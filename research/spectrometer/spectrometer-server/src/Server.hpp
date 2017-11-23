@@ -16,19 +16,22 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/write.hpp>
 
-#include "Session.hpp"
-#include "Message.hpp"
 #include "log.hpp"
+#include "Messages.hpp"
+
 
 class Server : private Logable<Server>
 {
 private:
-	typedef std::list<std::shared_ptr<Session>> session_list_t;
-public:
 	typedef boost::asio::ip::tcp::acceptor acceptor_t;
 	typedef boost::asio::ip::tcp::socket socket_t;
 	typedef boost::asio::io_service::strand strand_t;
 
+	struct Session { socket_t socket; };
+
+	typedef std::list<std::shared_ptr<Session>> session_list_t;
+
+public:
 	Server(boost::asio::io_service & io)
 		: ::Logable<Server>("Server"), _acceptor(io), _socket(io), _strand(io)
 	{}
@@ -38,11 +41,11 @@ public:
 	{
 		Server::stop();
 
+		// Импровизированный псевдо спинлок
 		// Не умираем пока все сессии не умрут
 		enum TheState { OKAY, AGAIN };
 
 	again:
-
 		auto promise = std::promise<TheState>();
 		auto future = promise.get_future();
 
@@ -92,38 +95,20 @@ public:
 
 	void send_message(std::shared_ptr<Message> msg)
 	{
-		enum TheState { OKAY, AGAIN };
-
-	again:
-		auto promise = std::promise<TheState>();
-		auto future = promise.get_future();
-
-		_strand.dispatch([&, this](){
-			try
+		_strand.dispatch([this, msg](){
+			if (_current_message)
 			{
-				if (_msgQueue.size() <= _queue_limit)
-				{
-					_msgQueue.push(std::move(msg));
-					if (_msgQueue.size() == 1)
-						_do_start_next_chain_ws();
-
-					promise.set_value(TheState::OKAY);
-				}
-				else
-				{
-					promise.set_value(TheState::AGAIN);
-				}
+				LOG_INFO << "Клиент не готов, сбрасываю сообщение";
+				return;
 			}
-			catch (std::exception & e)
+			else
 			{
-				LOG_ERROR << "Какая-то ошибка при записи пакета: " << e.what();
-				promise.set_exception(std::current_exception());
+				_current_message = std::move(msg);
+				_current_message_buffers.clear();
+				_current_message->fill_buffer_sequnce(_current_message_buffers);
+				_do_chain_ws(_sessions.begin());
 			}
 		});
-
-		TheState result = future.get();
-		if (result == TheState::AGAIN)
-			goto again;
 	}
 
 
@@ -143,7 +128,11 @@ public:
 
 			for (auto sessionPtr : _sessions)
 				sessionPtr->socket.close();
+
+			promise.set_value();
 		});
+
+		future.get();
 	}
 
 
@@ -162,7 +151,7 @@ private:
 				return;
 			}
 
-			auto session = std::make_shared<Session>(std::move(_socket));
+			auto session = std::make_shared<Session>( Session{std::move(_socket)} );
 
 //			// Запускаем чтение, чтобы ловить EOF и вежливо закрывать соединение с клиентами, которые отключились сами
 //			session->socket.async_read_some(asio::null_buffers(), _strand.wrap([this, session](const system::error_code & err, size_t){
@@ -175,38 +164,28 @@ private:
 //				// удаляем сокет из списка
 //			}));
 
+			LOG_INFO << "Новый клиент: " << session->socket.remote_endpoint();
 			_sessions.emplace_front(std::move(session));
 			_do_accept_ws();
 		}));
 	}
 
 
-	void _do_start_next_chain_ws()
-	{
-		using namespace boost;
-		assert(_strand.running_in_this_thread());
-
-		if (0 == _msgQueue.size())
-			return;
-
-		_do_process_current_chain_ws(_sessions.begin());
-	}
-
-
-	void _do_process_current_chain_ws(session_list_t::iterator current)
+	void _do_chain_ws(session_list_t::iterator current)
 	{
 		using namespace boost;
 		assert(_strand.running_in_this_thread());
 
 		if (current == _sessions.end())
 		{
-			_msgQueue.pop();
-			_do_start_next_chain_ws();
+			_current_message.reset();
 			return;
 		}
 
-		asio::async_write((*current)->socket, _msgQueue.front()->buffers_seq(),
+		asio::async_write((*current)->socket, _current_message_buffers,
 			_strand.wrap([this, current](const system::error_code & err, size_t transferred) {
+				assert(_strand.running_in_this_thread());
+
 				decltype(current) next;
 
 				if (err)
@@ -219,19 +198,18 @@ private:
 					next = std::next(current, 1);
 
 				// Если ошибки нет, просто переходим к следующему
-				_do_process_current_chain_ws(next);
+				_do_chain_ws(next);
 			})
 		);
 	}
 
+
 	acceptor_t _acceptor;
 	socket_t _socket;
 	strand_t _strand;
-
-	size_t _queue_limit = 100;
-
 	session_list_t _sessions;
-	std::queue<std::shared_ptr<Message>> _msgQueue;
+	std::shared_ptr<Message> _current_message;
+	Message::buff_sequence_t _current_message_buffers;
 };
 
 

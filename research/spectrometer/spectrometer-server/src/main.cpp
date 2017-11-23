@@ -114,7 +114,7 @@ int main()
 
 			boost::signals2::scoped_connection conn_guard_1(
 				cam.onFrame.connect([&server](std::shared_ptr<Camera::Frame> buffer){
-					server.send_message(std::make_shared<Message>(std::move(buffer)));
+					server.send_message(std::make_shared<FrameMessage>(std::move(buffer)));
 				})
 			);
 
