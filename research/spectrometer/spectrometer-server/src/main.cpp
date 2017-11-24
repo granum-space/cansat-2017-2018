@@ -21,6 +21,7 @@
 
 #include <boost/asio/signal_set.hpp>
 #include <boost/signals2/connection.hpp>
+#include <boost/program_options.hpp>
 
 #include "Camera.hpp"
 #include "Server.hpp"
@@ -56,40 +57,57 @@ void on_frame(std::shared_ptr<Camera::Frame> buffer)
 
 	prev = current;
 	return;
-
-	static int count = 10;
-	if (--count == 0)
-	{
-		on_signal(boost::system::error_code(), SIGINT);
-		return;
-	}
-
-	/*
-	std::ofstream f;
-	{
-		std::stringstream fname_stream;
-		fname_stream << "/tmp/frame_" << (10-count) << ".data";
-		std::string fname = fname_stream.str();
-		f.open(fname.c_str(), std::ios::out | std::ios::binary);
-		if (!f)
-		{
-			LOG_ERROR_FREE(logger) << "не могу открыть файл для снимка: " << fname;
-			return;
-		}
-	}
-
-	f.write((char*)buffer->data(), buffer->dataSize());
-	f.close();
-	*/
 }
 
 
-int main()
+int main(int argc, char ** argv)
 {
 	static auto logger = build_free_logger("main");
 
 	int retcode = EXIT_SUCCESS;
 	LOG_INFO_FREE(logger) << "started!";
+
+	namespace po = boost::program_options;
+
+	std::string iface = "0.0.0.0";
+	int32_t port;
+	int32_t width = 1280, height = 1720;
+
+	po::options_description descr;
+	descr.add_options()
+			("iface,i",
+					po::value(&iface)->default_value(iface),
+					"сетевой интерфейс на котором будет запущен сервер")
+
+			("port,p",
+					po::value(&port)->required(),
+					"порт на котором будет запущен сервер")
+
+			("width,w",
+					po::value(&width)->default_value(width),
+					"ширина снимка в пикселях")
+
+			("height,h",
+					po::value(&height)->default_value(height),
+					"высота снимка в пикселях")
+			;
+
+	try
+	{
+
+
+		po::variables_map vm;
+		auto parsed = po::parse_command_line(argc, argv, descr);
+		po::store(parsed, vm, true);
+		po::notify(vm);
+	}
+	catch (std::exception & e)
+	{
+		LOG_INFO_FREE(logger) << "Не могу определиться с опциями: " << e.what();
+		LOG_INFO_FREE(logger) << "меня следует запускать так: " << std::endl
+				<< descr;
+		return 1;
+	}
 
 	using namespace boost;
 	std::array<std::thread, 1> io_threads;
@@ -104,7 +122,7 @@ int main()
 
 		try
 		{
-			server.start(6112);
+			server.start(port, iface);
 
 			boost::signals2::scoped_connection conn_guard_0(
 				cam.onFrame.connect([](std::shared_ptr<Camera::Frame> buffer){
@@ -119,8 +137,7 @@ int main()
 			);
 
 			cam.open("/dev/video0");
-			//cam.set_fmt(2592, 1944, V4L2_PIX_FMT_YUYV);
-			cam.set_fmt(640, 480, V4L2_PIX_FMT_YUYV);
+			cam.set_fmt(width, height, V4L2_PIX_FMT_YUYV);
 			cam.start(4);
 
 			boost::asio::signal_set set(io);

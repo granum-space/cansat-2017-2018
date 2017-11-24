@@ -56,7 +56,7 @@ private:
 	void _init_device_ws();
 	void _init_buffers_ws(size_t buffers_count);
 	void _reset_buffers_ws();
-	void _enqueue_buffer_ws(const MmapBuffer & buffer);
+	void _enqueue_buffer_ws(const MmapBuffer & buffer, bool force = false);
 	void _do_read_ws();
 
 	boost::asio::io_service::strand _strand;

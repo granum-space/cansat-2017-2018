@@ -14,10 +14,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import ru.rsce.cansat.granum.spectrometer.client.netty.MessageDecoder;
 import ru.rsce.cansat.granum.spectrometer.client.netty.MessageHandler;
 
-public class Server {
+public class SpectrometerClient {
 	
 	public static interface MessageListener {
-		public void onMessage(Message msg);
+		public void onMessage(Message msg) throws Exception;
 	}
 	
 
@@ -33,7 +33,7 @@ public class Server {
 					@Override
 					protected void initChannel(Channel ch) throws Exception {
 						ch.pipeline().addLast(new MessageDecoder());
-						ch.pipeline().addLast(new MessageHandler(Server.this));
+						ch.pipeline().addLast(new MessageHandler(SpectrometerClient.this));
 					}
 				});
 			
@@ -65,10 +65,9 @@ public class Server {
 	}
 	
 
-	public void pushMessage(Message msg) {
+	public void pushMessage(Message msg) throws Exception {
 		if (msgListener != null)
 			msgListener.onMessage(msg);
-			
 	}
 
 	

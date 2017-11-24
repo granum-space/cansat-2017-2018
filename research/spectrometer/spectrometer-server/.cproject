@@ -29,6 +29,7 @@
 									<listOptionValue builtIn="false" value="BOOST_ASIO_DISABLE_EPOLL"/>
 									<listOptionValue builtIn="false" value="BOOST_LOG_DYN_LINK"/>
 								</option>
+								<option id="gnu.c.compiler.option.include.paths.1823399573" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.914444219" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1827804443" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -39,6 +40,7 @@
 									<listOptionValue builtIn="false" value="BOOST_ASIO_DISABLE_EPOLL"/>
 									<listOptionValue builtIn="false" value="BOOST_LOG_DYN_LINK"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.include.paths.1103616100" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1597676580" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.210115272" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
@@ -47,6 +49,7 @@
 								<option id="gnu.cpp.link.option.libs.779975958" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_system"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_log"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_program_options"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1567797824" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -55,6 +58,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.676278562" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.738743049" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<option id="gnu.both.asm.option.include.paths.418528327" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.234570927" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
@@ -95,6 +99,7 @@
 									<listOptionValue builtIn="false" value="BOOST_ASIO_DISABLE_EPOLL"/>
 									<listOptionValue builtIn="false" value="BOOST_LOG_DYN_LINK"/>
 								</option>
+								<option id="gnu.c.compiler.option.include.paths.1923503186" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2025028440" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.2122357387" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -105,6 +110,7 @@
 									<listOptionValue builtIn="false" value="BOOST_ASIO_DISABLE_EPOLL"/>
 									<listOptionValue builtIn="false" value="BOOST_LOG_DYN_LINK"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.include.paths.939601613" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.926815859" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1747117566" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
@@ -114,6 +120,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_system"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_log"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_log_setup"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_program_options"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.58198023" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -122,6 +129,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.815733505" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1112870352" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<option id="gnu.both.asm.option.include.paths.888131221" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.471150467" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>

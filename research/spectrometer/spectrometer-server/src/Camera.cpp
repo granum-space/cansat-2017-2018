@@ -96,11 +96,12 @@ void Camera::start(size_t framebuffer_queue_size /*= 4*/)
 			if (_started)
 				stop();
 
+			_reset_buffers_ws();
 			_init_buffers_ws(framebuffer_queue_size);
 
 			// передаем наши буфера в очередь на запись
 			for (const auto & buffer : _buffers_pool)
-				_enqueue_buffer_ws(*buffer);
+				_enqueue_buffer_ws(*buffer, true);
 
 			enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 			if (-1 == ioctl(_fd.native(), VIDIOC_STREAMON, &type))
@@ -140,8 +141,6 @@ void Camera::stop()
 				enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 				if (-1 == ioctl(_fd.native(), VIDIOC_STREAMOFF, &type))
 					throw std::system_error(errno, std::system_category(), "ioctl VIDIOC_STREAMOFF");
-
-				_reset_buffers_ws();
 			}
 
 			_started = false;
@@ -245,9 +244,12 @@ void Camera::_init_buffers_ws(size_t buffers_count)
 }
 
 
-void Camera::_enqueue_buffer_ws(const MmapBuffer & buffer)
+void Camera::_enqueue_buffer_ws(const MmapBuffer & buffer, bool force /*= false*/)
 {
 	assert(_strand.running_in_this_thread());
+
+	if (!force && !_started)
+		return;
 
 	struct v4l2_buffer buf;
 	std::memset(&buf, 0x00, sizeof(buf));
@@ -266,7 +268,9 @@ void Camera::_do_read_ws()
 	using namespace boost;
 
 	_fd.async_read_some(asio::null_buffers(), _strand.wrap([this](const system::error_code & err, size_t readed){
-		if (err)
+		if (err == asio::error::operation_aborted)
+			return;
+		else if (err)
 		{
 			LOG_ERROR << "Ошибка при async_read_some: " << err << ":" << err.message();
 			stop();

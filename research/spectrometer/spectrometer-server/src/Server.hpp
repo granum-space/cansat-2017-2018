@@ -96,6 +96,7 @@ public:
 	void send_message(std::shared_ptr<Message> msg)
 	{
 		_strand.dispatch([this, msg](){
+
 			if (_current_message)
 			{
 				LOG_INFO << "Клиент не готов, сбрасываю сообщение";
@@ -129,6 +130,8 @@ public:
 			for (auto sessionPtr : _sessions)
 				sessionPtr->socket.close();
 
+			if (_current_message) // Если никакое сообщение не стоит сейчас на отправку - просто удаляем все сокеты сами
+				_sessions.clear();
 			promise.set_value();
 		});
 
@@ -144,7 +147,9 @@ private:
 		assert(_strand.running_in_this_thread());
 
 		_acceptor.async_accept(_socket, _strand.wrap([this](const system::error_code & err){
-			if (err)
+			if (err == asio::error::operation_aborted)
+				return;
+			else if (err)
 			{
 				LOG_ERROR << "Ошибка на приеме соединения: " << err << ":" << err.message();
 				_do_accept_ws();
@@ -188,10 +193,23 @@ private:
 
 				decltype(current) next;
 
-				if (err)
+				if (err == asio::error::operation_aborted)
+				{
+					// очень некрасивое решение, но в целом пойдет
+					_sessions.clear();
+					return;
+				}
+				else if (err)
 				{
 					// Что-то пошло не так, выкидываем текущего клиента
-					LOG_ERROR << "Ошибка на записи к клиенту: " << err << ":" << err.message();
+					LOG_ERROR << "Ошибка на передаче данных к клиенту: " << err << ":" << err.message();
+
+					system::error_code socket_close_err;
+					(*current)->socket.close(socket_close_err);
+					if (socket_close_err)
+						LOG_WARN << "Какая-то ошибка с закрытием сокета : "  << socket_close_err
+							<< " : " << socket_close_err.message();
+
 					next = _sessions.erase(current);
 				}
 				else

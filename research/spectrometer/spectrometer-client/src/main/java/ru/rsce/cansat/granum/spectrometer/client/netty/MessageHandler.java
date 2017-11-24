@@ -7,7 +7,7 @@ import ru.rsce.cansat.granum.spectrometer.client.netty.FrameMessage;
 
 public class MessageHandler extends SimpleChannelInboundHandler<FrameMessage> {
 	
-	MessageHandler(Server parent_) {
+	MessageHandler(SpectrometerClient parent_) {
 		parent = parent_;
 	}
 	
@@ -19,5 +19,5 @@ public class MessageHandler extends SimpleChannelInboundHandler<FrameMessage> {
 		parent.pushMessage(msg);
 	}
 	
-	private final Server parent;
+	private final SpectrometerClient parent;
 }
