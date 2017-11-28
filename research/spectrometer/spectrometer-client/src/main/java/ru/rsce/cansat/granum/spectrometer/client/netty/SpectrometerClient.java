@@ -16,8 +16,8 @@ import ru.rsce.cansat.granum.spectrometer.client.netty.MessageHandler;
 
 public class SpectrometerClient {
 	
-	public static interface MessageListener {
-		public void onMessage(Message msg) throws Exception;
+	public static interface ClientMessageListener {
+		public void onSpectrometerMessage(Message msg) throws Exception;
 	}
 	
 
@@ -60,19 +60,19 @@ public class SpectrometerClient {
 	}
 	
 	
-	public void setMsgListener(MessageListener listener_) {
+	public void setMsgListener(ClientMessageListener listener_) {
 		msgListener = listener_;
 	}
 	
 
 	public void pushMessage(Message msg) throws Exception {
 		if (msgListener != null)
-			msgListener.onMessage(msg);
+			msgListener.onSpectrometerMessage(msg);
 	}
 
 	
 	private EventLoopGroup workerGroup;
 	private Channel ch;
 	
-	private MessageListener msgListener;
+	private ClientMessageListener msgListener;
 }
