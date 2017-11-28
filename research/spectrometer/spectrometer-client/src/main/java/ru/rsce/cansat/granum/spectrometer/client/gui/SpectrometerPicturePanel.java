@@ -12,7 +12,7 @@ public class SpectrometerPicturePanel extends JPanel {
 	
 	private class Rect {
 		public Rect(int left_, int top_, int width_, int height_) {
-			left = left_; top = top_; width_ = width_; height = height_;
+			left = left_; top = top_; width = width_; height = height_;
 		}
 		
 		public Rect scaled(float scaleX, float scaleY) {

@@ -1,15 +1,21 @@
 package ru.rsce.cansat.granum.spectrometer.client.gui;
 
-import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import java.awt.BorderLayout;
-import java.awt.image.BufferedImage;
+import javax.swing.JSplitPane;
 
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
-import java.util.List;
+
+import ru.rsce.cansat.granum.spectrometer.client.gui.icons.TextIcon;
 
 
 public class MainWindow {
@@ -31,22 +37,44 @@ public class MainWindow {
 		mainFrame.setBounds(100, 100, 450, 300);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout(0, 0));
+		JPanel rootPanel = new JPanel();
+		rootPanel.setLayout(new BorderLayout(0, 0));
+		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setResizeWeight(0.5);
 		splitPane.setDividerLocation(0.5);
+		
+		plotAndControlsPanel = new JPanel();
 			
 		spectrometerPicturePanel = new SpectrometerPicturePanel();
 		spectrometerPicturePanel.setLayout(new BorderLayout(0, 0));
-		
+
 		spectrometerPlotPanel = new SpectrometerPlotPanel();
 
 		splitPane.setLeftComponent(spectrometerPicturePanel);
-		splitPane.setRightComponent(spectrometerPlotPanel);
-		panel.add(splitPane);
-		mainFrame.getContentPane().add(panel);
+		plotAndControlsPanel.setLayout(new BorderLayout(0, 0));
+		
+		plotAndControlsPanel.add(spectrometerPlotPanel, BorderLayout.CENTER);
+		splitPane.setRightComponent(plotAndControlsPanel);
+		
+		freezePlotButton = new JButton("");
+		TextIcon t1 = new TextIcon(freezePlotButton, "Зафиксировать", TextIcon.Layout.VERTICAL);
+		//RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.DOWN);
+		freezePlotButton.setIcon(t1);
+		freezePlotButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spectrometerPlotPanel.freezePlot();
+				
+			}
+		});
+		
+		plotAndControlsPanel.add(freezePlotButton, BorderLayout.EAST);
+		
+		rootPanel.add(splitPane);
+		mainFrame.setContentPane(rootPanel);
 	}
 	
 	
@@ -70,11 +98,15 @@ public class MainWindow {
 		spectrometerPlotPanel.setPlotData(series);
 	}
 	
+	
 	public void show() {
 		mainFrame.setVisible(true);
 	}
 	
+	
 	private JFrame mainFrame;
 	private SpectrometerPicturePanel spectrometerPicturePanel;
 	private SpectrometerPlotPanel spectrometerPlotPanel;
+	private JPanel plotAndControlsPanel;
+	private JButton freezePlotButton;
 }

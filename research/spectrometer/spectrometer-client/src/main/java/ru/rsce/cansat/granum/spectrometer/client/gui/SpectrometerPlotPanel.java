@@ -40,6 +40,18 @@ public class SpectrometerPlotPanel extends JPanel {
 	public void setPlotData(XYSeries plotData) {
 		chartDataset.removeAllSeries();
 		chartDataset.addSeries(plotData);
+		if (freezedDataset != null)
+			chartDataset.addSeries(freezedDataset);
+	}
+	
+	
+	public void freezePlot() {
+		try {
+			freezedDataset = (XYSeries) chartDataset.getSeries(0).clone();
+		} catch (CloneNotSupportedException e) {
+			System.out.println(String.format("ТАКОГО НЕ МОЖЕТ БЫТЬ! %s", e.toString()));
+		}
+		freezedDataset.setKey("Сохраненная интенсивность");
 	}
 
 	
@@ -56,6 +68,7 @@ public class SpectrometerPlotPanel extends JPanel {
 	}
 	
 	XYSeriesCollection chartDataset;
+	XYSeries freezedDataset;
 	JFreeChart chart;
 	ChartPanel chartPanel;
 }
