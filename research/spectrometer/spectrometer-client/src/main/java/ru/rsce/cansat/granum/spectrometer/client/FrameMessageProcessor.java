@@ -180,13 +180,13 @@ public class FrameMessageProcessor implements ClientMessageListener {
 			b2 = Math.max(Math.min(b2, 255f), 0f);
 			
 			final int outputOffset = pixId*3*2;
-			output[outputOffset+0] = (byte)(r1);
+			output[outputOffset+0] = (byte)(b1);
 			output[outputOffset+1] = (byte)(g1);
-			output[outputOffset+2] = (byte)(b1);
+			output[outputOffset+2] = (byte)(r1);
 			
-			output[outputOffset+3] = (byte)(r2);
+			output[outputOffset+3] = (byte)(b2);
 			output[outputOffset+4] = (byte)(g2);
-			output[outputOffset+5] = (byte)(b2);
+			output[outputOffset+5] = (byte)(r2);
 		}
 		
 		return output;

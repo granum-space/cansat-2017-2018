@@ -2,6 +2,11 @@ package ru.rsce.cansat.granum.spectrometer.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import javax.imageio.IIOException;
 
 import javax.swing.JPanel;
 
@@ -48,9 +53,24 @@ public class SpectrometerPlotPanel extends JPanel {
 	public void freezePlot() {
 		try {
 			freezedDataset = (XYSeries) chartDataset.getSeries(0).clone();
+                        double freezedArray[][] = freezedDataset.toArray();
+                        
+                        File record = new File("./record_" + LocalDateTime.now().toString().replace(":", "-") + ".csv");
+                        FileWriter writer = new FileWriter(record, false);
+                        
+                        for(int i = 0; i < freezedArray[0].length; i++){
+                            writer.write(freezedArray[0][i] + "," + freezedArray[1][i] + "\r\n");
+                        }
+                        
+                        writer.flush();
+                        writer.close();
+                           
 		} catch (CloneNotSupportedException e) {
 			System.out.println(String.format("ТАКОГО НЕ МОЖЕТ БЫТЬ! %s", e.toString()));
 		}
+                catch (IOException ex) {
+                    System.err.println("Exception when saving spectre to file: " + ex.toString());
+                }
 		freezedDataset.setKey("Сохраненная интенсивность");
 	}
 
