@@ -12,6 +12,7 @@ import ru.rsce.cansat.granum.spectrometer.client.gui.MainWindow;
 import ru.rsce.cansat.granum.spectrometer.client.netty.SpectrometerClient;
 
 public class Main {
+        public static FrameMessageProcessor msgprocessor; //@FIXME костыльненько как-то
 	static Options opts = new Options();
 	static HelpFormatter helpFormatter = new HelpFormatter();
 	static String cmdLineSyntax = "java -jar spectrometer-client.jar";
@@ -88,6 +89,7 @@ public class Main {
 			client = new SpectrometerClient();
 			window = new MainWindow();
 			processor = new FrameMessageProcessor();
+                        msgprocessor = processor;
 			processor.setImageColorMode(mode);
 
 			processor.attachToMainWindow(window);

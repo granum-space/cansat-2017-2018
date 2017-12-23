@@ -45,14 +45,24 @@ public class MainWindow {
 		splitPane.setResizeWeight(0.5);
 		splitPane.setDividerLocation(0.5);
 		
-		plotAndControlsPanel = new JPanel();
-			
-		spectrometerPicturePanel = new SpectrometerPicturePanel();
+                JSplitPane upperSplit = new JSplitPane();
+                upperSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+                upperSplit.setResizeWeight(1);
+                upperSplit.setDividerLocation(0.8);
+                
+                spectrometerPicturePanel = new SpectrometerPicturePanel();
 		spectrometerPicturePanel.setLayout(new BorderLayout(0, 0));
-
+                upperSplit.setLeftComponent(spectrometerPicturePanel);
+                
+                spectrometerSliderPanel = new SpectrometerSliderPanel();
+                upperSplit.setRightComponent(spectrometerSliderPanel);
+                
+                splitPane.setLeftComponent(upperSplit);
+                
+		plotAndControlsPanel = new JPanel();
+                
 		spectrometerPlotPanel = new SpectrometerPlotPanel();
 
-		splitPane.setLeftComponent(spectrometerPicturePanel);
 		plotAndControlsPanel.setLayout(new BorderLayout(0, 0));
 		
 		plotAndControlsPanel.add(spectrometerPlotPanel, BorderLayout.CENTER);
@@ -90,7 +100,7 @@ public class MainWindow {
 	
 	
 	public void setSpectroPlotData(List<XYDataItem> plotData) {
-		XYSeries series = new XYSeries("Интенсивность");
+		XYSeries series = new XYSeries("Intensity");
 		for (XYDataItem item: plotData) {
 			series.add(item);
 		}
@@ -107,6 +117,7 @@ public class MainWindow {
 	private JFrame mainFrame;
 	private SpectrometerPicturePanel spectrometerPicturePanel;
 	private SpectrometerPlotPanel spectrometerPlotPanel;
+        private SpectrometerSliderPanel spectrometerSliderPanel;
 	private JPanel plotAndControlsPanel;
 	private JButton freezePlotButton;
 }

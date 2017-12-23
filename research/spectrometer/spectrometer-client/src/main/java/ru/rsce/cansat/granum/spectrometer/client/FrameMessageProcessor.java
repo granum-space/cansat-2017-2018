@@ -67,7 +67,18 @@ public class FrameMessageProcessor implements ClientMessageListener {
 		colorMode = mode_;
 	}
 	
-		
+	
+        public class ScanlineParams{
+            public int xCenter, xWidth, yStart, yStop;
+
+            public ScanlineParams(int xCenter, int xWidth, int yStart, int yStop) {
+                this.xCenter = xCenter;
+                this.xWidth = xWidth;
+                this.yStart = yStart;
+                this.yStop = yStop;
+            }
+        }
+        
 	public void setScanlineParams(int xCenter_, int xWidth_, int yStart_, int yStop_) {
 
 		if (xWidth_ < 0)
@@ -90,7 +101,14 @@ public class FrameMessageProcessor implements ClientMessageListener {
 		if (mw != null)
 			mw.setScanRegion(xCenter - xWidth/2, yStart, xWidth, yStop-yStart);
 	}
-	
+        
+        public void setScanlineParams(ScanlineParams params) {
+            setScanlineParams(params.xCenter, params.xWidth, params.yStart, params.yStop);
+	}
+        
+        public ScanlineParams getScanlineParams() {
+            return new ScanlineParams(xCenter, xWidth, yStart, yStop);
+        }
 	
 	protected BufferedImage convertImage(FrameMessage message) {
 	
