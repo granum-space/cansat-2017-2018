@@ -87,11 +87,11 @@ public class Main {
 		
 		try {
 			client = new SpectrometerClient();
-			window = new MainWindow();
 			processor = new FrameMessageProcessor();
                         msgprocessor = processor;
 			processor.setImageColorMode(mode);
 
+                        window = new MainWindow();
 			processor.attachToMainWindow(window);
 			processor.attachToSpectrometerClient(client);
 			processor.setScanlineParams(xCenter, xWidth, yStart, yStop);

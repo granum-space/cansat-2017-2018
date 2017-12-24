@@ -108,6 +108,11 @@ public class MainWindow {
 		spectrometerPlotPanel.setPlotData(series);
 	}
 	
+        
+        public void setPictureResolution(int width, int heigth) {
+            spectrometerSliderPanel.setResolution(width, heigth);
+        }
+        
 	
 	public void show() {
 		mainFrame.setVisible(true);

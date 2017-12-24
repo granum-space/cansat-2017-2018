@@ -51,6 +51,7 @@ public class FrameMessageProcessor implements ClientMessageListener {
 			
 			@Override
 			public void run() {
+                                _mw.setPictureResolution(msg.getWidth(), msg.getHeight());
 				_mw.setSpectroPicture(picture);
 				_mw.setSpectroPlotData(plotData);
 			}
@@ -109,21 +110,29 @@ public class FrameMessageProcessor implements ClientMessageListener {
         public ScanlineParams getScanlineParams() {
             return new ScanlineParams(xCenter, xWidth, yStart, yStop);
         }
+        
+        public void setResampleParams(int min, int max) {
+            resampleMin = min;
+            resampleMax = max;
+        }
 	
 	protected BufferedImage convertImage(FrameMessage message) {
 	
 		final int bufferedImageType;
+                final byte[] resampledPixels;
 		final byte[] rawData;
 		
 		switch (message.getPixFmt()) {
 		case YUYV422:
 			
+                        resampledPixels = _resampleYUYV(message.getPixData());
+                    
 			if (colorMode == ImageColorMode.COLORFULL) {
 				bufferedImageType = BufferedImage.TYPE_3BYTE_BGR;
-				rawData = _bgr888_from_YUYV(message.getPixData());
+				rawData = _bgr888_from_YUYV(resampledPixels);
 			} else {
 				bufferedImageType = BufferedImage.TYPE_BYTE_GRAY;
-				rawData = _i8_from_YUYV(message.getPixData());
+				rawData = _i8_from_YUYV(resampledPixels);
 			}
 			break;
 		default:
@@ -171,6 +180,20 @@ public class FrameMessageProcessor implements ClientMessageListener {
 		return dataString;
 	}
 
+        private byte[] _resampleYUYV(byte[] input) {
+            byte[] output = new byte[input.length];
+            
+            for (int pixId = 0; pixId < input.length / 2; pixId++) {
+                float y = input[pixId * 2] & 0xFF;
+                y -= resampleMin;
+                y *= 255 / resampleMax;
+                y = Math.max(Math.min(y, 255f), 0f);
+                output[pixId * 2] = (byte) y;
+                output[pixId * 2 + 1] = input[pixId * 2 + 1];
+            }
+            
+            return output;
+        }
 	
 	private byte[] _bgr888_from_YUYV(byte[] input) {
 		byte[] output = new byte[input.length / 2 * 3];
@@ -230,4 +253,6 @@ public class FrameMessageProcessor implements ClientMessageListener {
 	
 	private int yStart;
 	private int yStop;
+        
+        private int resampleMin = 0, resampleMax = 255;
 }
