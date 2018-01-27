@@ -1,0 +1,36 @@
+﻿  MODEL ALL_NEW1 :
+ 
+
+  2 CIRCULAR REFERENCE LOOPS FOUND
+ 
+
+   LOOP #  1
+
+   Depth of loop is 3
+
+Feature number 6 (EXTRUDE_2, id = 289) 
+  in model CAMDET_DOWN_NEW#AF1 refers to:
+
+Feature number 8 (COMPONENT, id = 132) 
+  in model SPECTROMETER_NEW1 refers to:
+
+Feature number 6 (EXTRUDE_2, id = 289) 
+  in model CAMDET_DOWN_NEW#AF1 - circle closed.
+
+
+   LOOP #  2
+
+   Depth of loop is 4
+
+Feature number 7 (EXTRUDE_3, id = 196) 
+  in model GRATING_COVER_NEWW#AF1 refers to:
+
+Feature number 9 (COMPONENT, id = 143) 
+  in model SPECTROMETER_NEW1 refers to:
+
+Feature number 14 (EXTRUDE_6__2, id = 701) 
+  in model GRATING_COVER_NEWW#AF1 must follow after:
+
+Feature number 7 (EXTRUDE_3, id = 196) 
+  in model GRATING_COVER_NEWW#AF1 - circle closed.
+
