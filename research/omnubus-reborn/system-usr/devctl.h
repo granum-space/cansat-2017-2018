@@ -5,25 +5,29 @@
 
 #include "granum_common.h"
 
-typedef enum {
-	GR_DEVID_RASPBERRY,
-	GR_DEVID_RADIO,
-	GR_DEVID_GPS,
-	GR_DEVID_MPU6000,
-	GR_DEVID_LSM,
-	GR_DEVID_BMP280,
-	GR_DEVID_TSL0,
-	GR_DEVID_TSL1,
-	GR_DEVID_TSL2,
-} gr_devid_t;
+struct gr_interface_struct;
+typedef struct gr_interface_struct gr_interface_t;
+
+typedef struct {
+	enum {
+		GR_IF_PARAM_SPEED_SLOW,
+		GR_IF_PARAM_SPEED_FAST,
+	} speed;
+
+} gr_interface_params_t;
+
+extern gr_interface_t GR_IF_I2C_1;
+
+//
+gr_error_t gr_if_set_params(gr_interface_t * iface, gr_interface_params_t );
 
 //Функции для работы с регистровыми устройствами (датчики)
-gr_error_t gr_dev_readreg(gr_devid_t devid, size_t address, void * buffer, size_t count);
-gr_error_t gr_dev_writereg(gr_devid_t devid, size_t address, void * buffer, size_t count);
+gr_error_t gr_dev_readreg(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count);
+gr_error_t gr_dev_writereg(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count);
 
 //Функции для работы с потоковыми устройствами (uart raspberry, радиоканал)
-gr_error_t gr_dev_receive(gr_devid_t devid, void * buffer, size_t count);
-gr_error_t gr_dev_transmit(gr_devid_t devid, void * buffer, size_t count);
+gr_error_t gr_dev_receive(gr_interface_t * iface, void * buffer, size_t count);
+gr_error_t gr_dev_transmit(gr_interface_t * iface, void * buffer, size_t count);
 
 //Изменение состояния светодиода на плате
 gr_error_t gr_dev_led(bool state);

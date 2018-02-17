@@ -9,9 +9,11 @@
 #define GRANUM_COMMON_H_
 
 typedef enum {
+	GR_ERROR_OK,
+	GR_ERROR_WRONGARG,
+} gr_error_t;
 
-} gr_error_t
-
+int gr_if_i2c_clockSpeeds[] = {100000, 100000, 100000};
 
 
 #endif /* GRANUM_COMMON_H_ */
