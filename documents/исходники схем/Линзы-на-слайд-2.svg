@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Создано Microsoft Visio, экспорт SVG Линзы-на-слайд.svg Page-1 -->
+<!-- Создано Microsoft Visio, экспорт SVG Линзы-на-слайд-2.svg Page-1 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
 		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="11.6929in" height="8.26772in"
-		viewBox="0 0 841.89 595.276" xml:space="preserve" color-interpolation-filters="sRGB" class="st18">
+		viewBox="0 0 841.89 595.276" xml:space="preserve" color-interpolation-filters="sRGB" class="st15">
 	<v:documentProperties v:langID="1049" v:metric="true" v:viewMarkup="false">
 		<v:userDefs>
 			<v:ud v:nameU="msvSubprocessMaster" v:prompt="" v:val="VT4(Rectangle)"/>
@@ -18,20 +18,17 @@
 		.st2 {fill:#625986;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
 		.st3 {fill:none}
 		.st4 {stroke:#5692c9;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
-		.st5 {marker-end:url(#mrkr4-51);stroke:#5692c9;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
+		.st5 {marker-end:url(#mrkr4-23);stroke:#5692c9;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
 		.st6 {fill:#5692c9;fill-opacity:1;stroke:#5692c9;stroke-opacity:1;stroke-width:0.16556291390728}
 		.st7 {fill:#5b9bd5;fill-opacity:0.3;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
 		.st8 {stroke:#ffffff;stroke-dasharray:9.5,2.5,3.5,2.5;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
 		.st9 {fill:#42829e;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
-		.st10 {fill:#5b9bd5;fill-opacity:0.3;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
-		.st11 {visibility:visible}
-		.st12 {fill:#a5a5a5;fill-opacity:0.098;stroke:#a5a5a5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.098}
-		.st13 {fill:#919191;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
-		.st14 {fill:none;stroke:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
-		.st15 {fill:#ffcc00;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
-		.st16 {fill:none;stroke:#00b0f0;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.25}
-		.st17 {stroke:#00b0f0;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.25}
-		.st18 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+		.st10 {visibility:visible}
+		.st11 {fill:#a5a5a5;fill-opacity:0.098;stroke:#a5a5a5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.098}
+		.st12 {fill:#919191;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5}
+		.st13 {fill:none;stroke:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
+		.st14 {fill:#ffcc00;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
+		.st15 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
 	]]>
 	</style>
 
@@ -39,7 +36,7 @@
 		<g id="lend4">
 			<path d="M 2 1 L 0 0 L 2 -1 L 2 1 " style="stroke:none"/>
 		</g>
-		<marker id="mrkr4-51" class="st6" v:arrowType="4" v:arrowSize="2" v:setback="12.08" refX="-12.08" orient="auto"
+		<marker id="mrkr4-23" class="st6" v:arrowType="4" v:arrowSize="2" v:setback="12.08" refX="-12.08" orient="auto"
 				markerUnits="strokeWidth" overflow="visible">
 			<use xlink:href="#lend4" transform="scale(-6.04,-6.04) "/>
 		</marker>
@@ -55,115 +52,49 @@
 		<v:layer v:name="Выноска" v:index="1"/>
 		<v:layer v:name="Закрепленное оборудование" v:index="2"/>
 		<v:layer v:name="Мебель" v:index="3"/>
-		<g id="group146-1" transform="translate(455.367,925.054) scale(1,-1)" v:mID="146" v:groupContext="group">
-			<title>Лист.146</title>
-			<g id="shape147-2" v:mID="147" v:groupContext="shape"
-					transform="translate(-587.059,478.984) rotate(-82.843) scale(-1,1)">
-				<title>Лист.147</title>
-				<v:userDefs>
-					<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-				</v:userDefs>
-				<path d="M0 595.28 L28.72 595.28" class="st1"/>
-			</g>
-			<g id="shape148-5" v:mID="148" v:groupContext="shape"
-					transform="translate(-541.9,362.581) rotate(-69.8742) scale(-1,1)">
-				<title>Лист.148</title>
-				<v:userDefs>
-					<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-				</v:userDefs>
-				<path d="M0 595.28 L29.68 595.28" class="st1"/>
-			</g>
-		</g>
-		<g id="group145-8" transform="translate(454.909,-316.172)" v:mID="145" v:groupContext="group">
-			<title>Лист.145</title>
-			<g id="shape134-9" v:mID="134" v:groupContext="shape"
-					transform="translate(-586.866,476.716) rotate(-82.843) scale(-1,1)">
-				<title>Лист.134</title>
-				<v:userDefs>
-					<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-				</v:userDefs>
-				<path d="M0 595.28 L30.27 595.28" class="st1"/>
-			</g>
-			<g id="shape143-12" v:mID="143" v:groupContext="shape"
-					transform="translate(-540.983,361.081) rotate(-69.8742) scale(-1,1)">
-				<title>Лист.143</title>
-				<v:userDefs>
-					<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-				</v:userDefs>
-				<path d="M0 595.28 L31.28 595.28" class="st1"/>
-			</g>
-		</g>
-		<g id="shape106-15" v:mID="106" v:groupContext="shape" transform="translate(619.565,-133.296) rotate(5.73128) scale(-1,1)">
+		<g id="shape106-1" v:mID="106" v:groupContext="shape" transform="translate(619.565,-133.296) rotate(5.73128) scale(-1,1)">
 			<title>Лист.106</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L51.74 595.28" class="st1"/>
 		</g>
-		<g id="shape107-18" v:mID="107" v:groupContext="shape" transform="translate(776.655,-95.4921) rotate(21.3311) scale(-1,1)">
+		<g id="shape107-4" v:mID="107" v:groupContext="shape" transform="translate(776.655,-95.4921) rotate(21.3311) scale(-1,1)">
 			<title>Лист.107</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L45.37 595.28" class="st1"/>
 		</g>
-		<g id="shape108-21" v:mID="108" v:groupContext="shape" transform="translate(1135.64,306.932) rotate(75.199) scale(-1,1)">
+		<g id="shape108-7" v:mID="108" v:groupContext="shape" transform="translate(1135.64,306.932) rotate(75.199) scale(-1,1)">
 			<title>Лист.108</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L50.9 595.28" class="st1"/>
 		</g>
-		<g id="shape109-24" v:mID="109" v:groupContext="shape" transform="translate(1071.95,155.06) rotate(59.2967) scale(-1,1)">
+		<g id="shape109-10" v:mID="109" v:groupContext="shape" transform="translate(1071.95,155.06) rotate(59.2967) scale(-1,1)">
 			<title>Лист.109</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L44.81 595.28" class="st1"/>
 		</g>
-		<g id="group139-27" transform="translate(364.819,-300.827)" v:mID="139" v:groupContext="group">
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<title>Лист.139</title>
-			<g id="shape135-28" v:mID="135" v:groupContext="shape" transform="translate(-161.508,31.7917) rotate(-20.1775)">
-				<title>Лист.135</title>
-				<path d="M0 588.25 A48.7048 17.562 -159.8 0 0 51.77 588.25" class="st1"/>
-			</g>
-			<g id="shape138-31" v:mID="138" v:groupContext="shape" transform="translate(-121.695,29.5948) rotate(-16.1615)">
-				<title>Лист.138</title>
-				<path d="M-0 588.96 A54.8496 15.8638 -163.83 0 0 57.03 588.96" class="st1"/>
-			</g>
-		</g>
-		<g id="group140-34" transform="translate(365.107,912.472) scale(1,-1)" v:mID="140" v:groupContext="group">
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<title>Лист.140</title>
-			<g id="shape141-35" v:mID="141" v:groupContext="shape" transform="translate(-159.512,31.1997) rotate(-20.0097)">
-				<title>Лист.141</title>
-				<path d="M0 588.25 A49.05 17.5786 -159.99 0 0 52.19 588.25" class="st1"/>
-			</g>
-			<g id="shape142-38" v:mID="142" v:groupContext="shape" transform="translate(-119.941,29.2001) rotate(-16.023)">
-				<title>Лист.142</title>
-				<path d="M0 588.96 A55.2756 15.874 -163.98 0 0 57.51 588.96" class="st1"/>
-			</g>
-		</g>
-		<g id="shape51-41" v:mID="51" v:groupContext="shape" transform="translate(414.389,-166.338)">
+		<g id="shape51-13" v:mID="51" v:groupContext="shape" transform="translate(414.389,-166.338)">
 			<title>Прямоугольник.51</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
 			<rect x="0" y="550.035" width="5.66929" height="45.2409" class="st2"/>
 		</g>
-		<g id="shape52-43" v:mID="52" v:groupContext="shape" transform="translate(414.389,-117.327)">
+		<g id="shape52-15" v:mID="52" v:groupContext="shape" transform="translate(414.389,-117.327)">
 			<title>Прямоугольник.52</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
 			<rect x="0" y="550.035" width="5.66929" height="45.2409" class="st2"/>
 		</g>
-		<g id="shape50-45" v:mID="50" v:groupContext="shape" transform="translate(417.223,986.413) rotate(180)">
+		<g id="shape50-17" v:mID="50" v:groupContext="shape" transform="translate(417.223,986.413) rotate(180)">
 			<title>Размерная линия.50</title>
 			<v:userDefs>
 				<v:ud v:nameU="Scale" v:val="VT0(1):26"/>
@@ -177,7 +108,7 @@
 			<path d="M34.02 609.45 L6.04 609.45" class="st5"/>
 			<path d="M34.02 609.45 L61.99 609.45" class="st5"/>
 		</g>
-		<g id="shape54-56" v:mID="54" v:groupContext="shape" transform="translate(417.223,-204.138)">
+		<g id="shape54-28" v:mID="54" v:groupContext="shape" transform="translate(417.223,-204.138)">
 			<title>Размерная линия.54</title>
 			<v:userDefs>
 				<v:ud v:nameU="Scale" v:val="VT0(1):26"/>
@@ -191,244 +122,150 @@
 			<path d="M34.02 581.1 L6.04 581.1" class="st5"/>
 			<path d="M34.02 581.1 L61.99 581.1" class="st5"/>
 		</g>
-		<g id="shape63-66" v:mID="63" v:groupContext="shape" transform="translate(349.192,1014.76) rotate(180)">
+		<g id="shape63-38" v:mID="63" v:groupContext="shape" transform="translate(349.192,1014.76) rotate(180)">
 			<title>Лист.63</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L66.43 595.28" class="st1"/>
+			<path d="M0 595.28 L202.9 595.28" class="st1"/>
 		</g>
-		<g id="shape67-69" v:mID="67" v:groupContext="shape" transform="translate(349.192,1003.42) rotate(180)">
+		<g id="shape67-41" v:mID="67" v:groupContext="shape" transform="translate(349.192,1003.42) rotate(180)">
 			<title>Лист.67</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L76.66 595.28" class="st1"/>
+			<path d="M0 595.28 L204.42 595.28" class="st1"/>
 		</g>
-		<g id="shape69-72" v:mID="69" v:groupContext="shape" transform="translate(349.192,1037.44) rotate(180)">
+		<g id="shape69-44" v:mID="69" v:groupContext="shape" transform="translate(349.192,1037.44) rotate(180)">
 			<title>Лист.69</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L45.72 595.28" class="st1"/>
+			<path d="M0 595.28 L202.14 595.28" class="st1"/>
 		</g>
-		<g id="shape70-75" v:mID="70" v:groupContext="shape" transform="translate(349.192,1048.78) rotate(180)">
+		<g id="shape70-47" v:mID="70" v:groupContext="shape" transform="translate(349.192,1048.78) rotate(180)">
 			<title>Лист.70</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L36.11 595.28" class="st1"/>
+			<path d="M0 595.28 L202.9 595.28" class="st1"/>
 		</g>
-		<g id="shape71-78" v:mID="71" v:groupContext="shape" transform="translate(536.751,1014.76) rotate(180)">
+		<g id="shape71-50" v:mID="71" v:groupContext="shape" transform="translate(536.751,1014.76) rotate(180)">
 			<title>Лист.71</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L51.5 595.28" class="st1"/>
 		</g>
-		<g id="shape72-81" v:mID="72" v:groupContext="shape" transform="translate(546.318,1003.42) rotate(180)">
+		<g id="shape72-53" v:mID="72" v:groupContext="shape" transform="translate(546.318,1003.42) rotate(180)">
 			<title>Лист.72</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L61.06 595.28" class="st1"/>
 		</g>
-		<g id="shape73-84" v:mID="73" v:groupContext="shape" transform="translate(517.6,1037.44) rotate(180)">
+		<g id="shape73-56" v:mID="73" v:groupContext="shape" transform="translate(517.6,1037.44) rotate(180)">
 			<title>Лист.73</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L32.35 595.28" class="st1"/>
 		</g>
-		<g id="shape74-87" v:mID="74" v:groupContext="shape" transform="translate(508.7,1048.78) rotate(180)">
+		<g id="shape74-59" v:mID="74" v:groupContext="shape" transform="translate(508.7,1048.78) rotate(180)">
 			<title>Лист.74</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L23.44 595.28" class="st1"/>
 		</g>
-		<g id="shape76-90" v:mID="76" v:groupContext="shape" transform="translate(297.012,1018.23) rotate(-161.565)">
+		<g id="shape76-62" v:mID="76" v:groupContext="shape" transform="translate(297.012,1018.23) rotate(-161.565)">
 			<title>Лист.76</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L143.42 595.28" class="st1"/>
 		</g>
-		<g id="shape77-93" v:mID="77" v:groupContext="shape" transform="translate(387.392,1029.34) rotate(-170.538)">
+		<g id="shape77-65" v:mID="77" v:groupContext="shape" transform="translate(387.392,1029.34) rotate(-170.538)">
 			<title>Лист.77</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L137.94 595.28" class="st1"/>
 		</g>
-		<g id="shape78-96" v:mID="78" v:groupContext="shape" transform="translate(583.117,1006.66) rotate(170.538)">
+		<g id="shape78-68" v:mID="78" v:groupContext="shape" transform="translate(583.117,1006.66) rotate(170.538)">
 			<title>Лист.78</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L137.94 595.28" class="st1"/>
 		</g>
-		<g id="shape79-99" v:mID="79" v:groupContext="shape" transform="translate(673.497,972.873) rotate(161.565)">
+		<g id="shape79-71" v:mID="79" v:groupContext="shape" transform="translate(673.497,972.873) rotate(161.565)">
 			<title>Лист.79</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L143.42 595.28" class="st1"/>
 		</g>
-		<g id="shape81-102" v:mID="81" v:groupContext="shape" transform="translate(936.378,405.311) rotate(90)">
+		<g id="shape81-74" v:mID="81" v:groupContext="shape" transform="translate(936.378,405.311) rotate(90)">
 			<title>Эллипс.81</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
 			<path d="M0 587.19 A25.5118 8.08911 0 1 1 51.02 587.19 A25.5118 8.08911 0 1 1 -0 587.19 Z" class="st7"/>
 		</g>
-		<g id="shape82-104" v:mID="82" v:groupContext="shape" transform="translate(1072.44,405.311) rotate(90)">
+		<g id="shape82-76" v:mID="82" v:groupContext="shape" transform="translate(1072.44,405.311) rotate(90)">
 			<title>Эллипс.82</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
 			<path d="M0 587.19 A25.5118 8.08911 0 1 1 51.02 587.19 A25.5118 8.08911 0 1 1 -0 587.19 Z" class="st7"/>
 		</g>
-		<g id="shape6-106" v:mID="6" v:groupContext="shape" transform="translate(282.719,-164.453)">
+		<g id="shape6-78" v:mID="6" v:groupContext="shape" transform="translate(88.8358,-164.453)">
 			<title>Лист.6</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L318.76 595.28" class="st8"/>
+			<path d="M0 595.28 L512.64 595.28" class="st8"/>
 		</g>
-		<g id="shape111-109" v:mID="111" v:groupContext="shape" transform="translate(-322.678,408.248) rotate(-90)">
-			<title>Лист.111</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L79.82 595.28" class="st1"/>
-		</g>
-		<g id="shape113-112" v:mID="113" v:groupContext="shape" transform="translate(-312.452,419.565) rotate(-90)">
-			<title>Лист.113</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L102.31 595.28" class="st1"/>
-		</g>
-		<g id="shape114-115" v:mID="114" v:groupContext="shape" transform="translate(-291.513,442.205) rotate(-90)">
-			<title>Лист.114</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L147.63 595.28" class="st1"/>
-		</g>
-		<g id="shape115-118" v:mID="115" v:groupContext="shape" transform="translate(-282.263,453.618) rotate(-90)">
-			<title>Лист.115</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L170.3 595.28" class="st1"/>
-		</g>
-		<g id="shape117-121" v:mID="117" v:groupContext="shape" transform="translate(407.717,-278.094) scale(-1,1)">
-			<title>Лист.117</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L124.95 595.28" class="st1"/>
-		</g>
-		<g id="shape118-124" v:mID="118" v:groupContext="shape" transform="translate(407.339,-266.755) scale(-1,1)">
-			<title>Лист.118</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L134.81 595.28" class="st1"/>
-		</g>
-		<g id="shape119-127" v:mID="119" v:groupContext="shape" transform="translate(406.961,-300.771) scale(-1,1)">
-			<title>Лист.119</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L103.49 595.28" class="st1"/>
-		</g>
-		<g id="shape120-130" v:mID="120" v:groupContext="shape" transform="translate(406.299,-312.109) scale(-1,1)">
-			<title>Лист.120</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L93.22 595.28" class="st1"/>
-		</g>
-		<g id="shape122-133" v:mID="122" v:groupContext="shape" transform="translate(-79.0574,13.799) rotate(-41.4)">
-			<title>Прямоугольник.122</title>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<rect x="0" y="518.797" width="2.83465" height="76.4787" class="st9"/>
-		</g>
-		<g id="shape123-135" v:mID="123" v:groupContext="shape" transform="translate(-79.0574,723.494) rotate(41.4) scale(1,-1)">
-			<title>Прямоугольник.123</title>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<rect x="0" y="518.797" width="2.83465" height="76.4787" class="st9"/>
-		</g>
-		<g id="shape125-137" v:mID="125" v:groupContext="shape" transform="translate(436.17,-238.677)">
-			<title>Лист.125</title>
-			<path d="M13.26 595.28 L0 595 L0 556.95 A6.93735 11.4622 -180 0 0 -0 534.93 L0.07 496.71 L13.26 496.63 A34.8073 57.51
-						 0 0 1 13.26 595.28 Z" class="st10"/>
-		</g>
-		<g id="shape128-139" v:mID="128" v:groupContext="shape" transform="translate(-304.895,442.299) rotate(-90)">
-			<title>Лист.128</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L145.51 595.28" class="st8"/>
-		</g>
-		<g id="shape129-142" v:mID="129" v:groupContext="shape" transform="translate(534.781,901.868) rotate(180)">
-			<title>Лист.129</title>
-			<v:userDefs>
-				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
-			</v:userDefs>
-			<path d="M0 595.28 L254.3 595.28" class="st8"/>
-		</g>
-		<g id="shape130-145" v:mID="130" v:groupContext="shape" transform="translate(422.396,-263.622)">
-			<title>Лист.130</title>
-			<path d="M0 544.25 L12.57 544.25 L12.57 595.28 L0 595.28 L0 578.69 A3.94598 9.34575 -180 0 0 0 561.26 L0 544.25 Z"
-					class="st10"/>
-		</g>
-		<g id="shape84-147" v:mID="84" v:groupContext="shape" transform="translate(168.633,856.821) rotate(40) scale(1,-1)">
+		<g id="shape84-81" v:mID="84" v:groupContext="shape" transform="translate(168.633,856.821) rotate(40) scale(1,-1)">
 			<title>Прямоугольник.84</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
 			<rect x="0" y="518.797" width="2.83465" height="76.4787" class="st9"/>
 		</g>
-		<g id="shape87-149" v:mID="87" v:groupContext="shape" transform="translate(128.23,872.962) rotate(40.2731) scale(1,-1)">
+		<g id="shape87-83" v:mID="87" v:groupContext="shape" transform="translate(128.23,872.962) rotate(40.2731) scale(1,-1)">
 			<title>Лист.87</title>
 			<v:userDefs>
 				<v:ud v:nameU="msvThemeColors" v:val="VT0(254):26"/>
 			</v:userDefs>
 			<path d="M0 595.28 L106.63 595.28" class="st8"/>
 		</g>
-		<g id="shape88-152" v:mID="88" v:groupContext="shape" transform="translate(997.318,846.182) rotate(-50) scale(1,-1)">
+		<g id="shape88-86" v:mID="88" v:groupContext="shape" transform="translate(997.318,846.182) rotate(-50) scale(1,-1)">
 			<title>Трапеция</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
 			</v:userDefs>
-			<g id="shadow88-153" v:groupContext="shadow" v:shadowOffsetX="2.124" v:shadowOffsetY="-2.124" v:shadowType="1"
-					transform="matrix(1,0,0,1,-0.261798,-2.99236)" class="st11">
-				<path d="M0 595.28 L31.76 595.28 L21.21 584.29 L10.55 584.29 L0 595.28 Z" class="st12"/>
+			<g id="shadow88-87" v:groupContext="shadow" v:shadowOffsetX="2.124" v:shadowOffsetY="-2.124" v:shadowType="1"
+					transform="matrix(1,0,0,1,-0.261798,-2.99236)" class="st10">
+				<path d="M0 595.28 L31.76 595.28 L21.21 584.29 L10.55 584.29 L0 595.28 Z" class="st11"/>
 			</g>
-			<path d="M0 595.28 L31.76 595.28 L21.21 584.29 L10.55 584.29 L0 595.28 Z" class="st13"/>
+			<path d="M0 595.28 L31.76 595.28 L21.21 584.29 L10.55 584.29 L0 595.28 Z" class="st12"/>
 		</g>
-		<g id="shape85-156" v:mID="85" v:groupContext="shape" transform="translate(184.316,903.361) rotate(40) scale(1,-1)">
+		<g id="shape85-90" v:mID="85" v:groupContext="shape" transform="translate(184.316,903.361) rotate(40) scale(1,-1)">
 			<title>Прямоугольник.85</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 			</v:userDefs>
-			<g id="shadow85-157" v:groupContext="shadow" v:shadowOffsetX="2.124" v:shadowOffsetY="-2.124" v:shadowType="1"
-					transform="matrix(1,-5.55112E-017,5.55112E-017,1,2.99236,-0.261798)" class="st11">
-				<rect x="0" y="574.016" width="28.3465" height="21.2598" class="st12"/>
+			<g id="shadow85-91" v:groupContext="shadow" v:shadowOffsetX="2.124" v:shadowOffsetY="-2.124" v:shadowType="1"
+					transform="matrix(1,-5.55112E-017,5.55112E-017,1,2.99236,-0.261798)" class="st10">
+				<rect x="0" y="574.016" width="28.3465" height="21.2598" class="st11"/>
 			</g>
-			<rect x="0" y="574.016" width="28.3465" height="21.2598" class="st13"/>
+			<rect x="0" y="574.016" width="28.3465" height="21.2598" class="st12"/>
 		</g>
-		<g id="shape152-160" v:mID="152" v:groupContext="shape" transform="translate(517.606,-286.299)">
+		<g id="shape152-94" v:mID="152" v:groupContext="shape" transform="translate(519.188,-281.973)">
 			<title>Лист.152</title>
-			<rect v:rectContext="foreign" x="0" y="513.246" width="93.6925" height="82.0299" class="st14"/>
+			<rect v:rectContext="foreign" x="0" y="513.246" width="93.6925" height="82.0299" class="st13"/>
 			<image x="0" y="513.246" width="93.6925" height="82.0299" preserveAspectRatio="none" xlink:href="data:image/png;base64,
 						iVBORw0KGgoAAAANSUhEUgAABK0AAAQYCAYAAADMPioUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7D
 						AcdvqGQAAP+lSURBVHhe7L1ngGRZWh342nvv3Ux3jmUYYAY3MBKjASVICKQVAoGQQRipFlgJkMSuBFokgQClxLAIhJBgYGybqixvutp7
@@ -7459,56 +7296,496 @@
 						NfSumMRvcY0twRrbLyzwOOXzK4yvyjdntDPOGTFADBADo4cBBtQlCKgZVI2eYdIZc86JgZJgAJpW6qMTv2FCb8F43tkJPzgzGeDv0PW4
 						xpZgjaWtlcTWBoAlxlejO/e0e849MUAMEAPlwQAD6gEEQf02AAZV5TGofs89j8e5JwaKjQGJ5kw7Qmlg4Fwlrdzg3LjnLxm3SdKK+C02
 						fkd9fhhfEZ+jbgO8ftoAMUAMlAED/w+XjoBe4SjoKQAAAABJRU5ErkJggg=="/>
-			<rect v:rectContext="foreign" x="0" y="513.246" width="93.6925" height="82.0299" class="st14"/>
+			<rect v:rectContext="foreign" x="0" y="513.246" width="93.6925" height="82.0299" class="st13"/>
 		</g>
-		<g id="shape170-164" v:mID="170" v:groupContext="shape" transform="translate(287.929,-277.555) rotate(-18.699)">
+		<g id="shape153-98" v:mID="153" v:groupContext="shape" transform="translate(707.32,337.682) rotate(90)">
+			<title>Лист.153</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape154-102" v:mID="154" v:groupContext="shape" transform="translate(701.858,352.782) rotate(90)">
+			<title>Лист.154</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape155-106" v:mID="155" v:groupContext="shape" transform="translate(710.362,366.955) rotate(90)">
+			<title>Лист.155</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape156-110" v:mID="156" v:groupContext="shape" transform="translate(701.858,378.293) rotate(90)">
+			<title>Лист.156</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape157-114" v:mID="157" v:groupContext="shape" transform="translate(700.724,409.475) rotate(90)">
+			<title>Лист.157</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape158-118" v:mID="158" v:groupContext="shape" transform="translate(709.795,421.38) rotate(90)">
+			<title>Лист.158</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape159-122" v:mID="159" v:groupContext="shape" transform="translate(706.394,394.168) rotate(90)">
+			<title>Лист.159</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape160-126" v:mID="160" v:groupContext="shape" transform="translate(699.591,434.986) rotate(90)">
+			<title>Лист.160</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape161-130" v:mID="161" v:groupContext="shape" transform="translate(709.468,229.07) rotate(90)">
+			<title>Лист.161</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape162-134" v:mID="162" v:groupContext="shape" transform="translate(704.007,244.17) rotate(90)">
+			<title>Лист.162</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7D
+						AcdvqGQAAAbfSURBVGhD7ZgNbBNVHMAnomjESIxfwagoaiQkJgbm2t5ddxvrx931E7NERdH4ETEaDIQPBWMaEGG99m6b0YSNj6iDAYO1
+						Q0EIyra2Q0hQgqhRJMYEQcEQEAURxs7/u6+9Xq/rurVLIG1yaXPvvf///3v/r/daVlb6lHagtAOlHcB3oHZT7VjnTudNV8WueNuD1YFY
+						YMJVAcPF/Ys8m5946IqHYbYzYzztwY6rAyYWmAgw3wXbg3cMxTN0iB7NNDJjhrK24GsAZL43FtgLReDGfIVbRJLOd03R5tOd9GiAOcjF
+						AqvyUYI8YYmScwezhqgjbh7MvGHPgSpW6YkFJPDMs4MVZhGIWdYo6ck13yKQXqtgzdvbueRmHQeQTgA544/778klRPaGQB6dEqFvG2iu
+						VSCDFVGCzSWvoONsh8+OvALPzjKp7JqBhIM3noP8ODLQHFvYNhFgNxbUSDNhqOIY3wNED4Lh2oMvZDUAICE3DlkFIp5tjuqxr231tvKi
+						g6C4tUasj+CKILQCqldOQucfZ2YEhEoV7LQEMHXZjLRGKR7C6rOCQoSgKmVVKFKB8qhdzwm5gsUCR1WvCGbrLCK1AYGAR140G39cIKbC
+						+CX4prLpXbl/ynV5Q4Y72bvqUuzUbOEFSpsmhyZfr40DREj1ygVfh288vo4W6XEw/18EgjxjlIm8XCGQP8L4wWyGRpLcFL7be3/eIGhB
+						OME+H0lx0813mJhhiRKN2hgY/6AKghK/Hl9jiVKvymGFQBrsGec0q0C9I4+L1AIzXeEUR/FJNjQkCLQoJIVGgYCucMqdUQqho18Lyg8D
+						jE/3ChxbVJhzzKba27X3MO8rDcTYG2wR232qty7aeFvGkaeum5sENvwkdprn3qDhot3MYyDoHNoV4yKLQM2B5Dyu9QVokMswryxF88tF
+						8gEwtE8FOZUhQyTWKiFH7jCOCXs8d/NJ5hifYt8atMEDTQwnuBaAORnu9qSFBQIAIy5odd+7ZboFAzmFLmMIVvMGKr+4HmvUbuuHJGbh
+						Y41wygadKYA4M2xvaIKjSfZhEHqZT3A/r9hVc0ta/AvkOqWsEr5QKDQKSvFxDcYb978EY106CPw2rN2tjZEN5L34WDjJrASdEp9gxIJ4
+						QxPCJ7k2RTC3DeWO9h4dJZREJY+g+PfE/S26V+J+lBu9eqJHyZi2DnrGtH5A4hvc2EiKmSHrSrJ94R5mYkFBIj3uclU4KOAWa8JRCQaD
+						zio9glwOEG9g4dVHNFbK1Up91uggArVTfy+S7+obBiUWhRPSFUmyuwsK0e8V9qAKc4nv8Vj1qiRSHapRF2rWcdMxEKl6jRMDIeRmCWWW
+						wOCkCsHmRO8lOMYg4/UNSzAvFwtkbr9X2MPQ/W9QDUO5oBpc2Qp5clGDYdq8uEfelucL5FYMpA9C8lb0HsL2GUx+L9/jHNINNCd8/V7f
+						naDoEqYspIDQEzDDerl2/wHcK8T7tAITJWdbRPsk+H0Zm/8LkvFBJz0W5P6GyU7lNGg4E8JJ7gtM2XktGSHZj2nGVTU79uEgVasdCohI
+						gecIAQ8rdAaTvQGdG5MrhVPsm8OxM+daUIaHF6osn5uFC9vmO63BuNazMoi1npwJ3yfS8kMk5tWlfONBznkcBH5X5DRmOBP4hPtRg0JU
+						xWogbBbjBlaunPa3BgKhhsozglma5g0ZjnKBvAaDzHNDOunmA6aev/5MV8wlKyKEIz1kSAm8gg6Q8kN+SEsVIpkwgvg+pqeCrH8MIMXN
+						D6wMbzR6ZeE2l99oZPVapw6CfsNxBR1n8CrWt6KLWWCUBSU46+Urn03POdckT6Rwkl0PRsp3Du0hGu06iFPNE3wcHThB1vcmIE/lNKIQ
+						E8Bod2aesBfpRvKI0SvuVo8Mw0CYGce4JvpbEzlStgtdIWxPk7G80z3BzICZrVWHjMbSq2p0r0Bip8G8HnP8YCZH2OOSG2TRP2rCG8ul
+						tGiH+1cjCDpr4QmPjy/50vWHCcjpogPgCsCAA0YjViTY/2xKmU17WDimIBi6WW2MME41kKjpXTYB2T+iIJAnMbOwYJvU4wgG4/iEkUGm
+						feTSAX3NlaiZZjzhBNMxoiDQBJvMDHm6pSrDI3SzkieOFqXDo2dGS7UpCMhcN6IgUOuXm4G8srkmAwQ1QwTi3uDRx2ZtqTH3CNwMRxQE
+						Xa7MQOZ+it8/lN23NSj9BC/Bc7Y6zEFSrOkffEWDg39V5pmBLNyeCQIdXalc7QHdI/O3Oc1DK8EtKZrRZoL5pCcIILvw570uZs/suPN3
+						+MPtL+gZZ7UHvNLramV7IbTgnf0AHCD3vxZznFjW5d5nlAGXqydHFKSkrLQDpR24snbgf/NxxTpfm7GRAAAAAElFTkSuQmCC"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape163-138" v:mID="163" v:groupContext="shape" transform="translate(712.511,258.343) rotate(90)">
+			<title>Лист.163</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape164-142" v:mID="164" v:groupContext="shape" transform="translate(704.007,269.682) rotate(90)">
+			<title>Лист.164</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape165-146" v:mID="165" v:groupContext="shape" transform="translate(702.873,300.863) rotate(90)">
+			<title>Лист.165</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape166-150" v:mID="166" v:groupContext="shape" transform="translate(711.944,312.768) rotate(90)">
+			<title>Лист.166</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape167-154" v:mID="167" v:groupContext="shape" transform="translate(708.542,285.556) rotate(90)">
+			<title>Лист.167</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape168-158" v:mID="168" v:groupContext="shape" transform="translate(701.739,326.375) rotate(90)">
+			<title>Лист.168</title>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+			<image x="0" y="556.876" width="38.3994" height="38.3994" preserveAspectRatio="none" xlink:href="data:image/png;base64,
+						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"/>
+			<rect v:rectContext="foreign" x="0" y="556.876" width="38.3994" height="38.3994" class="st13"/>
+		</g>
+		<g id="shape170-162" v:mID="170" v:groupContext="shape" transform="translate(31.0422,-205.724) rotate(-14.2097)">
 			<title>Простая стрелка.170</title>
 			<v:userDefs>
 				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
 				<v:ud v:nameU="ArrowType" v:prompt="" v:val="VT0(2):26"/>
 			</v:userDefs>
-			<path d="M0 595.28 L11.34 590.64 L11.34 592.96 L38.9 592.96 L38.9 595.28 L38.9 597.59 L11.34 597.59 L11.34 599.91 L0
-						 595.28 Z" class="st15"/>
-		</g>
-		<g id="group189-166" transform="translate(226.772,-180)" v:mID="189" v:groupContext="group">
-			<title>Лист.189</title>
-			<g id="shape179-167" v:mID="179" v:groupContext="shape" transform="translate(2.95789,-40.1164)">
-				<title>Лист.179</title>
-				<path d="M0 595.28 L11.2 588.76 L0 580.82 L0 595.28 Z" class="st16"/>
-			</g>
-			<g id="shape178-169" v:mID="178" v:groupContext="shape" transform="translate(11.0921,-43.937)">
-				<title>Лист.178</title>
-				<ellipse cx="2.69291" cy="592.583" rx="2.69291" ry="2.69291" class="st16"/>
-			</g>
-			<g id="shape172-171" v:mID="172" v:groupContext="shape" transform="translate(28.3465,0)">
-				<title>Лист.172</title>
-				<path d="M20.04 502.58 L0 502.58 L0 595.28 L21.26 595.28" class="st17"/>
-			</g>
-			<g id="shape173-174" v:mID="173" v:groupContext="shape" transform="translate(28.3465,1143.78) rotate(180)">
-				<title>Лист.173</title>
-				<path d="M0 595.28 L11.71 595.28" class="st17"/>
-			</g>
-			<g id="shape180-177" v:mID="180" v:groupContext="shape" transform="translate(398.218,98.3855) rotate(41.9872)">
-				<title>Лист.180</title>
-				<path d="M0 595.28 L3.81 595.28" class="st17"/>
-			</g>
-			<g id="shape185-180" v:mID="185" v:groupContext="shape" transform="translate(398.218,101.849) rotate(41.9872)">
-				<title>Лист.185</title>
-				<path d="M0 595.28 L3.81 595.28" class="st17"/>
-			</g>
-			<g id="shape186-183" v:mID="186" v:groupContext="shape" transform="translate(398.218,105.053) rotate(41.9872)">
-				<title>Лист.186</title>
-				<path d="M0 595.28 L3.81 595.28" class="st17"/>
-			</g>
-			<g id="shape187-186" v:mID="187" v:groupContext="shape" transform="translate(398.218,108.257) rotate(41.9872)">
-				<title>Лист.187</title>
-				<path d="M0 595.28 L3.81 595.28" class="st17"/>
-			</g>
-		</g>
-		<g id="shape131-189" v:mID="131" v:groupContext="shape" transform="translate(419.467,-263.055) scale(-1,1)">
-			<title>Лист.131</title>
-			<path d="M0 543.12 L12.57 543.12 L12.57 595.28 L0 595.28 L0 578.32 A3.94598 9.55343 -180 0 0 0 560.5 L0 543.12 Z"
-					class="st10"/>
+			<path d="M0 595.28 L11.34 584.83 L11.34 590.05 L340.66 590.05 L340.66 595.28 L340.66 600.5 L11.34 600.5 L11.34 605.73
+						 L0 595.28 Z" class="st14"/>
 		</g>
 	</g>
 </svg>
