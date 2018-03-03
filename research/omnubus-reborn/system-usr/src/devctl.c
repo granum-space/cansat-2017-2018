@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_i2c.h"
@@ -15,7 +16,8 @@
 #include "devctl.h"
 
 
-#define ERRORCHECK(EXPR) retval = EXPR; goto end;
+#define ERRORPROCESS(EXPR) retval = GR_ERROR_FROMHAL( EXPR ); goto end;
+#define	ERRORCHECK(EXPR) error = GR_ERROR_FROMHAL( EXPR ); if(error) goto end;
 
 static inline gr_error_t _chparams_i2c(gr_interface_t * iface, gr_interface_params_t * params) {
 	I2C_HandleTypeDef * descr = iface->descriptor;
@@ -163,57 +165,22 @@ static inline gr_error_t _init_on_need(gr_interface_t * iface) {
 gr_error_t gr_if_set_params(gr_interface_t * iface, gr_interface_params_t * params) {
 	xSemaphoreTake(iface->mutex, 0);
 
-	gr_error_t retval;
+	gr_error_t retval = GR_ERROR_OK;
 
 	if( !memcmp( &(iface->params), params, sizeof(gr_interface_params_t) ) ) {
 		switch(iface->type) {
 		case GR_IF_TYPE_I2C:
-			ERRORCHECK( _chparams_i2c(iface, params) )
+			ERRORPROCESS( _chparams_i2c(iface, params) )
 
 		case GR_IF_TYPE_SPI:
-			ERRORCHECK( _chparams_spi(iface, params) )
+			ERRORPROCESS( _chparams_spi(iface, params) )
 
 		case GR_IF_TYPE_STREAM:
 			//there should be stream ifaces handling
 
 		default:
-			return GR_ERROR_WRONGARG;
+			ERRORPROCESS( GR_ERROR_WRONGARG );
 		}
-
-	}
-
-end:
-	xSemaphoreGive(iface->mutex);
-	return GR_ERROR_OK;
-}
-
-static inline _readreg_i2c(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
-	return GR_ERROR_FROMHAL( HAL_I2C_Mem_Read(iface->descriptor, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, buffer, count, iface->params.timeout) );
-}
-
-static inline _writereg_i2c(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
-	return GR_ERROR_FROMHAL( HAL_I2C_Mem_Write(iface->descriptor, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, buffer, count, iface->params.timeout) );
-}
-
-static inline _readreg_spi(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
-
-}
-
-gr_error_t gr_dev_readreg(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
-	xSemaphoreTake(iface->mutex, 0);
-	gr_error_t retval;
-
-	_init_on_need(iface);
-
-	switch( iface->type ) {
-	case GR_IF_TYPE_I2C:
-		ERRORCHECK( _readreg_i2c(iface, dev_addr, reg_addr, buffer, count) )
-
-	case GR_IF_TYPE_SPI:
-		ERRORCHECK( _readreg_spi(iface, dev_addr, reg_addr, buffer, count) )
-
-	default:
-		ERRORCHECK( GR_ERROR_WRONGARG )
 
 	}
 
@@ -222,7 +189,44 @@ end:
 	return retval;
 }
 
-gr_error_t gr_dev_writereg(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
+static inline gr_error_t _readreg_i2c(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
+	return GR_ERROR_FROMHAL( HAL_I2C_Mem_Read(iface->descriptor, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, buffer, count, iface->params.timeout) );
+}
+
+static inline gr_error_t _writereg_i2c(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg_addr, void * buffer, size_t count) {
+	return GR_ERROR_FROMHAL( HAL_I2C_Mem_Write(iface->descriptor, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, buffer, count, iface->params.timeout) );
+}
+
+#define SPI_SS_SELECT(PIN) HAL_GPIO_WritePin(PIN.port, PIN.pin, GPIO_PIN_RESET)
+#define SPI_SS_DESELECT(PIN) HAL_GPIO_WritePin(PIN.port, PIN.pin, GPIO_PIN_SET)
+
+static inline gr_error_t _readreg_spi(gr_interface_t * iface, gr_pin_t ss, uint8_t reg_addr, void * buffer, size_t count) {
+	gr_error_t error = GR_ERROR_OK;
+
+	SPI_SS_SELECT(ss);
+
+	ERRORCHECK( HAL_SPI_Transmit(iface->descriptor, &reg_addr, 1, iface->params.timeout) )
+	ERRORCHECK( HAL_SPI_Receive(iface->descriptor, buffer, count, iface->params.timeout) )
+
+end:
+	SPI_SS_DESELECT(ss);
+	return error;
+}
+
+static inline gr_error_t _writereg_spi(gr_interface_t * iface, gr_pin_t ss, uint8_t reg_addr, void * buffer, size_t count) {
+	gr_error_t error = GR_ERROR_OK;
+
+	SPI_SS_SELECT(ss);
+
+	ERRORCHECK( HAL_SPI_Transmit(iface->descriptor, &reg_addr, 1, iface->params.timeout) )
+	ERRORCHECK( HAL_SPI_Transmit(iface->descriptor, buffer, count, iface->params.timeout) )
+
+end:
+	SPI_SS_DESELECT(ss);
+	return error;
+}
+
+gr_error_t gr_dev_readreg(gr_interface_t * iface, gr_device_selector_t * selector, uint8_t reg_addr, void * buffer, size_t count) {
 	xSemaphoreTake(iface->mutex, 0);
 	gr_error_t retval;
 
@@ -230,13 +234,36 @@ gr_error_t gr_dev_writereg(gr_interface_t * iface, uint8_t dev_addr, uint8_t reg
 
 	switch( iface->type ) {
 	case GR_IF_TYPE_I2C:
-		ERRORCHECK( _writereg_i2c(iface, dev_addr, reg_addr, buffer, count) )
+		ERRORPROCESS( _readreg_i2c(iface, selector->address, reg_addr, buffer, count) )
 
 	case GR_IF_TYPE_SPI:
-		ERRORCHECK( _writereg_spi(iface, dev_addr, reg_addr, buffer, count) )
+		ERRORPROCESS( _readreg_spi(iface, selector->pin, reg_addr, buffer, count) )
 
 	default:
-		ERRORCHECK( GR_ERROR_WRONGARG )
+		ERRORPROCESS( GR_ERROR_WRONGARG )
+
+	}
+
+end:
+	xSemaphoreGive(iface->mutex);
+	return retval;
+}
+
+gr_error_t gr_dev_writereg(gr_interface_t * iface, gr_device_selector_t * selector, uint8_t reg_addr, void * buffer, size_t count) {
+	xSemaphoreTake(iface->mutex, 0);
+	gr_error_t retval;
+
+	_init_on_need(iface);
+
+	switch( iface->type ) {
+	case GR_IF_TYPE_I2C:
+		ERRORPROCESS( _writereg_i2c(iface, selector->address, reg_addr, buffer, count) )
+
+	case GR_IF_TYPE_SPI:
+		ERRORPROCESS( _writereg_spi(iface, selector->pin, reg_addr, buffer, count) )
+
+	default:
+		ERRORPROCESS( GR_ERROR_WRONGARG )
 	}
 
 end:
