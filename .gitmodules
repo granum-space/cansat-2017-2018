@@ -1,0 +1,3 @@
+[submodule "src/board/omnibus/nuttx"]
+	path = src/board/omnibus/nuttx
+	url = https://github.com/cansat-rsce/nuttx.git
