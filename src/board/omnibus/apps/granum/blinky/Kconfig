@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_BLINKY
+	bool "blinky test"
+	default n
+	---help---
+		Enable the blinky example
+
+# if GRANUM_BLINKY
+# endif # GRANUM_BLINKY
