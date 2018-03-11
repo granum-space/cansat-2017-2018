@@ -6,12 +6,12 @@
     <enums>
     </enums>
     <messages>
-        <message id="150" name="RUDDER_RAW">
-            <description>This message encodes all of the raw rudder sensor data from the USV.</description>
-            <field type="uint16_t" name="position">The raw data from the position sensor, generally a potentiometer.</field>
-            <field type="uint8_t" name="port_limit">Status of the rudder limit sensor, port side. 0 indicates off and 1 indicates that the limit is hit. If this sensor is inactive set to 0xFF.</field>
-            <field type="uint8_t" name="center_limit">Status of the rudder limit sensor, port side. 0 indicates off and 1 indicates that the limit is hit. If this sensor is inactive set to 0xFF.</field>
-            <field type="uint8_t" name="starboard_limit">Status of the rudder limit sensor, starboard side. 0 indicates off and 1 indicates that the limit is hit. If this sensor is inactive set to 0xFF.</field>
+        <message id="150" name="TEST_MESSAGE">
+            <description>This is a test custom message</description>
+            <field type="uint16_t" name="field1">Custom test field 1</field>
+            <field type="uint8_t" name="field2">Custom test field 2</field>
+            <field type="uint8_t" name="field3">Custom test field 3</field>
+            <field type="uint32_t" name="field4">Custom test field 4</field>
         </message>
     </messages>
 </mavlink>
