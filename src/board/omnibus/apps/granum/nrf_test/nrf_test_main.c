@@ -15,7 +15,7 @@ int nrf_test_main(int argc, char *argv[])
   int fd = open("/dev/nrf24l01", O_RDWR);
   if (fd < 0)
   {
-      perror("cant open /dev/nrf24l01");
+      perror("Can't open /dev/nrf24l01");
       return 1;
   }
 
@@ -23,14 +23,16 @@ int nrf_test_main(int argc, char *argv[])
 
   uint32_t tmp = 2476;
   ret = ioctl(fd, WLIOC_SETRADIOFREQ, &tmp);
+  ret = ioctl(fd, WLIOC_GETRADIOFREQ, &tmp);
+  printf("Frequency is %d MHz\n", tmp);
 
   tmp = 5;
   ret = ioctl(fd, NRF24L01IOC_SETADDRWIDTH, &tmp);
 
-  tmp = 0xE7E7E7E7E7;
-  ret = ioctl(fd, NRF24L01IOC_SETTXADDR, &tmp);
+  uint8_t addr[] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
+  ret = ioctl(fd, NRF24L01IOC_SETTXADDR, addr);
 
-  tmp = -18;
+  tmp = 0;
   ret = ioctl(fd, WLIOC_SETTXPOWER, &tmp);
 
   nrf24l01_retrcfg_t retrcfg = {.delay = DELAY_4000us, .count = 10};
@@ -44,7 +46,15 @@ int nrf_test_main(int argc, char *argv[])
   pipe0.rx_addr[3] = 0xE7;
   pipe0.rx_addr[4] = 0xE7;
 
-  nrf24l01_pipecfg_t * pipes[] = {&pipe0, &pipe0, &pipe0, &pipe0, &pipe0};
+  nrf24l01_pipecfg_t pipeDummy = {.en_aa = true,\
+    	  	  	  	  	  	  	  .payload_length = NRF24L01_DYN_LENGTH};
+  pipeDummy.rx_addr[0] = 0xE8;
+  pipeDummy.rx_addr[1] = 0xE8;
+  pipeDummy.rx_addr[2] = 0xE8;
+  pipeDummy.rx_addr[3] = 0xE8;
+  pipeDummy.rx_addr[4] = 0xE8;
+
+  nrf24l01_pipecfg_t * pipes[] = {&pipe0, &pipeDummy, &pipeDummy, &pipeDummy, &pipeDummy};
 
   ret = ioctl(fd, NRF24L01IOC_SETPIPESCFG, pipes);
 
@@ -54,8 +64,15 @@ int nrf_test_main(int argc, char *argv[])
   nrf24l01_datarate_t datarate = RATE_1Mbps;
   ret = ioctl(fd, NRF24L01IOC_SETDATARATE, &datarate);
 
+  nrf24l01_crcmode_t crcmode = CRC_2BYTE;
+  ret = ioctl(fd, NRF24L01IOC_SETCRCMODE, &crcmode);
+
   nrf24l01_state_t state = ST_RX;
   ret = ioctl(fd, NRF24L01IOC_SETSTATE, &state);
+
+  FAR struct file *filep;
+  fs_getfilep(fd, &filep);
+  nrf24l01_dumpregs(filep->f_inode->i_private);
 
   uint8_t buffer[1];
 
