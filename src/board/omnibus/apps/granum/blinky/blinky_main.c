@@ -6,7 +6,7 @@
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
 #else
-int blinky_main(int argc, char *argv[])
+int sonar_main(int argc, char *argv[])
 #endif
 {
   printf("hello world, this is blinky app!\n");
