@@ -1,0 +1,3 @@
+ifeq ($(CONFIG_GRANUM_SONAR),y)
+CONFIGURED_APPS += granum/sonar
+endif
