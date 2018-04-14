@@ -30,6 +30,16 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm8s_it.h"
 
+enum {
+
+	STATE_1BITE = 0,
+	STATE_2BITE = 1
+} state = STATE_1BITE;
+
+
+uint8_t Slave_Buffer_Rx[2];
+
+
 /** @addtogroup Template_Project
   * @{
   */
@@ -379,12 +389,52 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
   * @param  None
   * @retval None
   */
-INTERRUPT_HANDLER(I2C_IRQHandler, 19)
-{
+INTERRUPT_HANDLER(I2C_IRQHandler, 19) {
+	int Event;
+	  /* Read SR2 register to get I2C error */
+	  if ((I2C->SR2) != 0) {
+	    /* Clears SR2 register */
+		  I2C->SR2 = 0;
+	  }
+	  Event = I2C_GetLastEvent();
+	  switch (Event)
+	{
+
+	  case I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED:
+		  state = STATE_1BITE;
+
+	    break;
+
+	    /* Check on EV2*/
+	  case I2C_EVENT_SLAVE_BYTE_RECEIVED:
+		  if (state == STATE_1BITE) {
+			  Slave_Buffer_Rx[state] = I2C_ReceiveData();
+			  state = STATE_2BITE;
+		  }
+		  else if (state == STATE_2BITE){
+			  GPIO_WriteReverse(GPIOC, GPIO_PIN_3);
+			  Slave_Buffer_Rx[state] = I2C_ReceiveData();
+			  TIM2_SetCompare1(*(uint16_t*)Slave_Buffer_Rx);
+			  state = STATE_1BITE;
+		  }
+
+	    break;
+
+	    case (I2C_EVENT_SLAVE_STOP_DETECTED):
+	            /* write to CR2 to clear STOPF flag */
+	            I2C->CR2 |= I2C_CR2_ACK;
+	    break;
+
+	    default:
+	    break;
+	}
+}
+
+
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
-}
+
 
 #if defined(STM8S105) || defined(STM8S005) ||  defined (STM8AF626x)
 /**

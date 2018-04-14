@@ -1,1 +1,11 @@
 /research/spectrometer/spectrometer-client/.nb-gradle/
+*.asm
+*.lst
+*.rel
+*.sym
+*.map
+#*.hex
+*.cdb
+*.lib
+*.lk
+*.rst
