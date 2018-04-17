@@ -1,0 +1,88 @@
+{% extends "basic.html" %}
+
+{% block content %}
+    <div class="row h-100 center-block">
+        <div class="col-xl-12 text-center">
+            <h1>PLOTS</h1>
+        </div>
+    </div>
+
+    <div class="row h-100 center-block">
+        <div class="col-xl-12 text-center">
+            <canvas id="acc-plot-canvas">
+
+            </canvas>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+{% block js %}
+{{ super() }}
+
+{% assets "chart_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+
+<script type="text/javascript">
+
+
+function makeChart(canvas_id) {
+
+   myChart = new Chart(document.getElementById(canvas_id).getContext('2d'), {
+        type: 'line',
+        data: datasets,
+        options: {
+            scales: {
+                yAxes: [{
+                    id: 'y1',
+                    type: 'linear',
+                }],
+                xAxes: [{
+                    id: 'x1',
+                    type: 'linear',
+                }]
+            }
+        },
+    });
+
+    return myChart;
+}
+
+
+function updatePlot(chartObject) {
+
+    $.getJSON(chartObject.dataUrl, function(data) {
+        console.log("updating plot " + chartObject.name);
+        chartObject.chart.
+    });
+}
+
+
+$(document).ready(function(){
+
+    var chartDataUrlBase ="{{ url_for(".plot_data") }}"
+
+    var charts = [{
+        name: "acc",
+    }, {
+        name: "gyro",
+    }]
+
+
+    charts = $.map(charts, function(chartObj) {
+        chartObj.dataUrl = chartDataUrlBase + "?chartName=" + chartObj.name;
+        chartObj.chart = makeChart(chartObj.name + "-plot-canvas");
+        return chartObj;
+    });
+
+    console.log(charts);
+})
+
+</script>
+
+
+{% endblock %}
