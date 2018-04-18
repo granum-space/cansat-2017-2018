@@ -1,17 +1,16 @@
 import click
 from .app_singleton import app
-from .database import db
-from sqlalchemy import create_engine
 
-
-def _buld_engine():
-    return create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
-
+from .redis_store import redis_store
 
 
 @app.cli.command()
 def create_database():
-    engine = _buld_engine()
-    db.metadata.drop_all(engine)
-    db.metadata.create_all(engine)
+    pass
+
+
+@app.cli.command()
+def test_redis():
+    value = redis_store.get("harharhar")
+    print(value)
 
