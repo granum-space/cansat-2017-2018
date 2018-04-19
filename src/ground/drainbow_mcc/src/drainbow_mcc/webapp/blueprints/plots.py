@@ -1,6 +1,10 @@
-from flask import Blueprint, render_template, abort
+import time
+import json
+
+from flask import Blueprint, render_template, abort, jsonify, request, current_app
 from jinja2 import TemplateNotFound
-from flask import jsonify
+
+from ..redis_store import redis_store
 
 plots = Blueprint('plots', __name__, url_prefix="/plots")
 
@@ -15,18 +19,27 @@ def plots_index():
 
 @plots.route("/plot_data")
 def plot_data():
+    chart_name = request.args.get("chartName")
+
+    # Грузим данные на 10 секунд назад
+    now = int(round(time.time()*1000))
+    ago = now - current_app.config["IMU_PLOT_SCOPE_MS"].total_seconds()*1000
+
+    elems = redis_store.zrangebyscore("acc", ago, now, withscores=True, score_cast_func=int)
+
+    datax = []
+    for e in elems:
+        value, score = e
+        value = json.loads(value.decode("utf-8"))
+        datax.append({
+            "x": value["time_boot_ms"] / 1000,
+            "y": value["xacc"]
+        })
 
     dataset1 = {
         "label": "acceleration",
         "lineTension": 0,
-        "data": [
-            {"x": 0, "y": 1},
-            {"x": 1, "y": 2},
-            {"x": 2, "y": 3},
-            {"x": 3, "y": 2},
-            {"x": 4, "y": 1},
-            {"x": 5, "y": 0},
-        ],
+        "data": datax,
     }
 
     data = {
