@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include <nuttx/wireless/nrf24l01.h>

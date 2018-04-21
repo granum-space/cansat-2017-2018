@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_MPU_TEST
+	bool "MPU6000 test"
+	default n
+	---help---
+		Enable the MPU6000 example
+
+# if GRANUM_MPU_TEST
+# endif # GRANUM_MPU_TEST
