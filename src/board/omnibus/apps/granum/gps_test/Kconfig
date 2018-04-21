@@ -1,0 +1,14 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_GPS_TEST
+	bool "GPS minmea test"
+	depends on GPSUTILS_MINMEA_LIB
+	default n
+	---help---
+		Enable the GPS minmea example
+
+# if GRANUM_GPS_TEST
+# endif # GRANUM_GPS_TEST
