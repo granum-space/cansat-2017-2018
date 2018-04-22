@@ -4,9 +4,12 @@ import time
 import json
 
 from pymavlink import mavutil
+from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message
 
 from .config import get_config
 from .redis_store import redis_store
+
+from ..common.definitions import ZSET_NAME_IMU
 
 _log = logging.getLogger(__name__)
 _config = get_config()
@@ -18,7 +21,7 @@ def update_zset(set_name, message):
 
     # кастуем соообщение в json
     # Добавим в сообщение метку времени для уникальности, так как в zrange можно добавлять только уникальные метки
-    # Так же, по времени будем строить ось y наших данных в виде "стоймости" элемента zset-а
+    # Так же, по времени будем строить ось x наших данных в виде "стоймости" элемента zset-а
     timestamp = int(round(time.time() * 1000))
 
     dmsg = message.to_dict()
@@ -35,13 +38,16 @@ def update_zset(set_name, message):
 def main(argv):
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    connection = mavutil.mavlink_connection('udpin:localhost:11000')
+    connection = mavutil.mavlink_connection(_config["MAV_LISTEN_URL"])
     mav = connection
 
     while True:
         msg = mav.recv_match(blocking=True)
-        update_zset("acc", msg)
         _log.debug("got message %s", msg)
+
+        if isinstance(msg, MAVLink_scaled_imu_message):
+            """ Сообщение с данными IMU """
+            update_zset(ZSET_NAME_IMU, msg)
 
 
 if __name__ == "__main__":
