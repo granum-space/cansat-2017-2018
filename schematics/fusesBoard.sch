@@ -4060,6 +4060,7 @@ drill 1.4 mm</description>
 <pinref part="LSP1" gate="1" pin="MP"/>
 <pinref part="GND10" gate="1" pin="GND"/>
 <wire x1="-129.54" y1="-195.58" x2="-129.54" y2="-198.12" width="0.1524" layer="91"/>
+<label x="-137.16" y="-195.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -4090,15 +4091,28 @@ drill 1.4 mm</description>
 <wire x1="-60.96" y1="-132.08" x2="-48.26" y2="-132.08" width="0.1524" layer="91"/>
 <wire x1="-73.66" y1="-132.08" x2="-60.96" y2="-132.08" width="0.1524" layer="91"/>
 <junction x="-60.96" y="-132.08"/>
+<label x="-66.04" y="-116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="LSP2" gate="1" pin="MP"/>
 <wire x1="-119.38" y1="-182.88" x2="-119.38" y2="-180.34" width="0.1524" layer="91"/>
+<label x="-124.46" y="-180.34" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
 </sheet>
 </sheets>
+<errors>
+<approved hash="113,1,-77.3388,-203.437,JP1,,,,,"/>
+<approved hash="113,1,-41.7788,-203.437,JP2,,,,,"/>
+<approved hash="113,1,-103.001,-157.243,JP3,,,,,"/>
+<approved hash="113,1,-100.199,-145.017,JP4,,,,,"/>
+<approved hash="113,1,26.8012,-203.437,JP5,,,,,"/>
+<approved hash="113,1,3.67877,-157.243,JP6,,,,,"/>
+<approved hash="113,1,6.48123,-145.017,JP7,,,,,"/>
+<approved hash="113,1,-31.8812,-157.243,JP8,,,,,"/>
+<approved hash="113,1,-29.0788,-145.017,JP9,,,,,"/>
+</errors>
 </schematic>
 </drawing>
 </eagle>
