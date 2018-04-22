@@ -8,8 +8,9 @@ Jinja2==2.10
 libsass==0.14.2
 lxml==4.2.1
 MarkupSafe==1.0
-pymavlink==2.2.8
+# pymavlink==2.2.8
 redis==2.10.6
 six==1.11.0
 webassets==0.12.1
 Werkzeug==0.14.1
+lxml==4.2.1

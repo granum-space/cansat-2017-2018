@@ -8,5 +8,5 @@ echo $BASEDIR
 export MDEF=$MAVLINKDIR/message_definitions
 cd $MAVLINKDIR/pymavlink
 
-python setup.py bdist_wheel
-pip install pymavlink --no-index --find-links=dist
+python3 setup.py bdist_wheel
+pip3 install pymavlink --no-index --find-links=dist
