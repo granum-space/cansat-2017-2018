@@ -1,4 +1,5 @@
 import os
+import logging
 
 from flask import Flask
 
@@ -8,6 +9,8 @@ from .redis_store import redis_store
 from .blueprints.landing import landing
 from .blueprints.plots import plots
 
+import logging
+
 app = Flask(
     __name__,
     static_folder="static",
@@ -15,6 +18,8 @@ app = Flask(
 )
 
 app.config.from_object(os.environ["DRAINBOW_MCC_CONFIG"])
+log = logging.getLogger('werkzeug')
+log.setLevel(app.config["LOG_LEVEL"])
 
 assets.init_app(app)
 redis_store.init_app(app)

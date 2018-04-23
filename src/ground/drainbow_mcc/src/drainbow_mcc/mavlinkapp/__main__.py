@@ -36,7 +36,7 @@ def update_zset(set_name, message):
 
 
 def main(argv):
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stdout, level=_config["LOG_LEVEL"])
 
     _log.info("Запускаюсь. Слушаю url: %s" % _config["MAV_LISTEN_URL"])
     connection = mavutil.mavlink_connection(_config["MAV_LISTEN_URL"])
