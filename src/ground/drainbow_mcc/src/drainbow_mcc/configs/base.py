@@ -6,7 +6,7 @@ from datetime import timedelta
 MAV_PLOT_DATA_PBACK = timedelta(seconds=120)
 """ Интервал времени в течение которого будут хранится даннные телеметрии для отображения от "сейчас" """
 
-MAV_LISTEN_URL = 'udpin:localhost:11000'
+MAV_LISTEN_URL = 'udpin:0.0.0.0:11000'
 """ Адрес для mavutil, на котором служба будет слушать сообщения """
 
 # Настройки веб службы

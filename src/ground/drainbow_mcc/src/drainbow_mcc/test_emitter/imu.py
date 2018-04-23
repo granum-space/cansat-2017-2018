@@ -15,6 +15,8 @@ def random_scaled_imu_test(url: str, pause: timedelta):
     connection = mavutil.mavlink_connection(url)
     mav = connection.mav
 
+    _log.info("Запускаю генерацию случайных данных БИНС")
+    _log.info("параметры: %s, %s" % (url, pause))
     boot_time = now()
     datagen = lambda: int(round(random.uniform(0, 1)*9.8*3))
 
@@ -32,7 +34,7 @@ def random_scaled_imu_test(url: str, pause: timedelta):
             zmag=datagen(),
         )
 
-        print(msg)
+        _log.debug(msg)
         mav.send(msg)
         time.sleep(pause.total_seconds())
 
