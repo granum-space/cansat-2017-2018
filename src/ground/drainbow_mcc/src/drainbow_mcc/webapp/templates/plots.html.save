@@ -45,9 +45,7 @@ $(document).ready(function(){
         name: "acc",
     },{
         name: "gyro",
-    },{
-        name: "temperature",
-    }];
+    },;
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     plotDataUrl = "{{ url_for(".plot_data") }}"

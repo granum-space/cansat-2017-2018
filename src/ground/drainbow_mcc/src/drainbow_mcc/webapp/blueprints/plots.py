@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, abort, jsonify, request, current_a
 from jinja2 import TemplateNotFound
 
 from ...common.definitions import ZSET_NAME_IMU
+from ...common.definitions import ZSET_NAME_TEMPERATURE
 from ..redis_store import redis_store
 
 
@@ -27,6 +28,8 @@ def plot_data():
         return _get_acc_data()
     elif chart_name == "gyro":
         return _get_gyro_data()
+    elif chart_name == "temperature":
+        return _get_temperature_data()
 
 
 def _imu_now_and_then():
@@ -133,6 +136,26 @@ def _get_gyro_data():
                 "data": dataz,
             },
 
+        ]
+    }
+
+    return jsonify(data)
+
+
+def _get_temperature_data():
+    data_temperature = [{"x":0, "y":59}, {"x":1, "y":63}, {"x":2, "y":57}, {"x":3, "y":53}, {"x":4, "y":48}]
+
+    data = {
+        "datasets": [
+            {
+                "label": "Температура по датчику MPU6000 (degC)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#f44242",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": data_temperature,
+            },
         ]
     }
 
