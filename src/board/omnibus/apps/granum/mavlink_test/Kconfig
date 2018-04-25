@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_MAVLINK_TEST
+	bool "MAVLink protocol with MPU6000 test"
+	default n
+	---help---
+		Enable the MAVLink example
+
+# if GRANUM_MAVLINK_TEST
+# endif # GRANUM_MAVLINK_TEST
