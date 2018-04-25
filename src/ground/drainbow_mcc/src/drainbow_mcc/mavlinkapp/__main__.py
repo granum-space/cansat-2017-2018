@@ -9,7 +9,7 @@ from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message
 from .config import get_config
 from .redis_store import redis_store
 
-from ..common.definitions import ZSET_NAME_IMU
+from ..common.definitions import ZSET_NAME_MPU6000
 
 _log = logging.getLogger(__name__)
 _config = get_config()
@@ -46,9 +46,9 @@ def main(argv):
         msg = mav.recv_match(blocking=True)
         _log.debug("got message %s", msg)
 
-        if isinstance(msg, MAVLink_scaled_imu_message):
-            """ Сообщение с данными IMU """
-            update_zset(ZSET_NAME_IMU, msg)
+        if isinstance(msg, MAVLink_scaled_mpu6000_message):
+            """ Сообщение с данными MPU6000 """
+            update_zset(ZSET_NAME_MPU6000, msg)
 
 
 if __name__ == "__main__":

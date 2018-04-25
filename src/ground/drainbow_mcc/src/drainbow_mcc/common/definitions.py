@@ -1,7 +1,10 @@
 import time
 
-ZSET_NAME_IMU = "granum:imu"
-""" Имя редисового zset, в котором хранятся сообщения IMU """
+ZSET_NAME_MPU6000 = "granum:imu"
+""" Имя редисового zset, в котором хранятся сообщения MPU6000 """
 
-ZSET_NAME_TEMPERATURE = "granum:temperature"
-""" Zset Redis для хранения сообщений с температурой """
+def now():
+    return round(time.time()*1000)
+
+def viewlimit(plotname):
+    return now() - current_app.config["%s_PLOT_SCOPE_MS" % plotname].total_seconds()*1000

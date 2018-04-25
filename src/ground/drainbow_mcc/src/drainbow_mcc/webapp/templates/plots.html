@@ -43,10 +43,83 @@
 $(document).ready(function(){
     var charts = [{
         name: "acc",
+        datasets:
+        [
+            {
+                "label": "Ускорения по X (mg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#f44242",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+            {
+                "label": "Ускорения по Y (mg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#15ff00",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+            {
+                "label": "Ускорения по Z (mg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#001dff",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+        ]
     },{
         name: "gyro",
+        datasets:
+        [
+            {
+                "label": "Угловая скорость по X (mdeg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#f44242",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+            {
+                "label": "Угловая скорость по Y (mdeg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#15ff00",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+            {
+                "label": "Угловая скорость по Z (mdeg/s)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#001dff",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+
+        ]
     },{
         name: "temperature",
+        datasets:
+        [
+            {
+                "label": "Температура по датчику MPU6000 (degC)",
+                "fill": False,
+                "pointRadius": 0,
+                "borderColor": "#f44242",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": temperature,
+            },
+        ]
     }];
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}

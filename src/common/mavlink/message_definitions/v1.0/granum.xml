@@ -13,5 +13,17 @@
             <field type="uint8_t" name="field3">Custom test field 3</field>
             <field type="uint32_t" name="field4">Custom test field 4</field>
         </message>
+
+        <message id="151" name="SCALED_MPU6000">
+            <description>Scaled data from MPU6000 sensor</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="int16_t" name="xacc" units="mG">X acceleration (mg)</field>
+            <field type="int16_t" name="yacc" units="mG">Y acceleration (mg)</field>
+            <field type="int16_t" name="zacc" units="mG">Z acceleration (mg)</field>
+            <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis (millirad /sec)</field>
+            <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis (millirad /sec)</field>
+            <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis (millirad /sec)</field>
+            <field type="int32_t" name="temperature" units="mdegC">Temperature (millidegrees of celsium)</field>
+        </message>
     </messages>
 </mavlink>

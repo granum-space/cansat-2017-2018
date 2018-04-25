@@ -4,8 +4,8 @@ import json
 from flask import Blueprint, render_template, abort, jsonify, request, current_app
 from jinja2 import TemplateNotFound
 
-from ...common.definitions import ZSET_NAME_IMU
-from ...common.definitions import ZSET_NAME_TEMPERATURE
+from ...common.definitions import ZSET_NAME_MPU6000, ZSET_NAME_TEMPERATURE
+from ...common.definitions import now, viewlimit
 from ..redis_store import redis_store
 
 
@@ -32,22 +32,17 @@ def plot_data():
         return _get_temperature_data()
 
 
-def _imu_now_and_then():
-    """ Вовзращает лимиты графика по времени для IMU на текущий момент """
-    now = round(time.time()*1000)
-    then = now - current_app.config["IMU_PLOT_SCOPE_MS"].total_seconds()*1000
-    return int(then), int(now)
+def _get_last_timestamp(plotname):
+    elems = redis_store.zrangebyscore("ZSET_NAME_%s" % plotname, 0, now(), start=-1, num=1, withscores=True, score_cast_func=int)
+    return elems[-1][1]
 
 
-def _get_imu_data_abstract(yvalue_name):
+def _get_mpu6000_data_abstract(yvalue_name):
     """ Преобразует набор "мавлинкоджсоновых элементов в набор элементов точек для графика
     Элементы оси Y выбираются по указанному ключу """
 
-    # определеяем диапазон на который будем отображать данные
-    then, now = _imu_now_and_then()
-
     # Достаем элементы
-    elems = redis_store.zrangebyscore(ZSET_NAME_IMU, then, now, withscores=True, score_cast_func=int)
+    elems = redis_store.zrangebyscore(ZSET_NAME_MPU6000, int(request.args.get("latestUpdateTime")), now(), withscores=True, score_cast_func=int)
 
     data = []
     for e in elems:
@@ -64,38 +59,12 @@ def _get_imu_data_abstract(yvalue_name):
 def _get_acc_data():
     """ Датасет для графика акселерометра """
 
-    datax, datay, dataz = [_get_imu_data_abstract(x) for x in ("xacc", "yacc", "zacc")]
+    datax, datay, dataz = [_get_mpu6000_data_abstract(x) for x in ("xacc", "yacc", "zacc")]
 
     data = {
-        "datasets": [
-            {
-                "label": "Угловая скорость по X (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#f44242",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": datax,
-            },
-            {
-                "label": "Угловая скорость по Y (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#15ff00",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": datay,
-            },
-            {
-                "label": "Угловая скорость по Z (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#001dff",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": dataz,
-            },
-        ]
+        "datas": [datax, datay, dataz],
+        "latestUpdateTime": _get_last_timestamp("MPU6000"),
+        "viewlimit": viewlimit("MPU6000")
     }
 
     return jsonify(data)
@@ -104,59 +73,25 @@ def _get_acc_data():
 def _get_gyro_data():
     """ Датасет для графика гироскопа """
 
-    datax, datay, dataz = [_get_imu_data_abstract(x) for x in ("xgyro", "ygyro", "zgyro")]
+    datax, datay, dataz = [_get_mpu6000_data_abstract(x) for x in ("xgyro", "ygyro", "zgyro")]
 
     data = {
-        "datasets": [
-            {
-                "label": "Угловая скорость по X (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#f44242",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": datax,
-            },
-            {
-                "label": "Угловая скорость по Y (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#15ff00",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": datay,
-            },
-            {
-                "label": "Угловая скорость по Z (град/с)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#001dff",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": dataz,
-            },
-
-        ]
+        "datas": [datax, datay, dataz],
+        "latestUpdateTime": _get_last_timestamp("MPU6000"),
+        "viewlimit": viewlimit("MPU6000")
     }
 
     return jsonify(data)
 
 
 def _get_temperature_data():
-    data_temperature = [{"x":0, "y":59}, {"x":1, "y":63}, {"x":2, "y":57}, {"x":3, "y":53}, {"x":4, "y":48}]
+    temperature = _get_mpu6000_data_abstract("temperature")
+    temperature = [temperature[i] / 1000.0 for i in range(0, len(temperature))]
 
     data = {
-        "datasets": [
-            {
-                "label": "Температура по датчику MPU6000 (degC)",
-                "fill": False,
-                "pointRadius": 0,
-                "borderColor": "#f44242",
-                "borderWidth": 2,
-                "lineTension": 0,
-                "data": data_temperature,
-            },
-        ]
+        "datas": [temperature],
+        "latestUpdateTime": _get_last_timestamp("MPU6000"),
+        "viewlimit": viewlimit("MPU6000")
     }
 
     return jsonify(data)
