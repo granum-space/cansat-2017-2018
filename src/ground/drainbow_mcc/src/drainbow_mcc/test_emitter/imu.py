@@ -21,7 +21,7 @@ def random_scaled_imu_test(url: str, pause: timedelta):
     datagen = lambda: int(round(random.uniform(0, 1)*9.8*3))
 
     while True:
-        msg = mav.scaled_imu_encode(
+        msg = mav.scaled_mpu6000_encode(
             time_boot_ms=now() - boot_time,
             xacc=datagen(),
             yacc=datagen(),
@@ -29,9 +29,7 @@ def random_scaled_imu_test(url: str, pause: timedelta):
             xgyro=datagen(),
             ygyro=datagen(),
             zgyro=datagen(),
-            xmag=datagen(),
-            ymag=datagen(),
-            zmag=datagen(),
+            temperature=datagen(),
         )
 
         _log.debug(msg)

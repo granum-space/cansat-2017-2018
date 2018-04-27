@@ -1,9 +1,9 @@
 
-function makeChart(canvasId) {
+function makeChart(canvasId, datasets) {
     myChart = new Chart(document.getElementById(canvasId).getContext('2d'), {
         type: 'line',
         data: {
-            "datasets": []
+            "datasets": datasets
         },
         options: {
             scales: {
@@ -33,10 +33,18 @@ function makeChart(canvasId) {
 
 function updatePlot(chartObject) {
 
-    $.getJSON(chartObject.dataUrl, function(data) {
+    $.getJSON(chartObject.dataUrl + "&latestUpdateTime=" + chartObject.latestUpdateTime, function(data) {
         console.log("updating plot " + chartObject.name);
-        chartObject.chart.data = data;
+        debugger;
+
+        var i;
+        for(i = 0; i < data.datas.length; i++) {
+            Array.prototype.push.apply(chartObject.chart.data.datasets[i].data, data.datas[i]);
+            while(chartObject.chart.data.datasets[i].data[0].servertime < data.viewlimit)
+                chartObject.chart.data.datasets[i].data.shift();
+        }
         chartObject.chart.update();
+        chartObject.latestUpdateTime = data.latestUpdateTime;
     });
 }
 
@@ -46,7 +54,8 @@ function mccChartsMain(charts, updatePeriodMs, plotDataRootUri) {
     charts = $.map(charts, function(chartObj) {
 
         chartObj.dataUrl = plotDataRootUri + "?chartName=" + chartObj.name;
-        chartObj.chart = makeChart(chartObj.name + "-plot-canvas");
+        chartObj.latestUpdateTime =  -1;
+        chartObj.chart = makeChart(chartObj.name + "-plot-canvas", chartObj.datasets);
 
         return chartObj;
     });

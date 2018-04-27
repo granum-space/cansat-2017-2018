@@ -4,7 +4,7 @@ import time
 import json
 
 from pymavlink import mavutil
-from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message
+from pymavlink.dialects.v20.granum import MAVLink_scaled_mpu6000_message
 
 from .config import get_config
 from .redis_store import redis_store
