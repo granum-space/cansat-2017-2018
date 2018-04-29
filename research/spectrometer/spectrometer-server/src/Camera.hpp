@@ -53,7 +53,6 @@ public:
 private:
 	typedef std::vector<std::shared_ptr<MmapBuffer>> BufferPool;
 
-	void _init_device_ws();
 	void _init_buffers_ws(size_t buffers_count);
 	void _reset_buffers_ws();
 	void _enqueue_buffer_ws(const MmapBuffer & buffer, bool force = false);

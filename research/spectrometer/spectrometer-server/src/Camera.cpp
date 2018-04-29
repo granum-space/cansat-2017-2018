@@ -186,20 +186,12 @@ void Camera::close()
 }
 
 
-
-void Camera::_init_device_ws()
-{
-	assert(_strand.running_in_this_thread());
-
-
-
-
-}
-
-
 void Camera::_reset_buffers_ws()
 {
 	assert(_strand.running_in_this_thread());
+
+	if (_buffers_pool.empty())
+		return;
 
 	struct v4l2_requestbuffers req;
 	std::memset(&req, 0x00, sizeof(req));
@@ -209,6 +201,8 @@ void Camera::_reset_buffers_ws()
 
 	if (-1 == ioctl(_fd.native(), VIDIOC_REQBUFS, &req))
 		throw std::system_error(errno, std::system_category(), "ошибка в ioctl VIDIOC_REQBUFS reset_buffers_ws");
+
+	_buffers_pool.clear();
 }
 
 
