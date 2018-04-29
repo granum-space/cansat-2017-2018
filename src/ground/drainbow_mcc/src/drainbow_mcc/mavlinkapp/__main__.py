@@ -4,12 +4,12 @@ import time
 import json
 
 from pymavlink import mavutil
-from pymavlink.dialects.v20.granum import MAVLink_scaled_mpu6000_message
+from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_scaled_pressure_message
 
 from .config import get_config
 from .redis_store import redis_store
 
-from ..common.definitions import ZSET_NAME_MPU6000
+from ..common.definitions import ZSET_NAME_IMU, ZSET_NAME_PRESSURE
 
 _log = logging.getLogger(__name__)
 _config = get_config()
@@ -25,7 +25,6 @@ def update_zset(set_name, message):
     timestamp = int(round(time.time() * 1000))
 
     dmsg = message.to_dict()
-    dmsg["gnd_timestamp"] = timestamp
     jmsg = json.dumps(dmsg)
     p.zadd(set_name, timestamp, jmsg)
 
@@ -46,9 +45,13 @@ def main(argv):
         msg = mav.recv_match(blocking=True)
         _log.debug("got message %s", msg)
 
-        if isinstance(msg, MAVLink_scaled_mpu6000_message):
-            """ Сообщение с данными MPU6000 """
-            update_zset(ZSET_NAME_MPU6000, msg)
+        if isinstance(msg, MAVLink_scaled_imu_message):
+            """ Сообщение с данными IMU """
+            update_zset(ZSET_NAME_IMU, msg)
+
+        elif isinstance(msg, MAVLink_scaled_pressure_message):
+            """ Сообщение с данными BMP280 """
+            update_zset(ZSET_NAME_PRESSURE, msg)
 
 
 if __name__ == "__main__":

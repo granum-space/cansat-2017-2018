@@ -1,5 +1,13 @@
 {% extends "basic.html" %}
 
+{% block styles %}
+
+{% assets "openlayers_css" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}"/>
+{% endassets %}
+
+{% endblock %}
+
 {% block content %}
     <div class="row h-100 center-block">
         <div class="col-xl-12 text-center">
@@ -16,11 +24,18 @@
         </div>
     </div>
 
-    <dev class="row h-100 center-block">
+    <div class="row h-100 center-block">
         <div class="col-xl-6 text-center">
             <canvas id="temperature-plot-canvas"></canvas>
         </div>
+        <div class="col-xl-6 text-center">
+            <canvas id="pressure-plot-canvas"></canvas>
+        </div>
     </div>
+
+    <div class="row h-100 center-block" id="map">
+    </div>
+
 {% endblock %}
 
 
@@ -37,8 +52,16 @@
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
 
+{% assets "openlayers_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{% assets "mcc_map" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 
 <script type="text/javascript">
+
 
 $(document).ready(function(){
     var charts = [{
@@ -46,7 +69,7 @@ $(document).ready(function(){
         datasets:
         [
             {
-                "label": "Ускорения по X (mg/s)",
+                "label": "Ускорения по X (g/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#f44242",
@@ -55,7 +78,7 @@ $(document).ready(function(){
                 "data": [],
             },
             {
-                "label": "Ускорения по Y (mg/s)",
+                "label": "Ускорения по Y (g/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#15ff00",
@@ -64,7 +87,7 @@ $(document).ready(function(){
                 "data": [],
             },
             {
-                "label": "Ускорения по Z (mg/s)",
+                "label": "Ускорения по Z (g/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#001dff",
@@ -78,7 +101,7 @@ $(document).ready(function(){
         datasets:
         [
             {
-                "label": "Угловая скорость по X (mdeg/s)",
+                "label": "Угловая скорость по X (deg/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#f44242",
@@ -87,7 +110,7 @@ $(document).ready(function(){
                 "data": [],
             },
             {
-                "label": "Угловая скорость по Y (mdeg/s)",
+                "label": "Угловая скорость по Y (deg/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#15ff00",
@@ -96,7 +119,7 @@ $(document).ready(function(){
                 "data": [],
             },
             {
-                "label": "Угловая скорость по Z (mdeg/s)",
+                "label": "Угловая скорость по Z (deg/s)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#001dff",
@@ -111,10 +134,24 @@ $(document).ready(function(){
         datasets:
         [
             {
-                "label": "Температура по датчику MPU6000 (degC)",
+                "label": "Температура по датчику BMP280 (degC)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#f44242",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+        ]
+    },{
+        name: "pressure",
+        datasets:
+        [
+            {
+                "label": "Давление по датчику BMP280 (hPa)",
+                "fill": false,
+                "pointRadius": 0,
+                "borderColor": "#15ff00",
                 "borderWidth": 2,
                 "lineTension": 0,
                 "data": [],
@@ -125,7 +162,9 @@ $(document).ready(function(){
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     plotDataUrl = "{{ url_for(".plot_data") }}"
 
-    mccChartsMain(charts, updatePeriodMs, plotDataUrl );
+    <!--mccChartsMain(charts, updatePeriodMs, plotDataUrl );-->
+
+    mccMapMain();
 })
 
 </script>

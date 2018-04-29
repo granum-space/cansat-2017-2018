@@ -4,8 +4,12 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
+
+#include <nuttx/config.h>
 
 #include <nuttx/sensors/mpu6000.h>
+#include <nuttx/sensors/bmp280.h>
 #include <nuttx/wireless/nrf24l01.h>
 #include <mavlink/granum/mavlink.h>
 
@@ -27,6 +31,13 @@ int mavlink_test_main(int argc, char *argv[])
 	if (nrf_fd < 0)
 	{
 	  perror("Can't open /dev/nrf24l01");
+	  return 1;
+	}
+
+	int baro_fd = open("/dev/baro0", O_RDWR | O_NONBLOCK);
+	if (baro_fd < 0)
+	{
+	  perror("Can't open /dev/baro0");
 	  return 1;
 	}
 
@@ -82,8 +93,11 @@ int mavlink_test_main(int argc, char *argv[])
 	mpu6000_record_t record;
 	struct file * filep;
 
-	mavlink_scaled_mpu6000_t mpu_msg;
+	mavlink_scaled_imu_t imu_msg;
+	mavlink_scaled_pressure_t baro_msg;
 	mavlink_message_t msg;
+
+	bmp280_data_t result = {0, 0};
 
 	uint8_t buffer[1024];
 
@@ -92,24 +106,43 @@ int mavlink_test_main(int argc, char *argv[])
 		fs_getfilep(mpu_fd, &filep);
 		ssize_t isok = read(mpu_fd, &record, sizeof(record) );
 		printf("MPU6000: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-		if(isok < 0) continue;
 
-		mpu_msg.time_boot_ms = record.time.tv_sec * 1000 + record.time.tv_nsec / 1000000;
-		mpu_msg.xacc = (int)(record.acc.x * 1000);
-		mpu_msg.yacc = (int)(record.acc.y * 1000);
-		mpu_msg.zacc = (int)(record.acc.z * 1000);
-		mpu_msg.xgyro = (int)(record.gyro.x * 1000 * M_PI / 180);
-		mpu_msg.ygyro = (int)(record.gyro.y * 1000 * M_PI / 180);
-		mpu_msg.zgyro = (int)(record.gyro.z * 1000 * M_PI / 180);
-		mpu_msg.temperature = (int)(record.temperature * 1000);
+		imu_msg.time_boot_ms = record.time.tv_sec * 1000 + record.time.tv_nsec / 1000000;
+		imu_msg.xacc = (int)(record.acc.x * 1000);
+		imu_msg.yacc = (int)(record.acc.y * 1000);
+		imu_msg.zacc = (int)(record.acc.z * 1000);
+		imu_msg.xgyro = (int)(record.gyro.x * 1000 * M_PI / 180);
+		imu_msg.ygyro = (int)(record.gyro.y * 1000 * M_PI / 180);
+		imu_msg.zgyro = (int)(record.gyro.z * 1000 * M_PI / 180);
+		imu_msg.xmag = 0x7fff;
+		imu_msg.ymag = 0x7fff;
+		imu_msg.zmag = 0x7fff;
 
-		mavlink_msg_scaled_mpu6000_encode(0, MAV_COMP_ID_IMU, &msg, &mpu_msg);
+		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		isok = write(nrf_fd, buffer, len);
 		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 
 		printf("_________________________________________________________________\n");
+
+		isok = read(baro_fd, &result, sizeof(result) );
+		printf("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+
+		struct timespec current_time;
+		clock_gettime(CLOCK_MONOTONIC, &current_time);
+		baro_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
+		baro_msg.press_abs = result.pressure / 100.0;				//pressure in hPa
+		baro_msg.temperature = result.temperature * 100.0;		//temperature in 0.01 degC
+
+		mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &baro_msg);
+
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+		isok = write(nrf_fd, buffer, len);
+		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		printf("_________________________________________________________________\n");
+
 		sleep(1);
 	}
 
