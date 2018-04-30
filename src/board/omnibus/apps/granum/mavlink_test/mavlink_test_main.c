@@ -2,9 +2,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <termios.h>
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include <nuttx/config.h>
 
@@ -12,6 +14,40 @@
 #include <nuttx/sensors/bmp280.h>
 #include <nuttx/wireless/nrf24l01.h>
 #include <mavlink/granum/mavlink.h>
+#include "../../include/gpsutils/minmea.h"
+
+#define MSG_BUF_SIZE 256
+
+static size_t _msg_carret = 0;
+static char _msg_buffer[MSG_BUF_SIZE];
+
+bool parseGPS(int fd, int cycles) {
+	while(cycles--) {
+		if(!_msg_carret) {
+			read(fd, _msg_buffer, 1);
+			if(_msg_buffer[0] == '$') _msg_carret++;
+		}
+		else {
+			read(fd, _msg_buffer + (_msg_carret++), 1);
+
+			if (_msg_carret >= MSG_BUF_SIZE)
+			{
+				// что-то не так
+				printf("Buffer overflow error!\n");
+				_msg_carret = 0;
+				break;
+			}
+
+			if('\r' == _msg_buffer[_msg_carret-2]
+			   ||	'\n' == _msg_buffer[_msg_carret-1]) {
+				_msg_buffer[_msg_carret] = '\x00';
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
@@ -39,6 +75,14 @@ int mavlink_test_main(int argc, char *argv[])
 	{
 	  perror("Can't open /dev/baro0");
 	  return 1;
+	}
+
+	int gps_fd = open("/dev/ttyS1", O_RDONLY);
+
+	if (gps_fd < 0)
+	{
+		perror("Can't open /dev/ttyS1");
+		return 1;
 	}
 
 	ioctl(mpu_fd, MPU6000_CMD_SET_CONVERT, true);
@@ -90,12 +134,34 @@ int mavlink_test_main(int argc, char *argv[])
 	nrf24l01_state_t state = ST_STANDBY;
 	ioctl(nrf_fd, NRF24L01IOC_SETSTATE, &state);
 
+	struct termios termios;
+
+	ioctl(gps_fd, TCGETS, (unsigned long) &termios);
+
+	termios.c_cflag = 	(CS8 	 	//8 bits
+						| CREAD) 	//Enable read
+						& ~CSTOPB	//1 stop bit
+						& ~PARENB	//Disable parity check
+						& ~CRTSCTS; //No hardware flow control
+
+	ioctl(gps_fd, TCSETS, (unsigned long) &termios);
+
 	mpu6000_record_t record;
 	struct file * filep;
 
 	mavlink_scaled_imu_t imu_msg;
 	mavlink_scaled_pressure_t baro_msg;
+	mavlink_hil_gps_t gps_msg;
 	mavlink_message_t msg;
+
+	gps_msg.cog = 0;
+	gps_msg.eph = 0;
+	gps_msg.epv = 0;
+	gps_msg.vd = 0;
+	gps_msg.ve = 0;
+	gps_msg.vel = 0;
+	gps_msg.vn = 0;
+	gps_msg.satellites_visible = 0xff;
 
 	bmp280_data_t result = {0, 0};
 
@@ -142,6 +208,31 @@ int mavlink_test_main(int argc, char *argv[])
 		isok = write(nrf_fd, buffer, len);
 		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 		printf("_________________________________________________________________\n");
+
+		if( parseGPS(gps_fd, 100) ) {
+			// накопили, теперь разбираем
+			if (!minmea_check(_msg_buffer, false))
+				continue;
+
+			struct minmea_sentence_gga frame;
+			if (!minmea_parse_gga(&frame, _msg_buffer))
+				continue; // опс, что-то пошло не так
+
+			if (frame.fix_quality == 0)
+				continue;
+
+			gps_msg.lon = (int32_t)(minmea_tofloat(&frame.longitude) * (10 ^ 7));
+			gps_msg.lat = (int32_t)(minmea_tofloat(&frame.latitude) * (10 ^ 7));
+			gps_msg.alt = (int32_t)(minmea_tofloat(&frame.altitude) * (10 ^ 3));
+			gps_msg.fix_type = frame.fix_quality;
+
+			mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
+			len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+			isok = write(nrf_fd, buffer, len);
+			printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			printf("_________________________________________________________________\n");
+		}
 
 		sleep(1);
 	}

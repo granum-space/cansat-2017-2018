@@ -34,10 +34,8 @@ int main(int argc, char ** argv)
 	using udp = boost::asio::ip::udp;
 
 	RF24 radio1(22, BCM2835_SPI_CS0); //, BCM2835_SPI_SPEED_8MHZ);
-	RF24 radio2(24, BCM2835_SPI_CS1); //, BCM2835_SPI_SPEED_8MHZ);
 
 	radio1.begin();
-	radio2.begin();
 
 	radio1.setChannel(NRF_CHANNEL);
 	radio1.setAddressWidth(5);
@@ -45,8 +43,6 @@ int main(int argc, char ** argv)
 	radio1.setCRCLength(RF24_CRC_16);
 	radio1.enableDynamicPayloads();
 	radio1.enableAckPayload();
-	//radio1.openWritingPipe(ADDR_ONBOARD);
-	//radio1.openReadingPipe(0, ADDR_ONBOARD);
 	radio1.openWritingPipe(0xAAAAAAAAAA);
 	radio1.openReadingPipe(1, 0xBBBBBBBBBB);
 	radio1.startListening();
@@ -79,11 +75,9 @@ int main(int argc, char ** argv)
 		std::cout << "ERROR: " << e.what() << std::endl;
 	}
 
-	//radio2.openWritingPipe(0xCCDDCCDDCCDDCCDD);
 
 	std::cout << std::endl;
 	std::cout << std::endl;
-	//radio2.printDetails();
 
 	return 0;
 }
