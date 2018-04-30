@@ -1,6 +1,7 @@
 {% extends "basic.html" %}
 
 {% block styles %}
+{{ super() }}
 
 {% assets "openlayers_css" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}"/>
@@ -35,6 +36,9 @@
 
     <div class="row h-100 center-block" id="map">
     </div>
+    <div style="display: none;">
+        <div id="popup" title="Telemetry"></div>
+    </div>
 
 {% endblock %}
 
@@ -42,6 +46,11 @@
 
 
 {% block js %}
+
+{% assets "popper_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
 {{ super() }}
 
 {% assets "chart_js" %}
@@ -161,10 +170,11 @@ $(document).ready(function(){
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     plotDataUrl = "{{ url_for(".plot_data") }}"
+    mapDataUrl = "{{ url_for(".map_data") }}"
 
     <!--mccChartsMain(charts, updatePeriodMs, plotDataUrl );-->
 
-    mccMapMain();
+    mccMapMain(mapDataUrl);
 })
 
 </script>

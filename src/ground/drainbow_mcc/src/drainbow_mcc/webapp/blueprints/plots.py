@@ -1,6 +1,7 @@
 import time
 import json
 import math
+from cgi import valid_boundary
 
 from flask import Blueprint, render_template, abort, jsonify, request, current_app
 from jinja2 import TemplateNotFound
@@ -40,6 +41,55 @@ def plot_data():
         return _get_temperature_data()
     elif chart_name == "pressure":
         return _get_pressure_data()
+
+@plots.route("/map_data")
+def map_data():
+    # Достаем элементы
+    time = now()
+    latest_update_time = float(request.args.get("latestUpdateTime"))
+    latest_update_time = max(latest_update_time, viewlimit("MAP", time))
+
+    zsetname = current_app.config["ZSET_NAME_MAP"]
+    elems = redis_store.zrangebyscore(zsetname, latest_update_time, time, withscores=True, score_cast_func=int)
+
+    data = []
+    for e in elems:
+        value, score = e
+        value = json.loads(value.decode("utf-8"))
+        data.append({
+            'time_usec': value['time_usec'],
+            'fix_type': value['fix_type'],
+            'lat': value['lat'],
+            'lon': value['lon'],
+            'alt': value['alt'],
+            'servertime': score
+        })
+
+    if(int(request.args.get("latestUpdateTime")) == -1):
+        data = [{
+                'time_usec': 1,
+                'fix_type': 3,
+                'lat': 35,
+                'lon': 55,
+                'alt': 170,
+                'servertime': 15
+            }, {
+                'time_usec': 2,
+                'fix_type': 3,
+                'lat': 37,
+                'lon': 55,
+                'alt': 160,
+                'servertime': 16
+            }, {
+                'time_usec': 3,
+                'fix_type': 3,
+                'lat': 37,
+                'lon': 50,
+                'alt': 70,
+                'servertime': 17
+            }]
+
+    return jsonify(data)
 
 
 def _get_data_abstract(plotname, yvalue_name, time=now()):

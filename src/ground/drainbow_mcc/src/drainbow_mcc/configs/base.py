@@ -29,5 +29,11 @@ PRESSURE_PLOT_SCOPE_MS = timedelta(seconds=15)
 ZSET_NAME_PRESSURE = "granum:pressure"
 """ Имя редисового zset, в котором хранятся сообщения SCALES_PRESSURE """
 
+MAP_PLOT_SCOPE_MS = timedelta(seconds=15)
+""" Диапазон отображения на графике последних данных MPU6000 """
+ZSET_NAME_MAP = "granum:map"
+""" Имя редисового zset, в котором хранятся сообщения SCALES_PRESSURE """
+
+
 REDIS_URL = "redis://:@localhost:6379/0"
 
