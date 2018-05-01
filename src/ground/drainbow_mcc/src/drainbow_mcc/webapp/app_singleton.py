@@ -8,8 +8,7 @@ from .redis_store import redis_store
 
 from .blueprints.landing import landing
 from .blueprints.plots import plots
-
-import logging
+from .blueprints.gl_test import gl_test
 
 app = Flask(
     __name__,
@@ -26,5 +25,6 @@ redis_store.init_app(app)
 
 app.register_blueprint(landing)
 app.register_blueprint(plots)
+app.register_blueprint(gl_test)
 
 

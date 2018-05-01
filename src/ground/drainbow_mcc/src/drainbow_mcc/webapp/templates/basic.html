@@ -7,13 +7,14 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>DRainbow MCC</title>
 
+    {% block styles %}
     {% assets "bs_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
     {% assets "main_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
-    {% block styles %}{% endblock %}
+    {% endblock %}
 
 
 </head>
