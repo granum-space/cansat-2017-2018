@@ -1,4 +1,4 @@
-var cords = []
+var headPoint = undefined;
 
 function addCoord(source, line, point) {
     coordinate = ol.proj.fromLonLat( [point.lon, point.lat ]);
@@ -9,6 +9,7 @@ function addCoord(source, line, point) {
     });
 
     feature.setId(point.time_usec.toString());
+    feature.fix_type = point.fix_type;
 
     source.addFeature(feature);
 }
@@ -26,12 +27,15 @@ function updateCoords(mapUpdateData) {
 
 function mccMapMain(mapDataRootUri) {
 
+    OSM = new ol.source.OSM();
+    ArcGIS = new ol.source.TileArcGISRest({
+        url: 'http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer'
+    });
+
     var map = new ol.Map({
         layers: [
             new ol.layer.Tile({
-                source: new ol.source.TileArcGISRest({
-                    url: 'http://server.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer'
-                })
+                source: OSM
             })
         ],
         target: 'map',
@@ -41,8 +45,8 @@ function mccMapMain(mapDataRootUri) {
           }
         }),
         view: new ol.View({
-          center: ol.proj.fromLonLat( [55, 35 ]),
-          zoom: 6
+          center: [4209258.894783431, 7543688.893557276],
+          zoom: 17
         })
     });
 
@@ -57,11 +61,11 @@ function mccMapMain(mapDataRootUri) {
             color: '#ffcc33',
             width: 2
           }),
-          image: new ol.style.Icon({
-            anchor: [0.5, 1],
-            scale: 0.05,
-            opacity: 0.01,
-            src: "https://upload.wikimedia.org/wikipedia/commons/0/00/Simpleicons_Places_map-marker-point.svg"
+          image: new ol.style.Circle({
+            radius: 3,
+            fill: new ol.style.Fill({
+              color: '#ff9933'
+            })
           })
         })
     });
@@ -99,20 +103,25 @@ function mccMapMain(mapDataRootUri) {
 
         evt.selected.forEach( function(feature) {
             popup.setPosition(feature.getGeometry().getCoordinates());
-            id = feature.getId()
             $(element).popover({
                 'placement': 'top',
                 'animation': false,
                 'html': true
             });
 
-            $(element).data('bs.popover').config.content = '<p>' + id + '</p>'
+            $(element).data('bs.popover').config.content = '<p>Fix:' + feature.fix_type.toString() + '</p>'
             $(element).popover('show');
 
         });
     });
 
     map.addInteraction(select);
+
+
+    var snap = new ol.interaction.Snap({
+        source: vector.getSource()
+    });
+    map.addInteraction(snap);
 
 
     mapUpdateData = {

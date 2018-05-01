@@ -4,12 +4,12 @@ import time
 import json
 
 from pymavlink import mavutil
-from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_scaled_pressure_message
+from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_scaled_pressure_message, MAVLink_hil_gps_message
 
 from .config import get_config
 from .redis_store import redis_store
 
-from ..common.definitions import ZSET_NAME_IMU, ZSET_NAME_PRESSURE
+from ..common.definitions import ZSET_NAME_IMU, ZSET_NAME_PRESSURE, ZSET_NAME_MAP
 
 _log = logging.getLogger(__name__)
 _config = get_config()
@@ -52,6 +52,10 @@ def main(argv):
         elif isinstance(msg, MAVLink_scaled_pressure_message):
             """ Сообщение с данными BMP280 """
             update_zset(ZSET_NAME_PRESSURE, msg)
+
+        elif isinstance(msg, MAVLink_hil_gps_message):
+            """ Сообщение с данными GPS """
+            update_zset(ZSET_NAME_MAP, msg)
 
 
 if __name__ == "__main__":

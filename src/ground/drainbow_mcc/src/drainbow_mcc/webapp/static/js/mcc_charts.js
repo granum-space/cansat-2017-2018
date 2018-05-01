@@ -36,13 +36,13 @@ function updatePlot(chartObject) {
     $.getJSON(chartObject.dataUrl + "&latestUpdateTime=" + chartObject.latestUpdateTime, function(data) {
         console.log("updating plot " + chartObject.name);
         debugger;
-
         var i;
         for(i = 0; i < data.datas.length; i++) {
             Array.prototype.push.apply(chartObject.chart.data.datasets[i].data, data.datas[i]);
-            var dt = chartObject.chart.data.datasets[i].data[0];
-            while(chartObject.chart.data.datasets[i].data[0].servertime < data.viewlimit)
-                chartObject.chart.data.datasets[i].data.shift();
+            try {
+                while(chartObject.chart.data.datasets[i].data[0].servertime < data.viewlimit)
+                        chartObject.chart.data.datasets[i].data.shift();
+            } catch(err) {}
         }
         chartObject.chart.update();
         chartObject.latestUpdateTime = data.latestUpdateTime;

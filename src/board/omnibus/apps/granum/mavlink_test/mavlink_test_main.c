@@ -39,8 +39,9 @@ bool parseGPS(int fd, int cycles) {
 			}
 
 			if('\r' == _msg_buffer[_msg_carret-2]
-			   ||	'\n' == _msg_buffer[_msg_carret-1]) {
+			   &&	'\n' == _msg_buffer[_msg_carret-1]) {
 				_msg_buffer[_msg_carret] = '\x00';
+				_msg_carret = 0;
 				return true;
 			}
 		}
@@ -163,6 +164,14 @@ int mavlink_test_main(int argc, char *argv[])
 	gps_msg.vn = 0;
 	gps_msg.satellites_visible = 0xff;
 
+
+	struct timespec gps_time;
+	struct minmea_date gps_basedate = {
+			.year = 18,
+			.month = 5,
+			.day = 1,
+	};
+
 	bmp280_data_t result = {0, 0};
 
 	uint8_t buffer[1024];
@@ -221,12 +230,15 @@ int mavlink_test_main(int argc, char *argv[])
 			if (frame.fix_quality == 0)
 				continue;
 
-			gps_msg.lon = (int32_t)(minmea_tofloat(&frame.longitude) * (10 ^ 7));
-			gps_msg.lat = (int32_t)(minmea_tofloat(&frame.latitude) * (10 ^ 7));
-			gps_msg.alt = (int32_t)(minmea_tofloat(&frame.altitude) * (10 ^ 3));
+			minmea_gettime(&gps_time, &gps_basedate, &frame.time);
+
+			gps_msg.time_usec = gps_time.tv_sec * 1000000.0 + gps_time.tv_nsec / 1000.0;
+			gps_msg.lon = (int32_t)(minmea_tocoord(&frame.longitude) * 10000000);
+			gps_msg.lat = (int32_t)(minmea_tocoord(&frame.latitude) * 10000000);
+			gps_msg.alt = (int32_t)(minmea_tofloat(&frame.altitude) * 1000);
 			gps_msg.fix_type = frame.fix_quality;
 
-			mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
+			mavlink_msg_hil_gps_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 			isok = write(nrf_fd, buffer, len);
