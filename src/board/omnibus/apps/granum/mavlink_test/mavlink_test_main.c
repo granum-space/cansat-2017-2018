@@ -12,6 +12,7 @@
 
 #include <nuttx/sensors/mpu6000.h>
 #include <nuttx/sensors/bmp280.h>
+#include <nuttx/sensors/gy_us42.h>
 #include <nuttx/wireless/nrf24l01.h>
 #include <mavlink/granum/mavlink.h>
 #include "../../include/gpsutils/minmea.h"
@@ -86,6 +87,13 @@ int mavlink_test_main(int argc, char *argv[])
 		return 1;
 	}
 
+	int fd = open("/dev/sonar0", O_RDONLY);
+	if (fd < 0)
+	{
+	  perror("cant open sonar device");
+	  return 1;
+	}
+
 	ioctl(mpu_fd, MPU6000_CMD_SET_CONVERT, true);
 
 	uint32_t tmp = 2489;
@@ -152,6 +160,7 @@ int mavlink_test_main(int argc, char *argv[])
 
 	mavlink_scaled_imu_t imu_msg;
 	mavlink_scaled_pressure_t baro_msg;
+	mavlink_sonar_t sonar_msg;
 	mavlink_hil_gps_t gps_msg;
 	mavlink_message_t msg;
 
@@ -201,6 +210,8 @@ int mavlink_test_main(int argc, char *argv[])
 
 		printf("_________________________________________________________________\n");
 
+
+
 		isok = read(baro_fd, &result, sizeof(result) );
 		printf("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 
@@ -217,6 +228,21 @@ int mavlink_test_main(int argc, char *argv[])
 		isok = write(nrf_fd, buffer, len);
 		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 		printf("_________________________________________________________________\n");
+
+
+		read(fd, &sonar_msg.distance, 2);
+		clock_gettime(CLOCK_MONOTONIC, &current_time);
+		ioctl(fd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
+		sonar_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
+		mavlink_msg_sonar_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &sonar_msg);
+
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+		isok = write(nrf_fd, buffer, len);
+		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		printf("_________________________________________________________________\n");
+
+
 
 		if( parseGPS(gps_fd, 100) ) {
 			// накопили, теперь разбираем
@@ -245,6 +271,8 @@ int mavlink_test_main(int argc, char *argv[])
 			printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 			printf("_________________________________________________________________\n");
 		}
+
+
 
 		sleep(1);
 	}
