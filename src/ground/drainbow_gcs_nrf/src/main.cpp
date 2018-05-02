@@ -15,7 +15,7 @@
 #include <boost/lexical_cast.hpp>
 
 //TODO вынести в что-нибудь общее
-#define NRF_CHANNEL		89
+#define NRF_CHANNEL		0x4C
 #define ADDR_ONBOARD	0xB0AFDB0AFD
 #define ADDR_GCS 		0x57A7104313
 
@@ -33,7 +33,7 @@ int main(int argc, char ** argv)
 	using namespace boost;
 	using udp = boost::asio::ip::udp;
 
-	RF24 radio1(22, BCM2835_SPI_CS0); //, BCM2835_SPI_SPEED_8MHZ);
+	RF24 radio1(24, BCM2835_SPI_CS1); //, BCM2835_SPI_SPEED_8MHZ);
 
 	radio1.begin();
 
@@ -43,8 +43,8 @@ int main(int argc, char ** argv)
 	radio1.setCRCLength(RF24_CRC_16);
 	radio1.enableDynamicPayloads();
 	radio1.enableAckPayload();
-	radio1.openWritingPipe(0xAAAAAAAAAA);
-	radio1.openReadingPipe(1, 0xBBBBBBBBBB);
+	radio1.openWritingPipe(0xE7E7E7E7E7);
+	radio1.openReadingPipe(1, 0xE7E7E7E7E7);
 	radio1.startListening();
 
 	uint8_t rx_pipeno;

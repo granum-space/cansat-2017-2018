@@ -34,6 +34,16 @@
         </div>
     </div>
 
+    <div class="row h-100 center-block">
+        <div class="col-xl-6 text-center">
+            <canvas id="distance-plot-canvas"></canvas>
+        </div>
+        <div class="col-xl-6 text-center">
+            <canvas id="luminosity-plot-canvas"></canvas>
+        </div>
+    </div>
+
+
     <div class="row h-100 center-block" id="map">
     </div>
     <div style="display: none;">
@@ -158,6 +168,20 @@ $(document).ready(function(){
         [
             {
                 "label": "Давление по датчику BMP280 (hPa)",
+                "fill": false,
+                "pointRadius": 0,
+                "borderColor": "#15ff00",
+                "borderWidth": 2,
+                "lineTension": 0,
+                "data": [],
+            },
+        ]
+    },{
+        name: "distance",
+        datasets:
+        [
+            {
+                "label": "Дистанция до поверхности (Хзчто)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#15ff00",

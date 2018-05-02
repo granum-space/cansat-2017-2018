@@ -41,6 +41,8 @@ def plot_data():
         return _get_temperature_data()
     elif chart_name == "pressure":
         return _get_pressure_data()
+    elif chart_name == "distance":
+        return _get_distance_data()
 
 @plots.route("/map_data")
 def map_data():
@@ -169,6 +171,22 @@ def _get_pressure_data():
         "datas": [pressure],
         "latestUpdateTime": latestUpdateTime,
         "viewlimit": viewlimit("PRESSURE", time)
+    }
+
+    return jsonify(data)
+
+def _get_distance_data():
+    time = now()
+    distance = _get_data_abstract("DISTANCE", "distance", time)
+
+    latestUpdateTime = request.args.get("latestUpdateTime")
+    if len(distance) > 0:
+        latestUpdateTime = distance[-1]["servertime"]
+
+    data = {
+        "datas": [distance],
+        "latestUpdateTime": latestUpdateTime,
+        "viewlimit": viewlimit("DISTANCE", time)
     }
 
     return jsonify(data)

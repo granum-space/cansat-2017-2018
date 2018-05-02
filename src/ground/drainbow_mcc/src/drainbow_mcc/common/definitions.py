@@ -4,5 +4,8 @@ ZSET_NAME_IMU = "granum:imu"
 ZSET_NAME_PRESSURE = "granum:pressure"
 """ Имя редисового zset, в котором хранятся сообщения SCALES_PRESSURE """
 
+ZSET_NAME_DISTANCE = "granum:distance"
+""" Имя редисового zset, в котором хранятся сообщения SONAR """
+
 ZSET_NAME_MAP = "granum:map"
-""" Имя редисового zset, в котором хранятся сообщения SCALES_PRESSURE """
+""" Имя редисового zset, в котором хранятся сообщения HIL_GPS """
