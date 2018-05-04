@@ -35,7 +35,6 @@ function updatePlot(chartObject) {
 
     $.getJSON(chartObject.dataUrl + "&latestUpdateTime=" + chartObject.latestUpdateTime, function(data) {
         console.log("updating plot " + chartObject.name);
-        debugger;
         var i;
         for(i = 0; i < data.datas.length; i++) {
             Array.prototype.push.apply(chartObject.chart.data.datasets[i].data, data.datas[i]);
@@ -46,6 +45,11 @@ function updatePlot(chartObject) {
         }
         chartObject.chart.update();
         chartObject.latestUpdateTime = data.latestUpdateTime;
+
+        chartObject.timeoutContext.setTimeout(
+            function() { updatePlot(chartObject); },
+            updatePeriodMs
+        );
     });
 }
 
@@ -57,14 +61,16 @@ function mccChartsMain(charts, updatePeriodMs, plotDataRootUri) {
         chartObj.dataUrl = plotDataRootUri + "?chartName=" + chartObj.name;
         chartObj.latestUpdateTime =  -1;
         chartObj.chart = makeChart(chartObj.name + "-plot-canvas", chartObj.datasets);
+        chartObj.timeoutContext = this;
 
         return chartObj;
     });
 
+
     // Графики успешно созданы. Запускаем периодические обновления
 
     var intervals = $.map(charts, function(chartObj) {
-        return setInterval(
+        return setTimeout(
             function() { updatePlot(chartObj); },
             updatePeriodMs
         );

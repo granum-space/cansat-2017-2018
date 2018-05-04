@@ -9,3 +9,6 @@ ZSET_NAME_DISTANCE = "granum:distance"
 
 ZSET_NAME_MAP = "granum:map"
 """ Имя редисового zset, в котором хранятся сообщения HIL_GPS """
+
+ZSET_NAME_ATTITUDE = "granum:attitude"
+""" Имя редисового zset, в котором хранятся сообщения ATTITUDE_QUATERNION """

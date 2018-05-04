@@ -16,6 +16,12 @@
 #include <nuttx/wireless/nrf24l01.h>
 #include <mavlink/granum/mavlink.h>
 #include "../../include/gpsutils/minmea.h"
+#include "madgwick/MadgwickAHRS.h"
+
+#define DEBUG (void)//printf
+
+#define SEC2NSEC(SEC) (SEC * 1000000000)
+#define PERIOD_NSEC SEC2NSEC(1)
 
 #define MSG_BUF_SIZE 256
 
@@ -49,6 +55,103 @@ bool parseGPS(int fd, int cycles) {
 	}
 
 	return false;
+}
+
+struct fds {
+	int mpu, nrf;
+};
+
+pthread_addr_t mpu_thread(pthread_addr_t arg) {
+	int mpu_fd = ((struct fds*)arg)->mpu;
+	int nrf_fd = ((struct fds*)arg)->nrf;
+
+	mpu6000_record_t record;
+	mavlink_scaled_imu_t imu_msg;
+	imu_msg.xmag = 0x7fff;
+	imu_msg.ymag = 0x7fff;
+	imu_msg.zmag = 0x7fff;
+
+	mavlink_attitude_quaternion_t quat_msg = {
+			.rollspeed = 0, .yawspeed = 0, .pitchspeed = 0
+	};
+
+	struct timespec current_time, last_drop_time;
+	clock_gettime(CLOCK_REALTIME, &last_drop_time);
+
+	mavlink_message_t msg;
+	uint8_t buffer[256];
+
+	struct timespec pause = {
+			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.01)
+	};
+
+	float gyro_err_x = 0;
+	float gyro_err_y = 0;
+	float gyro_err_z = 0;
+
+
+	for(int i = 0; i < 10; i++){
+		read(mpu_fd, &record, sizeof(mpu6000_record_t) );
+		gyro_err_x += record.gyro.x;
+		gyro_err_y += record.gyro.y;
+		gyro_err_z += record.gyro.z;
+		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
+		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
+		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
+	}
+
+	gyro_err_x /= 10.0f;
+	gyro_err_y /= 10.0f;
+	gyro_err_z /= 10.0f;
+
+	int tick = 0;
+	while(true) {
+		tick++;
+
+		ssize_t isok = read(mpu_fd, &record, sizeof(mpu6000_record_t) );
+
+		DEBUG("MPU6000: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+
+		MadgwickAHRSupdateIMU(record.gyro.x - gyro_err_x, record.gyro.y - gyro_err_y, record.gyro.z - gyro_err_z, \
+				record.acc.x, record.acc.y, record.acc.z);
+
+		if(tick == 100) {
+			beta = 0.066;
+			tick = 0;
+
+			imu_msg.time_boot_ms = record.time.tv_sec * 1000 + record.time.tv_nsec / 1000000;
+			imu_msg.xacc = (int)(record.acc.x * 1000.0f);
+			imu_msg.yacc = (int)(record.acc.y * 1000.0f);
+			imu_msg.zacc = (int)(record.acc.z * 1000.0f);
+			imu_msg.xgyro = (int)((record.gyro.x - gyro_err_x) * 1000.0f * M_PI / 180);
+			imu_msg.ygyro = (int)((record.gyro.y - gyro_err_y) * 1000.0f * M_PI / 180);
+			imu_msg.zgyro = (int)((record.gyro.z - gyro_err_z) * 1000.0f * M_PI / 180);
+
+			mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
+			uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+			isok = write(nrf_fd, buffer, len);
+			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+
+			quat_msg.q1 = q0;
+			quat_msg.q2 = q1;
+			quat_msg.q3 = q2;
+			quat_msg.q4 = q3;
+
+			mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
+			len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+			isok = write(nrf_fd, buffer, len);
+			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+
+			clock_gettime(CLOCK_REALTIME, &last_drop_time);
+		}
+
+		DEBUG("_________________________________________________________________\n");
+		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
+	}
+
+	return NULL;
 }
 
 #ifdef CONFIG_BUILD_KERNEL
@@ -94,8 +197,27 @@ int mavlink_test_main(int argc, char *argv[])
 	  return 1;
 	}
 
+//Настройки MPU6000
 	ioctl(mpu_fd, MPU6000_CMD_SET_CONVERT, true);
+	ioctl(mpu_fd, MPU6000_CMD_SET_FILTER, 6);
+	ioctl(mpu_fd, MPU6000_CMD_SET_SAMPLERATE_DIVIDER, 9);
 
+
+//Настройки UART4 для GPS
+	struct termios termios;
+
+	ioctl(gps_fd, TCGETS, (unsigned long) &termios);
+
+	termios.c_cflag = 	(CS8 	 	//8 bits
+						| CREAD) 	//Enable read
+						& ~CSTOPB	//1 stop bit
+						& ~PARENB	//Disable parity check
+						& ~CRTSCTS; //No hardware flow control
+
+	ioctl(gps_fd, TCSETS, (unsigned long) &termios);
+
+
+//Настройки NRF24L01+
 	uint32_t tmp = 2489;
 	ioctl(nrf_fd, WLIOC_SETRADIOFREQ, (long unsigned int)&tmp);
 
@@ -109,7 +231,7 @@ int mavlink_test_main(int argc, char *argv[])
 	ioctl(nrf_fd, WLIOC_SETTXPOWER, (long unsigned int)&tmp);
 
 	nrf24l01_retrcfg_t retrcfg = {.delay = DELAY_4000us, .count = 15};
-	ioctl(nrf_fd, NRF24L01IOC_SETRETRCFG, &retrcfg);
+	ioctl(nrf_fd, NRF24L01IOC_SETRETRCFG, (long unsigned int)&retrcfg);
 
 	nrf24l01_pipecfg_t pipe0 = {.en_aa = true,\
 							  .payload_length = NRF24L01_DYN_LENGTH};
@@ -143,27 +265,14 @@ int mavlink_test_main(int argc, char *argv[])
 	nrf24l01_state_t state = ST_STANDBY;
 	ioctl(nrf_fd, NRF24L01IOC_SETSTATE, &state);
 
-	struct termios termios;
 
-	ioctl(gps_fd, TCGETS, (unsigned long) &termios);
 
-	termios.c_cflag = 	(CS8 	 	//8 bits
-						| CREAD) 	//Enable read
-						& ~CSTOPB	//1 stop bit
-						& ~PARENB	//Disable parity check
-						& ~CRTSCTS; //No hardware flow control
-
-	ioctl(gps_fd, TCSETS, (unsigned long) &termios);
-
-	mpu6000_record_t record;
-	struct file * filep;
-
-	mavlink_scaled_imu_t imu_msg;
 	mavlink_scaled_pressure_t baro_msg;
-	mavlink_sonar_t sonar_msg;
-	mavlink_hil_gps_t gps_msg;
-	mavlink_message_t msg;
+	bmp280_data_t result = {0, 0};
 
+	mavlink_sonar_t sonar_msg;
+
+	mavlink_hil_gps_t gps_msg;
 	gps_msg.cog = 0;
 	gps_msg.eph = 0;
 	gps_msg.epv = 0;
@@ -172,8 +281,6 @@ int mavlink_test_main(int argc, char *argv[])
 	gps_msg.vel = 0;
 	gps_msg.vn = 0;
 	gps_msg.satellites_visible = 0xff;
-
-
 	struct timespec gps_time;
 	struct minmea_date gps_basedate = {
 			.year = 18,
@@ -181,39 +288,18 @@ int mavlink_test_main(int argc, char *argv[])
 			.day = 1,
 	};
 
-	bmp280_data_t result = {0, 0};
-
+	mavlink_message_t msg;
 	uint8_t buffer[1024];
+
+	pthread_t mpu_thread_id;
+	struct fds fds = {.mpu = mpu_fd, .nrf = nrf_fd};
+	pthread_create(&mpu_thread_id, 0, mpu_thread, &fds);
 
 	while(1)
 	{
-		fs_getfilep(mpu_fd, &filep);
-		ssize_t isok = read(mpu_fd, &record, sizeof(record) );
-		printf("MPU6000: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-
-		imu_msg.time_boot_ms = record.time.tv_sec * 1000 + record.time.tv_nsec / 1000000;
-		imu_msg.xacc = (int)(record.acc.x * 1000);
-		imu_msg.yacc = (int)(record.acc.y * 1000);
-		imu_msg.zacc = (int)(record.acc.z * 1000);
-		imu_msg.xgyro = (int)(record.gyro.x * 1000 * M_PI / 180);
-		imu_msg.ygyro = (int)(record.gyro.y * 1000 * M_PI / 180);
-		imu_msg.zgyro = (int)(record.gyro.z * 1000 * M_PI / 180);
-		imu_msg.xmag = 0x7fff;
-		imu_msg.ymag = 0x7fff;
-		imu_msg.zmag = 0x7fff;
-
-		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
-		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-		isok = write(nrf_fd, buffer, len);
-		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-
-		printf("_________________________________________________________________\n");
-
-
-
-		isok = read(baro_fd, &result, sizeof(result) );
-		printf("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+//BMP280
+		ssize_t isok = read(baro_fd, &result, sizeof(result) );
+		DEBUG("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 
 		struct timespec current_time;
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
@@ -223,13 +309,13 @@ int mavlink_test_main(int argc, char *argv[])
 
 		mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &baro_msg);
 
-		len = mavlink_msg_to_send_buffer(buffer, &msg);
+		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		isok = write(nrf_fd, buffer, len);
-		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-		printf("_________________________________________________________________\n");
+		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		DEBUG("_________________________________________________________________\n");
 
-
+//SONAR
 		read(fd, &sonar_msg.distance, 2);
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
 		ioctl(fd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
@@ -239,11 +325,10 @@ int mavlink_test_main(int argc, char *argv[])
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		isok = write(nrf_fd, buffer, len);
-		printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-		printf("_________________________________________________________________\n");
+		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		DEBUG("_________________________________________________________________\n");
 
-
-
+//GPS
 		if( parseGPS(gps_fd, 100) ) {
 			// накопили, теперь разбираем
 			if (!minmea_check(_msg_buffer, false))
@@ -268,10 +353,9 @@ int mavlink_test_main(int argc, char *argv[])
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 			isok = write(nrf_fd, buffer, len);
-			printf("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-			printf("_________________________________________________________________\n");
+			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			DEBUG("_________________________________________________________________\n");
 		}
-
 
 
 

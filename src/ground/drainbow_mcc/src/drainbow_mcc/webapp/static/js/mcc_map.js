@@ -129,7 +129,7 @@ function mccMapMain(mapDataRootUri) {
         line: line,
         dataUrl: mapDataRootUri,
         latestUpdateTime: -1
-    }
+    };
 
     setInterval(
         function() { updateCoords(mapUpdateData); },

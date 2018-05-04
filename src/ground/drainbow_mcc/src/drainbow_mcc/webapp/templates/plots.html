@@ -61,6 +61,15 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-push-8">
+            <p>Made on Earth by Granum. 2018.</p>
+            <p>Vasilly.Prokopyev, IngaCansat, volospolina, Kirs67</p>
+            <p><a href="https://github.com/granum-space/">Team github</a></p>
+        </div>
+    </div>
+
 
     <div style="display: none;">
         <div id="popup" title="Telemetry"></div>
@@ -211,7 +220,7 @@ $(document).ready(function(){
         datasets:
         [
             {
-                "label": "Дистанция до поверхности (Хзчто)",
+                "label": "Дистанция до поверхности (cm)",
                 "fill": false,
                 "pointRadius": 0,
                 "borderColor": "#15ff00",
@@ -225,10 +234,11 @@ $(document).ready(function(){
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     plotDataUrl = "{{ url_for(".plot_data") }}"
     mapDataUrl = "{{ url_for(".map_data") }}"
+    glDataUrl = "{{ url_for(".gl_data") }}"
 
     mccChartsMain(charts, updatePeriodMs, plotDataUrl );
     mccMapMain(mapDataUrl);
-    mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='rocket.stl') }}");
+    mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='rocket.stl') }}", glDataUrl);
 })
 
 </script>

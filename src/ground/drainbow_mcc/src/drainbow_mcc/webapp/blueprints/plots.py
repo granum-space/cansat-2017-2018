@@ -69,6 +69,25 @@ def map_data():
 
     return jsonify(data)
 
+@plots.route("/gl_data")
+def gl_data():
+    # Достаем элементы
+    time = now()
+
+    zsetname = common_definitions.ZSET_NAME_ATTITUDE
+    elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
+
+    data = []
+    for e in elems:
+        value, score = e
+        value = json.loads(value.decode("utf-8"))
+        data.append({
+            'data': [value['q2'], value['q3'], value['q4'], value['q1']],
+            'servertime': score
+        })
+
+    return jsonify(data)
+
 
 def _get_data_abstract(plotname, yvalue_name, time=now()):
     """ Преобразует набор "мавлинкоджсоновых элементов в набор элементов точек для графика
@@ -86,7 +105,7 @@ def _get_data_abstract(plotname, yvalue_name, time=now()):
         value, score = e
         value = json.loads(value.decode("utf-8"))
         data.append({
-            "x": value["time_boot_ms"] / 1000,  # будем показывать секунды, считаем что бортовое время в мс
+            "x": value["time_boot_ms"] / 1000.0,  # будем показывать секунды, считаем что бортовое время в мс
             "y": value[yvalue_name],
             "servertime": score
         })

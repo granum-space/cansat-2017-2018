@@ -1,8 +1,22 @@
 var scene;
 var camera;
 var renderer;
+var group;
 
-function mccGLMain(container, modelUrl)
+function updateModel(glUpdateData) {
+    $.getJSON(glUpdateData.dataUrl, function(data) {
+        console.log("updating gl");
+
+        var quaternion = new THREE.Quaternion()
+        quaternion.fromArray(data[0].data);
+        quaternion.normalize();
+
+        group.setRotationFromQuaternion(quaternion)
+        render();
+    });
+}
+
+function mccGLMain(container, modelUrl, dataUrl)
 {
     width = container.width();
     height = container.height();
@@ -34,12 +48,13 @@ function mccGLMain(container, modelUrl)
 
     // Rocket
     var loader = new THREE.STLLoader();
-    var group = new THREE.Object3D();
+    group = new THREE.Object3D();
     loader.load(modelUrl, function (geometry) {
         console.log(geometry);
         var mat = new THREE.MeshLambertMaterial({color: 0x7777ff});
         group = new THREE.Mesh(geometry, mat);
         group.translateY(15);
+        debugger;
         group.rotation.x = -0.5 * Math.PI;
         group.rotation.z = -0.5 * Math.PI;
         group.scale.set(0.2, 0.2, 0.2);
@@ -59,13 +74,16 @@ function mccGLMain(container, modelUrl)
 
     render();
 
-    /*setInterval(
+    modelUpdateData = {
+        dataUrl: dataUrl
+    };
+
+    setInterval(
         function() {
-             group.rotation.z += 0.1;
-             render();
+             updateModel(modelUpdateData);
         },
         100
-    );*/
+    );
 }
 
 
