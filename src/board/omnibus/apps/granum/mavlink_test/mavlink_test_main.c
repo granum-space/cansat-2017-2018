@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <signal.h>
 #include <stdbool.h>
 
 #include <nuttx/config.h>
@@ -65,7 +66,7 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 	int mpu_fd = ((struct fds*)arg)->mpu;
 	int nrf_fd = ((struct fds*)arg)->nrf;
 
-	mpu6000_record_t record;
+	mpu6000_record_t record[20];
 	mavlink_scaled_imu_t imu_msg;
 	imu_msg.xmag = 0x7fff;
 	imu_msg.ymag = 0x7fff;
@@ -75,14 +76,11 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 			.rollspeed = 0, .yawspeed = 0, .pitchspeed = 0
 	};
 
-	struct timespec current_time, last_drop_time;
-	clock_gettime(CLOCK_REALTIME, &last_drop_time);
-
 	mavlink_message_t msg;
-	uint8_t buffer[256];
+	uint8_t buffer[1024];
 
-	struct timespec pause = {
-			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.01)
+	struct timespec period = {
+			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.09)
 	};
 
 	float gyro_err_x = 0;
@@ -91,41 +89,68 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 
 
 	for(int i = 0; i < 10; i++){
-		read(mpu_fd, &record, sizeof(mpu6000_record_t) );
-		gyro_err_x += record.gyro.x;
-		gyro_err_y += record.gyro.y;
-		gyro_err_z += record.gyro.z;
-		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
-		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
-		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
+		read(mpu_fd, &record[0], sizeof(mpu6000_record_t) );
+		gyro_err_x += record[0].gyro.x;
+		gyro_err_y += record[0].gyro.y;
+		gyro_err_z += record[0].gyro.z;
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
 	}
 
 	gyro_err_x /= 10.0f;
 	gyro_err_y /= 10.0f;
 	gyro_err_z /= 10.0f;
 
+	timer_t timer;
+	struct sigevent evt = {
+		.sigev_notify = SIGEV_SIGNAL,
+		.sigev_signo = SIGALRM,
+		.sigev_value = 0,
+	};
+	volatile int ret = timer_create(CLOCK_REALTIME, &evt, &timer);
+
+	struct itimerspec timerspec = {
+		.it_value = period,
+		.it_interval = period,
+	};
+	ret = timer_settime(timer, 0, &timerspec, NULL);
+
+	sigset_t waitset = (sigset_t)0;
+	sigaddset(&waitset, SIGALRM);
+
 	int tick = 0;
+	ioctl(mpu_fd, MPU6000_CMD_FLUSHFIFO, 0);
 	while(true) {
+		sigsuspend(&waitset);
+
 		tick++;
 
-		ssize_t isok = read(mpu_fd, &record, sizeof(mpu6000_record_t) );
+		ssize_t isok = read(mpu_fd, &record, sizeof(mpu6000_record_t) * 20 );
+
+		if(isok < 0) continue;
 
 		DEBUG("MPU6000: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		int records_count =  isok / sizeof(mpu6000_record_t);
 
-		MadgwickAHRSupdateIMU(record.gyro.x - gyro_err_x, record.gyro.y - gyro_err_y, record.gyro.z - gyro_err_z, \
-				record.acc.x, record.acc.y, record.acc.z);
+		for(int i = 0; i < records_count; i++)
+			MadgwickAHRSupdateIMU(record[i].gyro.x - gyro_err_x, record[i].gyro.y - gyro_err_y, record[i].gyro.z - gyro_err_z, \
+					record[i].acc.x, record[i].acc.y, record[i].acc.z);
 
-		if(tick == 100) {
+		if(tick == 10) {
 			beta = 0.066;
 			tick = 0;
 
-			imu_msg.time_boot_ms = record.time.tv_sec * 1000 + record.time.tv_nsec / 1000000;
-			imu_msg.xacc = (int)(record.acc.x * 1000.0f);
-			imu_msg.yacc = (int)(record.acc.y * 1000.0f);
-			imu_msg.zacc = (int)(record.acc.z * 1000.0f);
-			imu_msg.xgyro = (int)((record.gyro.x - gyro_err_x) * 1000.0f * M_PI / 180);
-			imu_msg.ygyro = (int)((record.gyro.y - gyro_err_y) * 1000.0f * M_PI / 180);
-			imu_msg.zgyro = (int)((record.gyro.z - gyro_err_z) * 1000.0f * M_PI / 180);
+			int last = 0;
+
+			if(records_count > 0)
+				last = records_count - 1;
+
+			imu_msg.time_boot_ms = record[last].time.tv_sec * 1000 + record[last].time.tv_nsec / 1000000;
+			imu_msg.xacc = (int)(record[last].acc.x * 1000.0f);
+			imu_msg.yacc = (int)(record[last].acc.y * 1000.0f);
+			imu_msg.zacc = (int)(record[last].acc.z * 1000.0f);
+			imu_msg.xgyro = (int)((record[last].gyro.x - gyro_err_x) * 1000.0f * M_PI / 180);
+			imu_msg.ygyro = (int)((record[last].gyro.y - gyro_err_y) * 1000.0f * M_PI / 180);
+			imu_msg.zgyro = (int)((record[last].gyro.z - gyro_err_z) * 1000.0f * M_PI / 180);
 
 			mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
 			uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -143,12 +168,9 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 
 			isok = write(nrf_fd, buffer, len);
 			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-
-			clock_gettime(CLOCK_REALTIME, &last_drop_time);
 		}
 
 		DEBUG("_________________________________________________________________\n");
-		clock_nanosleep(CLOCK_REALTIME, 0, &pause, NULL);
 	}
 
 	return NULL;
@@ -263,7 +285,7 @@ int mavlink_test_main(int argc, char *argv[])
 	ioctl(nrf_fd, NRF24L01IOC_SETCRCMODE, (long unsigned int)&crcmode);
 
 	nrf24l01_state_t state = ST_STANDBY;
-	ioctl(nrf_fd, NRF24L01IOC_SETSTATE, &state);
+	ioctl(nrf_fd, NRF24L01IOC_SETSTATE, (long unsigned int)&state);
 
 
 
