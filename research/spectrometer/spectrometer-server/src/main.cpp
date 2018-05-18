@@ -71,7 +71,7 @@ int main(int argc, char ** argv)
 
 	std::string iface = "0.0.0.0";
 	int32_t port;
-	int32_t width = 1280, height = 1720;
+	int32_t width = 1280, height = 720;
 
 	po::options_description descr;
 	descr.add_options()
@@ -94,8 +94,6 @@ int main(int argc, char ** argv)
 
 	try
 	{
-
-
 		po::variables_map vm;
 		auto parsed = po::parse_command_line(argc, argv, descr);
 		po::store(parsed, vm, true);

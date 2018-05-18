@@ -32,10 +32,17 @@
 
 #include "stm8s_gpio.h"
 #include "stm8s_tim2.h"
+#include "stm8s_i2c.h"
+
+#define SLAVE_ADDRESS 0x13
+
 
 /* Private defines -----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+
+
+
 
 void blink(void) {
 
@@ -44,51 +51,34 @@ void blink(void) {
 	GPIO_Write(GPIOC, port);
 }
 
-void delay(long int cycles) {
-
-	for (long int i = 0; i < cycles; i++) {
-
-		volatile int x = 13;
-	}
-}
 
 void rotate(int angle) {
 
-	uint16_t time = (angle / 180.0) * 2000 + 2000;
+	uint16_t time = (angle / 180.0) * 3600 + 1600;
 	TIM2_SetCompare1(time);
 }
 
 void main(void) {
-	TIM2_TimeBaseInit(TIM2_PRESCALER_1, 40000);
+
+	CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
+
+	TIM2_TimeBaseInit(TIM2_PRESCALER_8, 39624);
 	TIM2_OC1Init(TIM2_OCMODE_PWM2, TIM2_OUTPUTSTATE_ENABLE, 4000, TIM2_OCPOLARITY_LOW);
 	TIM2_OC1PreloadConfig(ENABLE);
 
+	I2C_DeInit();
+	I2C_Init(100000, SLAVE_ADDRESS, I2C_DUTYCYCLE_2, I2C_ACK_CURR, I2C_ADDMODE_7BIT, 16);
+	I2C_ITConfig((I2C_IT_TypeDef)(I2C_IT_ERR | I2C_IT_EVT | I2C_IT_BUF), ENABLE);
+
+	/* Enable general interrupts */
+	enableInterrupts();
 
 	TIM2_Cmd(ENABLE);
 
 	GPIO_Init(GPIOC, GPIO_PIN_3, GPIO_MODE_OUT_OD_LOW_FAST);
-	//GPIO_Init(GPIOD, GPIO_PIN_4, GPIO_MODE_OUT_PP_HIGH_SLOW);
+	GPIO_Init(GPIOD, GPIO_PIN_4, GPIO_MODE_OUT_PP_HIGH_SLOW);
 
 	while(1) {
-
-		for(int i = 0; i < 3; i++) {
-
-			rotate(180);
-			delay(30000);
-			rotate(0);
-			delay(30000);
-
-		}
-
-		for(int i = 0; i < 3; i++) {
-
-					rotate(180);
-					delay(30000);
-					rotate(0);
-					delay(90000);
-
-		}
-
 	}
 }
 
