@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <nuttx/sensors/tsl2561.h>
 
 #ifdef CONFIG_BUILD_KERNEL
