@@ -24,6 +24,8 @@
 #define SEC2NSEC(SEC) (SEC * 1000000000)
 #define PERIOD_NSEC SEC2NSEC(1)
 
+#define DTORAD(DEG) ((DEG) * M_PI / 180.0f)
+
 #define MSG_BUF_SIZE 256
 
 static size_t _msg_carret = 0;
@@ -89,10 +91,19 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 
 
 	for(int i = 0; i < 10; i++){
-		read(mpu_fd, &record[0], sizeof(mpu6000_record_t) );
+		read(mpu_fd, record, sizeof(mpu6000_record_t) );
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
+	}
+
+	for(int i = 0; i < 10; i++){
+		read(mpu_fd, record, sizeof(mpu6000_record_t) );
 		gyro_err_x += record[0].gyro.x;
 		gyro_err_y += record[0].gyro.y;
 		gyro_err_z += record[0].gyro.z;
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
+		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
 		clock_nanosleep(CLOCK_REALTIME, 0, &period, NULL);
 	}
 
@@ -132,7 +143,9 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 		int records_count =  isok / sizeof(mpu6000_record_t);
 
 		for(int i = 0; i < records_count; i++)
-			MadgwickAHRSupdateIMU(record[i].gyro.x - gyro_err_x, record[i].gyro.y - gyro_err_y, record[i].gyro.z - gyro_err_z, \
+			MadgwickAHRSupdateIMU(DTORAD(record[i].gyro.x - gyro_err_x), \
+					DTORAD(record[i].gyro.y - gyro_err_y), \
+					DTORAD(record[i].gyro.z - gyro_err_z), \
 					record[i].acc.x, record[i].acc.y, record[i].acc.z);
 
 		if(tick == 10) {
