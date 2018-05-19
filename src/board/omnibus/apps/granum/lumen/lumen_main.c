@@ -18,18 +18,13 @@ int lumen_main(int argc, char *argv[])
       return 1;
   }
 
-  unsigned int lux;
+  uint16_t lux = 0;
   unsigned long arg;
-  int ioctl1, ioctl2;
-  int read1;
-  uint8_t* ret;
+  ioctl(fd, TSL2561_IOCTL_CMD_SETUP, arg);
   while(1) {
-	  read1 = read(fd, ret, 2);
-	  ioctl1 = ioctl(fd, TSL2561_IOCTL_CMD_MEASURE_CHANNEL_0, arg);
-	  ioctl2 = ioctl(fd, TSL2561_IOCTL_CMD_MEASURE_CHANNEL_1, arg);
-	  lux = ioctl(fd, TSL2561_IOCTL_CMD_GETLUX, arg);
+	  read(fd, &lux, 2);
 	  usleep(5000);
-	  printf("lux: %d % d %d\n", ioctl1, ioctl2, lux);
+	  printf("lux: %d\n", lux);
 	  sleep(2);
   }
   return 0;
