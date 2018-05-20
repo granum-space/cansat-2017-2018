@@ -8,6 +8,8 @@
 #include <time.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include <nuttx/config.h>
 
@@ -61,12 +63,13 @@ bool parseGPS(int fd, int cycles) {
 }
 
 struct fds {
-	int mpu, nrf;
+	int mpu, nrf, file;
 };
 
 pthread_addr_t mpu_thread(pthread_addr_t arg) {
 	int mpu_fd = ((struct fds*)arg)->mpu;
 	int nrf_fd = ((struct fds*)arg)->nrf;
+	int file_fd = ((struct fds*)arg)->file;
 
 	mpu6000_record_t record[20];
 	mavlink_scaled_imu_t imu_msg;
@@ -170,6 +173,10 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 
 			isok = write(nrf_fd, buffer, len);
 			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = write(file_fd, buffer, len);
+			DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = fsync(file_fd);
+			DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 
 			quat_msg.q1 = q0;
 			quat_msg.q2 = q1;
@@ -181,6 +188,10 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 
 			isok = write(nrf_fd, buffer, len);
 			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = write(file_fd, buffer, len);
+			DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = fsync(file_fd);
+			DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 		}
 
 		DEBUG("_________________________________________________________________\n");
@@ -210,6 +221,32 @@ int mavlink_test_main(int argc, char *argv[])
 	  return 1;
 	}
 
+	char filename[16];
+	int file_fd = -1;
+	struct stat stats;
+
+	for(int i = 0; i < 100; i++) {
+		snprintf(filename, 22, "/mnt/sd0/GRANUM%d.bin", i);
+		int ret = stat(filename, &stats);
+
+		if(ret == -1 && get_errno() == ENOENT) {
+			file_fd = open(filename, O_WRONLY | O_CREAT);
+			break;
+		}
+
+		if(i == 99) {
+			perror("There are 99 telemetry files already");
+			return 1;
+		}
+	}
+
+	if (file_fd < 0)
+	{
+	  perror("Can't open telemetry file");
+	  perror(filename);
+	  return 1;
+	}
+
 	int baro_fd = open("/dev/baro0", O_RDWR | O_NONBLOCK);
 	if (baro_fd < 0)
 	{
@@ -225,12 +262,12 @@ int mavlink_test_main(int argc, char *argv[])
 		return 1;
 	}
 
-	int fd = open("/dev/sonar0", O_RDONLY);
-	if (fd < 0)
+	/*int sonarfd = open("/dev/sonar0", O_RDONLY);
+	if (sonarfd < 0)
 	{
 	  perror("cant open sonar device");
 	  return 1;
-	}
+	}*/
 
 //Настройки MPU6000
 	ioctl(mpu_fd, MPU6000_CMD_SET_CONVERT, true);
@@ -327,7 +364,7 @@ int mavlink_test_main(int argc, char *argv[])
 	uint8_t buffer[1024];
 
 	pthread_t mpu_thread_id;
-	struct fds fds = {.mpu = mpu_fd, .nrf = nrf_fd};
+	struct fds fds = {.mpu = mpu_fd, .nrf = nrf_fd, .file = file_fd};
 	pthread_create(&mpu_thread_id, 0, mpu_thread, &fds);
 
 	while(1)
@@ -348,12 +385,16 @@ int mavlink_test_main(int argc, char *argv[])
 
 		isok = write(nrf_fd, buffer, len);
 		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = write(file_fd, buffer, len);
+		DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = fsync(file_fd);
+		DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 		DEBUG("_________________________________________________________________\n");
 
 //SONAR
-		read(fd, &sonar_msg.distance, 2);
+		/*read(sonarfd, &sonar_msg.distance, 2);
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
-		ioctl(fd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
+		ioctl(sonarfd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
 		sonar_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
 		mavlink_msg_sonar_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &sonar_msg);
 
@@ -361,7 +402,11 @@ int mavlink_test_main(int argc, char *argv[])
 
 		isok = write(nrf_fd, buffer, len);
 		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-		DEBUG("_________________________________________________________________\n");
+		isok = write(file_fd, buffer, len);
+		DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = fsync(file_fd);
+		DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
+		DEBUG("_________________________________________________________________\n");*/
 
 //GPS
 		if( parseGPS(gps_fd, 100) ) {
@@ -389,6 +434,10 @@ int mavlink_test_main(int argc, char *argv[])
 
 			isok = write(nrf_fd, buffer, len);
 			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = write(file_fd, buffer, len);
+			DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+			isok = fsync(file_fd);
+			DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 			DEBUG("_________________________________________________________________\n");
 		}
 
