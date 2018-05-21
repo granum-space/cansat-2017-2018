@@ -26,7 +26,7 @@ def update_zset(set_name, message):
     timestamp = int(round(time.time() * 1000))
 
     dmsg = message.to_dict()
-    if(dmsg['mavpackettype'] == 'SCALED_IMU'):
+    if dmsg['mavpackettype'] == 'SCALED_IMU':
         print(dmsg.get('time_boot_ms'))
     jmsg = json.dumps(dmsg)
     p.zadd(set_name, timestamp, jmsg)
@@ -68,6 +68,7 @@ def main(argv):
         elif isinstance(msg, MAVLink_attitude_quaternion_message):
             """ Сообщение с данными GPS """
             update_zset(ZSET_NAME_ATTITUDE, msg)
+
 
 if __name__ == "__main__":
     exit(main([]))

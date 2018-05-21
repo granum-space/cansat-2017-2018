@@ -207,6 +207,8 @@ int mavlink_test_main(int argc, char *argv[])
 #endif
 {
 	printf("This is MAVLink test app!\n");
+	sleep(3);
+	printf("End of sleep\n");
 	int mpu_fd = open("/dev/mpu0", O_RDONLY | O_NONBLOCK);
 	if (mpu_fd < 0)
 	{
