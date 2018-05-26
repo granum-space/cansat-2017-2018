@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_LSM_TEST
+	bool "LSM303C magnitometer test"
+	default n
+	---help---
+		Enable the LSM303C example
+
+# if GRANUM_LSM_TEST
+# endif # GRANUM_LSM_TEST
