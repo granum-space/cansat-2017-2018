@@ -131,12 +131,9 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 	sigset_t waitset = (sigset_t)0;
 	sigaddset(&waitset, SIGALRM);
 
-	int tick = 0;
 	ioctl(mpu_fd, MPU6000_CMD_FLUSHFIFO, 0);
 	while(true) {
 		sigsuspend(&waitset);
-
-		tick++;
 
 		ssize_t isok = read(mpu_fd, &record, sizeof(mpu6000_record_t) * 20 );
 
@@ -151,49 +148,45 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 					DTORAD(record[i].gyro.z - gyro_err_z), \
 					record[i].acc.x, record[i].acc.y, record[i].acc.z);
 
-		if(tick == 10) {
-			beta = 0.066;
-			tick = 0;
+		beta = 0.066;
 
-			int last = 0;
+		int last = 0;
 
-			if(records_count > 0)
-				last = records_count - 1;
+		if(records_count > 0)
+			last = records_count - 1;
 
-			imu_msg.time_boot_ms = record[last].time.tv_sec * 1000 + record[last].time.tv_nsec / 1000000;
-			imu_msg.xacc = (int)(record[last].acc.x * 1000.0f);
-			imu_msg.yacc = (int)(record[last].acc.y * 1000.0f);
-			imu_msg.zacc = (int)(record[last].acc.z * 1000.0f);
-			imu_msg.xgyro = (int)((record[last].gyro.x - gyro_err_x) * 1000.0f * M_PI / 180);
-			imu_msg.ygyro = (int)((record[last].gyro.y - gyro_err_y) * 1000.0f * M_PI / 180);
-			imu_msg.zgyro = (int)((record[last].gyro.z - gyro_err_z) * 1000.0f * M_PI / 180);
+		imu_msg.time_boot_ms = record[last].time.tv_sec * 1000 + record[last].time.tv_nsec / 1000000;
+		imu_msg.xacc = (int)(record[last].acc.x * 1000.0f);
+		imu_msg.yacc = (int)(record[last].acc.y * 1000.0f);
+		imu_msg.zacc = (int)(record[last].acc.z * 1000.0f);
+		imu_msg.xgyro = (int)((record[last].gyro.x - gyro_err_x) * 1000.0f * M_PI / 180);
+		imu_msg.ygyro = (int)((record[last].gyro.y - gyro_err_y) * 1000.0f * M_PI / 180);
+		imu_msg.zgyro = (int)((record[last].gyro.z - gyro_err_z) * 1000.0f * M_PI / 180);
 
-			mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
-			uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
+		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
+		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-			isok = write(nrf_fd, buffer, len);
-			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-			isok = write(file_fd, buffer, len);
-			DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-			isok = fsync(file_fd);
-			DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
+		isok = write(nrf_fd, buffer, len);
+		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = write(file_fd, buffer, len);
+		DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = fsync(file_fd);
+		DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 
-			quat_msg.q1 = q0;
-			quat_msg.q2 = q1;
-			quat_msg.q3 = q2;
-			quat_msg.q4 = q3;
+		quat_msg.q1 = q0;
+		quat_msg.q2 = q1;
+		quat_msg.q3 = q2;
+		quat_msg.q4 = q3;
 
-			mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
-			len = mavlink_msg_to_send_buffer(buffer, &msg);
+		mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-			isok = write(nrf_fd, buffer, len);
-			DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-			isok = write(file_fd, buffer, len);
-			DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
-			isok = fsync(file_fd);
-			DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
-		}
-
+		isok = write(nrf_fd, buffer, len);
+		DEBUG("NRF: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = write(file_fd, buffer, len);
+		DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
+		isok = fsync(file_fd);
+		DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
 		DEBUG("_________________________________________________________________\n");
 	}
 
@@ -304,7 +297,7 @@ int mavlink_test_main(int argc, char *argv[])
 	tmp = 0;
 	ioctl(nrf_fd, WLIOC_SETTXPOWER, (long unsigned int)&tmp);
 
-	nrf24l01_retrcfg_t retrcfg = {.delay = DELAY_4000us, .count = 15};
+	nrf24l01_retrcfg_t retrcfg = {.delay = DELAY_250us, .count = 4};
 	ioctl(nrf_fd, NRF24L01IOC_SETRETRCFG, (long unsigned int)&retrcfg);
 
 	nrf24l01_pipecfg_t pipe0 = {.en_aa = true,\
@@ -443,9 +436,7 @@ int mavlink_test_main(int argc, char *argv[])
 			DEBUG("_________________________________________________________________\n");
 		}
 
-
-
-		sleep(1);
+		usleep(100000);
 	}
 
  	return 0;

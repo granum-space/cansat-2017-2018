@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include <cstdlib>
@@ -15,7 +16,7 @@
 #include <boost/lexical_cast.hpp>
 
 //TODO вынести в что-нибудь общее
-#define NRF_CHANNEL		0x4C
+#define NRF_CHANNEL		0x59
 #define ADDR_ONBOARD	0xB0AFDB0AFD
 #define ADDR_GCS 		0x57A7104313
 
@@ -23,6 +24,7 @@ int main(int argc, char ** argv)
 {
 	std::string addr_net;
 	std::string port;
+	std::string file;
 
 	if(argc >= 2) addr_net = argv[1];
 	else addr_net = "localhost";
@@ -30,6 +32,10 @@ int main(int argc, char ** argv)
 	if(argc >= 3) port = argv[2];
 	else port = "23728";
 
+	if(argc >= 4) file = argv[3];
+	else file = "radio.bin";
+
+	using namespace std;
 	using namespace boost;
 	using udp = boost::asio::ip::udp;
 
@@ -43,8 +49,9 @@ int main(int argc, char ** argv)
 	radio1.setCRCLength(RF24_CRC_16);
 	radio1.enableDynamicPayloads();
 	radio1.enableAckPayload();
-	radio1.openWritingPipe(0xE7E7E7E7E7);
-	radio1.openReadingPipe(1, 0xE7E7E7E7E7);
+	radio1.openWritingPipe(0xAAAAAAAAAA);
+	radio1.openReadingPipe(0, 0xAAAAAAAAAA);
+	radio1.openReadingPipe(1, 0xBBBBBBBBBB);
 	radio1.startListening();
 
 	uint8_t rx_pipeno;
@@ -58,6 +65,14 @@ int main(int argc, char ** argv)
 		udp::endpoint target_endpoint = *resolver.resolve(query);
 		socket.open(target_endpoint.protocol());
 
+		time_t current_time = time(NULL);
+		struct tm * time_tm = localtime(&current_time);
+		char time_string[255];
+		strftime(time_string, 255, "%c", time_tm);
+		std::cout << std::string(time_string) << std::endl;
+		ofstream log(file.c_str(), ios::out | ios::binary);
+		//free(time_string);
+
 		radio1.printDetails();
 
 		while(true) {
@@ -67,6 +82,9 @@ int main(int argc, char ** argv)
 				std::cout << "Got packet! " << len << std::endl;
 
 	            socket.send_to(asio::buffer(buffer, len), target_endpoint);
+
+	            log.write((const char *)buffer, len);
+	            log.flush();
 			}
 		}
 	}
