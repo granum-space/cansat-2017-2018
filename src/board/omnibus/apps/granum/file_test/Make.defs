@@ -1,0 +1,3 @@
+ifeq ($(CONFIG_GRANUM_FILE_TEST),y)
+CONFIGURED_APPS += granum/file_test
+endif

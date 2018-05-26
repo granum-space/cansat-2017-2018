@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config GRANUM_GRANUM
+	bool "GRANUM flying onboard code"
+	default n
+	---help---
+		You SHOULD enable this
+
+# if GRANUM_GRANUM
+# endif # GRANUM_GRANUM

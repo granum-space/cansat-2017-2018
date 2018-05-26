@@ -64,12 +64,12 @@ bool parseGPS(int fd, int cycles) {
 }
 
 struct fds {
-	int mpu, lsm, nrf, file;
+	int mpu, mag, nrf, file;
 };
 
-pthread_addr_t mpu_thread(pthread_addr_t arg) {
+pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 	int mpu_fd = ((struct fds*)arg)->mpu;
-	int lsm_fd = ((struct fds*)arg)->lsm;
+	int mag_fd = ((struct fds*)arg)->mag;
 	int nrf_fd = ((struct fds*)arg)->nrf;
 	int file_fd = ((struct fds*)arg)->file;
 
@@ -139,7 +139,7 @@ pthread_addr_t mpu_thread(pthread_addr_t arg) {
 		DEBUG("MPU6000: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 		if(isok < 0) continue;
 
-		isok = read(lsm_fd, &record_lsm, sizeof(record_lsm));
+		isok = read(mag_fd, &record_lsm, sizeof(record_lsm));
 		DEBUG("LSM303C: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 		if(isok < 0) continue;
 
@@ -201,6 +201,8 @@ int mavlink_test_main(int argc, char *argv[])
 	printf("This is MAVLink test app!\n");
 	sleep(3);
 	printf("End of sleep\n");
+
+//Opening files/devices
 	int mpu_fd = open("/dev/mpu0", O_RDONLY | O_NONBLOCK);
 	if (mpu_fd < 0)
 	{
@@ -236,16 +238,16 @@ int mavlink_test_main(int argc, char *argv[])
 
 	if (file_fd < 0)
 	{
-	  perror("Can't open telemetry file");
-	  perror(filename);
-	  return 1;
+		perror("Can't open telemetry file");
+		perror(filename);
+		return 1;
 	}
 
 	int baro_fd = open("/dev/baro0", O_RDWR | O_NONBLOCK);
 	if (baro_fd < 0)
 	{
-	  perror("Can't open /dev/baro0");
-	  return 1;
+		perror("Can't open /dev/baro0");
+		return 1;
 	}
 
 	int gps_fd = open("/dev/ttyS1", O_RDONLY);
@@ -256,13 +258,23 @@ int mavlink_test_main(int argc, char *argv[])
 		return 1;
 	}
 
-	/*int sonarfd = open("/dev/sonar0", O_RDONLY);
-	if (sonarfd < 0)
+	int sonar_fd = open("/dev/sonar0", O_RDONLY);
+	if (sonar_fd < 0)
 	{
-	  perror("cant open sonar device");
-	  return 1;
-	}*/
+		perror("cant open sonar device");
+		return 1;
+	}
 
+	int mag_fd = open("/dev/mag0", O_RDONLY);
+	if (sonar_fd < 0)
+	{
+		perror("cant open magnitometer device");
+		return 1;
+	}
+
+
+
+//Settings
 //Настройки MPU6000
 	ioctl(mpu_fd, MPU6000_CMD_SET_CONVERT, true);
 	ioctl(mpu_fd, MPU6000_CMD_SET_FILTER, 6);
@@ -307,15 +319,7 @@ int mavlink_test_main(int argc, char *argv[])
 	pipe0.rx_addr[3] = 0xAA;
 	pipe0.rx_addr[4] = 0xAA;
 
-	nrf24l01_pipecfg_t pipeDummy = {.en_aa = true,\
-							  .payload_length = NRF24L01_DYN_LENGTH};
-	pipeDummy.rx_addr[0] = 0xAA;
-	pipeDummy.rx_addr[1] = 0xAA;
-	pipeDummy.rx_addr[2] = 0xAA;
-	pipeDummy.rx_addr[3] = 0xAA;
-	pipeDummy.rx_addr[4] = 0xAA;
-
-	nrf24l01_pipecfg_t * pipes[] = {&pipe0, &pipeDummy, &pipeDummy, &pipeDummy, &pipeDummy, &pipeDummy};
+	nrf24l01_pipecfg_t * pipes[] = {&pipe0, NULL, NULL, NULL, NULL NULL};
 
 	ioctl(nrf_fd, NRF24L01IOC_SETPIPESCFG, (long unsigned int)pipes);
 
@@ -333,6 +337,7 @@ int mavlink_test_main(int argc, char *argv[])
 
 
 
+//Messages instances
 	mavlink_scaled_pressure_t baro_msg;
 	bmp280_data_t result = {0, 0};
 
@@ -357,10 +362,15 @@ int mavlink_test_main(int argc, char *argv[])
 	mavlink_message_t msg;
 	uint8_t buffer[1024];
 
-	pthread_t mpu_thread_id;
-	struct fds fds = {.mpu = mpu_fd, .nrf = nrf_fd, .file = file_fd};
-	pthread_create(&mpu_thread_id, 0, mpu_thread, &fds);
 
+
+//Running madgwick thread
+	pthread_t madgwick_thread_id;
+	struct fds fds = {.mpu = mpu_fd, .mag = mag_fd, .nrf = nrf_fd, .file = file_fd};
+	pthread_create(&madgwick_thread_id, 0, madgwick_thread, &fds);
+
+
+//Main loop
 	while(1)
 	{
 //BMP280
@@ -386,9 +396,9 @@ int mavlink_test_main(int argc, char *argv[])
 		DEBUG("_________________________________________________________________\n");
 
 //SONAR
-		/*read(sonarfd, &sonar_msg.distance, 2);
+		read(sonar_fd, &sonar_msg.distance, 2);
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
-		ioctl(sonarfd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
+		ioctl(sonar_fd, GY_US42_IOCTL_CMD_MEASURE, (unsigned int)NULL);
 		sonar_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
 		mavlink_msg_sonar_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &sonar_msg);
 
@@ -400,7 +410,7 @@ int mavlink_test_main(int argc, char *argv[])
 		DEBUG("FILE: wrote %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 		isok = fsync(file_fd);
 		DEBUG("FILE: synced, error %d\n", isok >=0 ? 0 : -get_errno());
-		DEBUG("_________________________________________________________________\n");*/
+		DEBUG("_________________________________________________________________\n");
 
 //GPS
 		if( parseGPS(gps_fd, 100) ) {
