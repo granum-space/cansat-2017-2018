@@ -1,0 +1,8 @@
+width = 65
+height = 260
+x_upleft = 320
+y_upleft = 130
+x_upleft_sp = 0
+y_upleft_sp = 0
+capture_period_s = 1
+send_period_s = 2
