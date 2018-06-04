@@ -19,6 +19,9 @@ MAV_LISTEN_URL = 'udpin:0.0.0.0:11000'
 PLOT_DATA_UPDATE_PERIOD_MS = 500
 """ период обновления графиков (в мс) """
 
+MODEL_DATA_UPDATE_PERIOD_MS = 100
+""" период обновления модели (в мс) """
+
 IMU_PLOT_SCOPE_MS = timedelta(seconds=15)
 """ Диапазон отображения на графике последних данных MPU6000 """
 

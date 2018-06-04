@@ -3,6 +3,8 @@ var camera;
 var renderer;
 var group;
 
+
+
 function updateModel(glUpdateData) {
     $.getJSON(glUpdateData.dataUrl, function(data) {
         console.log("updating gl");
@@ -14,6 +16,13 @@ function updateModel(glUpdateData) {
         group.setRotationFromQuaternion(quaternion)
         render();
     });
+
+    glUpdateData.timeoutContext.setTimeout(
+        function() {
+             updateModel(modelUpdateData);
+        },
+        updatePeriodGLMs
+    );
 }
 
 function mccGLMain(container, modelUrl, dataUrl)
@@ -75,14 +84,15 @@ function mccGLMain(container, modelUrl, dataUrl)
     render();
 
     modelUpdateData = {
-        dataUrl: dataUrl
+        dataUrl: dataUrl,
+        timeoutContext: this
     };
 
-    setInterval(
+    setTimeout(
         function() {
              updateModel(modelUpdateData);
         },
-        100
+        updatePeriodGLMs
     );
 }
 

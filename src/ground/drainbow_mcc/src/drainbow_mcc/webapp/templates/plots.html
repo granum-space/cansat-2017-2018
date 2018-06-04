@@ -232,13 +232,14 @@ $(document).ready(function(){
     }];
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodGLMs = {{ config["MODEL_DATA_UPDATE_PERIOD_MS"] }}
     plotDataUrl = "{{ url_for(".plot_data") }}"
     mapDataUrl = "{{ url_for(".map_data") }}"
     glDataUrl = "{{ url_for(".gl_data") }}"
 
     mccChartsMain(charts, updatePeriodMs, plotDataUrl );
     mccMapMain(mapDataUrl);
-    mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='rocket.stl') }}", glDataUrl);
+    mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='cansat.stl') }}", glDataUrl);
 })
 
 </script>

@@ -23,6 +23,11 @@ function updateCoords(mapUpdateData) {
             mapUpdateData.latestUpdateTime = point.servertime;
         });
     });
+
+    mapUpdateData.timeoutContext.setTimeout(
+        function() { updateCoords(mapUpdateData); },
+        updatePeriodMs
+    );
 }
 
 function mccMapMain(mapDataRootUri) {
@@ -128,10 +133,11 @@ function mccMapMain(mapDataRootUri) {
         source: vector.getSource(),
         line: line,
         dataUrl: mapDataRootUri,
-        latestUpdateTime: -1
+        latestUpdateTime: -1,
+        timeoutContext: this
     };
 
-    setInterval(
+    setTimeout(
         function() { updateCoords(mapUpdateData); },
         updatePeriodMs
     );
