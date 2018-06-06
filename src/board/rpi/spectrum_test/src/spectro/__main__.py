@@ -26,7 +26,7 @@ def main(argv):
 
     #i = 0
     while True:
-        intensity = []
+        #intensity = []
         #img = camera.read()
         #cropped_img = get_cropped_img(img, setup_dict)
 

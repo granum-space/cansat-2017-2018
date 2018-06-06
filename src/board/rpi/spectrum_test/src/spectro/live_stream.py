@@ -2,16 +2,14 @@ import math
 import time 
 from pymavlink import mavutil 
 #import cv2
-'''
-import numpy as np
-camera = cv2.VideoCapture(0)
+#camera = cv2.VideoCapture(0)
 setup_dict = {}
 
 f = open('config.txt')
 for line in f:
     setup_dict[line.split()[0]] = int(line.split()[2])
 
-def get_cropped_img(img, setup_dict):
+'''def get_cropped_img(img, setup_dict):
     width = setup_dict['width']
     height = setup_dict['height']
     x_upleft = setup_dict['x_upleft']
@@ -47,8 +45,8 @@ def get_spectrum_from_img(cropped_img):
         
         i -= 1
 
-    return intensity
-'''
+    return intensity'''
+
 class MavSender:
     BYTES_PER_PACKET = 253
 
@@ -67,17 +65,17 @@ class MavSender:
             payload=self.BYTES_PER_PACKET,
             jpg_quality=100
         )
-        for i in range(0, packets-1):
+        for i in range(packets-1):
             self.mav.encapsulated_data_send(
                 seqnr=i, 
                 data=data[self.BYTES_PER_PACKET*i:self.BYTES_PER_PACKET*(i+1)], 
                 force_mavlink1=False
             )
         i = packets - 1
-        last_data = data[self.BYTES_PER_PACKET*(i+1):]
+        last_data = data[self.BYTES_PER_PACKET*(i):]
         if len(last_data) != 0:
             zero_count = self.BYTES_PER_PACKET - len(last_data)
-            last_data += bytes('\x00'*zero_count, encoding = 'utf-8')
+            last_data += bytes('\x00'*(zero_count), encoding = 'utf-8')
             self.mav.encapsulated_data_send(
                 seqnr=i, 
                 data=last_data, 

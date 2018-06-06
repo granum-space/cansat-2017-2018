@@ -9,3 +9,10 @@
 *.lib
 *.lk
 *.rst
+
+.DS_Store
+._.DS_Store
+._*
+
+
+__pycache__/
