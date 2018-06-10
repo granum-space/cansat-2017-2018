@@ -31,7 +31,7 @@
 uint8_t buffer[512];
 
 pthread_addr_t interfaces_thread(pthread_addr_t arg)  {
-	raspberry_fd = open("/dev/ttyS2", O_RDWR | O_NONBLOCK); //FIXME уточнить номер tty
+	printf("Interfaces thread\n");
 
 	while(true) {
 		int len = read(nrf_fd, buffer, 512);

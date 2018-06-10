@@ -33,7 +33,7 @@
 static size_t _msg_carret = 0;
 static char _msg_buffer[MSG_BUF_SIZE];
 
-bool parseGPS(int fd, int cycles) {
+static bool _parseGPS(int fd, int cycles) {
 	while(cycles--) {
 		if(!_msg_carret) {
 			read(fd, _msg_buffer, 1);
@@ -63,6 +63,8 @@ bool parseGPS(int fd, int cycles) {
 }
 
 pthread_addr_t sensors_thread(pthread_addr_t arg) {
+	printf("Sensors thread\n");
+
 //Opening files
 	int baro_fd = open("/dev/baro0", O_RDWR | O_NONBLOCK);
 	if (baro_fd < 0)
@@ -163,7 +165,7 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 		DEBUG("_________________________________________________________________\n");
 
 //GPS
-		if( parseGPS(gps_fd, 100) ) {
+		if( _parseGPS(gps_fd, 100) ) {
 			// накопили, теперь разбираем
 			if (!minmea_check(_msg_buffer, false))
 				continue;

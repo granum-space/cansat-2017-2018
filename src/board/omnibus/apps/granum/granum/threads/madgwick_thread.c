@@ -33,6 +33,8 @@
 #define DTORAD(DEG) ((DEG) * M_PI / 180.0f)
 
 pthread_addr_t madgwick_thread(pthread_addr_t arg) {
+	printf("Madgwick thread\n");
+
 	int mpu_fd = open("/dev/mpu0", O_RDONLY | O_NONBLOCK);
 	if (mpu_fd < 0)
 	{

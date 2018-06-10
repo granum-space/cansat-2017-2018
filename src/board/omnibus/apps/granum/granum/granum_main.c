@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -9,7 +10,6 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <sys/stat.h>
 
 #include <nuttx/config.h>
 
@@ -29,12 +29,12 @@
 #include "threads/sensors_thread.h"
 #include "threads/interfaces_thread.h"
 
-int nrf_fd, file_fd, fifo_fd;
+int nrf_fd, file_fd, fifo_fd, raspberry_fd;
 
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
 #else
-int mavlink_test_main(int argc, char *argv[])
+int granum_main(int argc, char *argv[])
 #endif
 {
 	printf("Starting main mission!\n");
@@ -74,6 +74,10 @@ int mavlink_test_main(int argc, char *argv[])
 		return 1;
 	}
 
+	raspberry_fd = open("/dev/ttyS2", O_RDWR | O_NONBLOCK); //FIXME уточнить номер tty
+
+
+
 //Настройки NRF24L01+
 	uint32_t tmp = 2489;
 	ioctl(nrf_fd, WLIOC_SETRADIOFREQ, (long unsigned int)&tmp);
@@ -98,7 +102,7 @@ int mavlink_test_main(int argc, char *argv[])
 	pipe0.rx_addr[3] = 0xAA;
 	pipe0.rx_addr[4] = 0xAA;
 
-	nrf24l01_pipecfg_t * pipes[] = {&pipe0, NULL, NULL, NULL, NULL NULL};
+	nrf24l01_pipecfg_t * pipes[] = {&pipe0, (nrf24l01_pipecfg_t *)NULL, (nrf24l01_pipecfg_t *)NULL, (nrf24l01_pipecfg_t *)NULL, (nrf24l01_pipecfg_t *)NULL, (nrf24l01_pipecfg_t *)NULL};
 
 	ioctl(nrf_fd, NRF24L01IOC_SETPIPESCFG, (long unsigned int)pipes);
 
@@ -146,7 +150,7 @@ int mavlink_test_main(int argc, char *argv[])
 	pthread_create(&sensors_thread_id, 0, sensors_thread, NULL);
 
 	pthread_t interfaces_thread_id;
-	pthread_create(&interfaces_thread_id, 0, sensors_thread, NULL);
+	pthread_create(&interfaces_thread_id, 0, interfaces_thread, NULL);
 
 	while(true){
 		//control flow here
