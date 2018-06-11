@@ -19,7 +19,7 @@ int sonar_main(int argc, char *argv[])
   }
 
   uint16_t val;
-  unsigned long arg;
+  unsigned long arg = 0;
   int rc1, rc2;
   int cmd = GY_US42_IOCTL_CMD_MEASURE;
   while(1) {
