@@ -3,7 +3,7 @@ import json
 import math
 from cgi import valid_boundary
 
-from flask import Blueprint, render_template, abort, jsonify, request, current_app
+from flask import Blueprint, render_template, abort, jsonify, request, current_app, send_file
 from jinja2 import TemplateNotFound
 
 from ...common import definitions as common_definitions
@@ -75,6 +75,65 @@ def gl_data():
     time = now()
 
     zsetname = common_definitions.ZSET_NAME_ATTITUDE
+    elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
+
+    data = []
+    for e in elems:
+        value, score = e
+        value = json.loads(value.decode("utf-8"))
+        data.append({
+            'data': [value['q2'], value['q3'], value['q4'], value['q1']],
+            'servertime': score
+        })
+
+    return jsonify(data)
+
+@plots.route("/spectrum_data")
+def spectrum_data():
+    # Достаем элементы
+    time = now()
+
+    zsetname = common_definitions.ZSET_NAME_SPECTRUM
+    elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
+
+    data = []
+    for e in elems:
+        value, score = e
+        value = json.loads(value.decode("utf-8"))
+        data.append({
+            'data': [value['q2'], value['q3'], value['q4'], value['q1']],
+            'servertime': score
+        })
+
+    return jsonify(data)
+
+
+prevTimestamp = 0
+currFile = 'static/staytuned.jpg'
+backFile = 'static/presentation.jpg'
+
+@plots.route("/spectrum_img")
+def spectrum_img():
+    global prevTimestamp
+    global currFile
+    global backFile
+
+    try:
+        timestamp = int(request.args.get("timestamp_ms"))
+    except Exception as e:
+        print(type(e))
+        timestamp = prevTimestamp + 1001
+
+    if(timestamp - prevTimestamp > 1000):
+        currFile, backFile = (backFile, currFile)
+        prevTimestamp = timestamp
+
+    return send_file(currFile, mimetype='image/jpeg')
+
+    # Достаем элементы
+    time = now()
+
+    zsetname = common_definitions.ZSET_NAME_SPECTRUM
     elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
 
     data = []

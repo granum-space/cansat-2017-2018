@@ -19,60 +19,71 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row h-100 center-block">
-        <div class="col-xl-12 text-center">
-            <h1>PLOTS</h1>
+    <div style="padding-bottom: 10px">
+        <div class="row h-100 center-block">
+            <div class="col-xl-12 text-center">
+                <h1>PLOTS</h1>
+            </div>
         </div>
-    </div>
 
-    <div class="row h-100 center-block">
-        <div class="col-xl-6 text-center">
-            <canvas id="acc-plot-canvas"></canvas>
+        <div class="row h-100 center-block">
+            <div class="col-xl-6 text-center">
+                <canvas id="acc-plot-canvas"></canvas>
+            </div>
+            <div class="col-xl-6 text-center">
+                <canvas id="gyro-plot-canvas"></canvas>
+            </div>
         </div>
-        <div class="col-xl-6 text-center">
-            <canvas id="gyro-plot-canvas"></canvas>
-        </div>
-    </div>
 
-    <div class="row h-100 center-block">
-        <div class="col-xl-6 text-center">
-            <canvas id="temperature-plot-canvas"></canvas>
+        <div class="row h-100 center-block">
+            <div class="col-xl-6 text-center">
+                <canvas id="temperature-plot-canvas"></canvas>
+            </div>
+            <div class="col-xl-6 text-center">
+                <canvas id="pressure-plot-canvas"></canvas>
+            </div>
         </div>
-        <div class="col-xl-6 text-center">
-            <canvas id="pressure-plot-canvas"></canvas>
-        </div>
-    </div>
 
-    <div class="row h-100 center-block">
-        <div class="col-xl-6 text-center">
-            <canvas id="distance-plot-canvas"></canvas>
+        <div class="row h-100 center-block">
+            <div class="col-xl-6 text-center">
+                <canvas id="distance-plot-canvas"></canvas>
+            </div>
+            <div class="col-xl-6 text-center">
+                <canvas id="luminosity-plot-canvas"></canvas>
+            </div>
         </div>
-        <div class="col-xl-6 text-center">
-            <canvas id="luminosity-plot-canvas"></canvas>
-        </div>
-    </div>
 
-    <div class="row h-100 center-block">
-        <div class="col-xl-6 text-center">
-            <div class="row h-100 center-block three-js-scene" id="orientation-model-scene"></div>
+        <div class="row h-100 center-block">
+            <div class="col-xl-6 text-center">
+                <img id="spectrum-img" src="{{ url_for(".spectrum_img") }}" alt="Stay tuned!"/>
+            </div>
+            <div class="col-xl-6 text-center">
+                <canvas id="spectrum-plot-canvas"></canvas>
+            </div>
         </div>
-        <div class="col-xl-6 text-center">
-            <div class="row h-100 center-block" id="map"></div>
+
+        <div class="row h-100 center-block">
+            <div class="col-xl-6 text-center">
+                <div class="row h-100 center-block three-js-scene" id="orientation-model-scene"></div>
+            </div>
+            <div class="col-xl-6 text-center">
+                <div class="row h-100 center-block" id="map"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-8"></div>
-        <div class="col-md-push-8">
-            <p>Made on Earth by Granum. 2018.</p>
-            <p>Vasilly.Prokopyev, IngaCansat, volospolina, Kirs67</p>
-            <p><a href="https://github.com/granum-space/">Team github</a></p>
+        <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-push-8">
+                <p>Made on Earth by Granum. 2018.</p>
+                <p>Vasilly.Prokopyev, IngaCansat, volospolina, Kirs67</p>
+                <p><a href="https://github.com/granum-space/">Team github</a></p>
+            </div>
         </div>
-    </div>
 
 
-    <div style="display: none;">
-        <div id="popup" title="Telemetry"></div>
+        <div style="display: none;">
+            <div id="popup" title="Telemetry"></div>
+        </div>
     </div>
 
 {% endblock %}
@@ -115,6 +126,11 @@
 {% endassets %}
 
 {% assets "mcc_gl" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+
+{% assets "mcc_spectrum" %}
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
 
@@ -233,13 +249,18 @@ $(document).ready(function(){
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     updatePeriodGLMs = {{ config["MODEL_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodSpectrumMs = {{ config["SPECTRUM_DATA_UPDATE_PERIOD_MS"] }}
+
     plotDataUrl = "{{ url_for(".plot_data") }}"
     mapDataUrl = "{{ url_for(".map_data") }}"
     glDataUrl = "{{ url_for(".gl_data") }}"
+    spectrumDataUrl = "{{ url_for(".spectrum_data") }}"
+    spectrumIMGUrl = "{{ url_for(".spectrum_img") }}"
 
     mccChartsMain(charts, updatePeriodMs, plotDataUrl );
     mccMapMain(mapDataUrl);
     mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='cansat.stl') }}", glDataUrl);
+    mccSpectrumMain(spectrumIMGUrl);
 })
 
 </script>

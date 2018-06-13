@@ -14,6 +14,7 @@ three_stl_loader = Bundle('three/STLLoader.js')
 mcc_charts = Bundle('js/mcc_charts.js')
 mcc_map = Bundle('js/mcc_map.js')
 mcc_gl = Bundle('js/mcc_gl.js')
+mcc_spectrum = Bundle('js/mcc_spectrum.js')
 
 
 assets = Environment()
@@ -30,3 +31,4 @@ assets.register('three_stl_loader', three_stl_loader)
 assets.register('mcc_charts', mcc_charts)
 assets.register('mcc_map', mcc_map)
 assets.register('mcc_gl', mcc_gl)
+assets.register('mcc_spectrum', mcc_spectrum)

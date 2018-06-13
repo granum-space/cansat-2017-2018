@@ -11,7 +11,7 @@ int sonar_main(int argc, char *argv[])
 #endif
 {
   printf("hello world, this is sonar app!\n");
-  int fd = open("/dev/range0", O_RDONLY);
+  int fd = open("/dev/sonar0", O_RDONLY);
   if (fd < 0)
   {
       perror("cant open sonar device");

@@ -12,3 +12,6 @@ ZSET_NAME_MAP = "granum:map"
 
 ZSET_NAME_ATTITUDE = "granum:attitude"
 """ Имя редисового zset, в котором хранятся сообщения ATTITUDE_QUATERNION """
+
+ZSET_NAME_SPECTRUM = "granum:spectrum"
+""" Имя редисового zset, в котором хранятся полученные спектры"""

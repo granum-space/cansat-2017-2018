@@ -2,7 +2,7 @@ var scene;
 var camera;
 var renderer;
 var group;
-
+var pivot;
 
 
 function updateModel(glUpdateData) {
@@ -13,7 +13,7 @@ function updateModel(glUpdateData) {
         quaternion.fromArray(data[0].data);
         quaternion.normalize();
 
-        group.setRotationFromQuaternion(quaternion)
+        pivot.setRotationFromQuaternion(quaternion)
         render();
     });
 
@@ -34,9 +34,7 @@ function mccGLMain(container, modelUrl, dataUrl)
     // Scene
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
-    camera.position.set(30, 30, 30);
-    var cameraTarget = new THREE.Vector3(0, 0, 0);
-    camera.lookAt(cameraTarget);
+    camera.position.set(30, 40, 30);
 
     // Plane
     var plane = new THREE.Mesh(
@@ -55,19 +53,30 @@ function mccGLMain(container, modelUrl, dataUrl)
     // addShadowedLight( 1, 1, 1, 0xffffff, 1.35 );
     // addShadowedLight( 0.5, 1, -1, 0xffaa00, 1 );
 
-    // Rocket
+    // CanSat model
     var loader = new THREE.STLLoader();
     group = new THREE.Object3D();
     loader.load(modelUrl, function (geometry) {
+        modelCenterHeight = 14; //TODO Find a correct way to determine it dynamically
+
+        var cameraTarget = new THREE.Vector3(0, modelCenterHeight, 0);
+        camera.lookAt(cameraTarget);
+
         console.log(geometry);
         var mat = new THREE.MeshLambertMaterial({color: 0x7777ff});
         group = new THREE.Mesh(geometry, mat);
-        group.translateY(15);
-        debugger;
-        group.rotation.x = -0.5 * Math.PI;
-        group.rotation.z = -0.5 * Math.PI;
-        group.scale.set(0.2, 0.2, 0.2);
-        scene.add(group);
+
+        group.translateY(-modelCenterHeight);
+
+        //group.rotation.x = -0.5 * Math.PI;
+        //group.rotation.z = -0.5 * Math.PI;
+        group.scale.set(0.13, 0.13, 0.13);
+
+        pivot = new THREE.Object3D(); //Creating pivot to rotate model around center
+        pivot.position.y = modelCenterHeight + 3;
+        pivot.add( group );
+
+        scene.add(pivot);
     });
 
 
@@ -98,6 +107,7 @@ function mccGLMain(container, modelUrl, dataUrl)
 
 
 function render(){
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
+    requestAnimationFrame(function() {
+        renderer.render(scene, camera);
+    });
 }
