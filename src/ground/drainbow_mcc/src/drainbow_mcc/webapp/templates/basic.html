@@ -14,16 +14,38 @@
     {% assets "main_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
+
+    <style>
+        .margin-bottom {
+            margin-bottom:20px;
+        }
+
+        #footer {
+            border-top-style:double;
+            border-width: 3px;
+        }
+    </style>
     {% endblock %}
 
 
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="/">DOUBLE RAINBOW MISSION CONTROL CENTRE</a>
+    <a class="navbar-brand" href="/">
+        <img src="/static/Drainbow.png" style="max-height:40px" href="/" alt="DOUBLE RAINBOW">
+        MISSION CONTROL CENTRE
+    </a>
 </nav>
-<div class="container min-height-100vh under-header">
+<div class="container-fluid min-height-100vh under-header">
     {% block content %}{% endblock %}
+
+    <div id="footer" class="row" style="text-align:right">
+        <div class="col">
+            <p>Made on Earth by Granum. 2018.</p>
+            <p>Vasilly.Prokopyev, IngaCansat, volospolina, Kirs67</p>
+            <p><a href="https://github.com/granum-space/">Team github</a></p>
+        </div>
+    </div>
 </div>
 
 

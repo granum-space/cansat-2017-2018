@@ -110,7 +110,7 @@ def spectrum_data():
 
 prevTimestamp = 0
 currFile = 'static/staytuned.jpg'
-backFile = 'static/presentation.jpg'
+backFile = 'static/Drainbow.png'
 
 @plots.route("/spectrum_img")
 def spectrum_img():
@@ -128,7 +128,7 @@ def spectrum_img():
         currFile, backFile = (backFile, currFile)
         prevTimestamp = timestamp
 
-    return send_file(currFile, mimetype='image/jpeg')
+    return send_file(currFile)
 
     # Достаем элементы
     time = now()
