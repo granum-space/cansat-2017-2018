@@ -20,5 +20,35 @@
             <field type="uint16_t" name="distance" units="hz">Measured distance (hz)</field>
         </message>
         
+        <message id="152" name="PICTURE_HEADER">
+            <description>Picture of spectrum</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint32_t" name="size" units="bytes">total data size in bytes (set on ACK only)</field>
+            <field type="uint16_t" name="width">Width of a matrix or image</field>
+            <field type="uint16_t" name="height">Height of a matrix or image</field>
+            <field type="uint16_t" name="packets">number of packets beeing sent (set on ACK only)</field>
+            <field type="uint8_t" name="payload" units="bytes">payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only)</field>
+            <field type="uint8_t" name="jpg_quality" units="%">JPEG quality out of [1,100]</field>
+        </message>
+        
+        <message id="153" name="INTENSITY_HEADER">
+            <description>Array of spectrum intensity</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint32_t" name="size" units="bytes">total data size in bytes (set on ACK only)</field>
+            <field type="uint16_t" name="packets">number of packets beeing sent (set on ACK only)</field>
+            <field type="uint8_t" name="payload" units="bytes">payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only)</field>
+        </message>
+        
+        <message id="154" name="INTENSITY_ENCAPSULATED_DATA">
+            <field type="uint16_t" name="seqnr">sequence number (starting with 0 on every transmission)</field>
+            <field type="uint16_t[126]" name="data">intensities</field>
+        </message>
+        
+        <message id="155" name="AM2320">
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="int8_t" name="temperature" units="C">Measured temperature</field>
+            <field type="uint8_t" name="humidity" units="%">Measured humidity</field>
+        </message>
+        
     </messages>
 </mavlink>
