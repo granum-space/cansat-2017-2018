@@ -11,8 +11,8 @@ class MavSender:
     # data[1] - humidity
 
     def send_data(self, data):
-        self.mav.am2320_header(
-            time_usec=int(time.time()*1000),
+        self.mav.am2320_send(
+            time_boot_ms=int(time.time()*1000),
             temperature=data[0],
             humidity=data[1]
         )

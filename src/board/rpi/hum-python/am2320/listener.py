@@ -23,8 +23,8 @@ def Listener:
 
 	def accept_message(self, msg)
 		if msg.get_type() == "AM2320":
-			self.temperature = msg.temperature
-			self.humidity = msg.humidity
+			self.temperature = float(msg.temperature*10.0)
+			self.humidity = float(msg.humidity*10.0)
 			self.time = msg.time_usec
 
 	def save_data(self):

@@ -1,4 +1,4 @@
-from . i2cdev import I2C
+from . import i2cdev
 from time import sleep
 
 addr = 0x5c
@@ -9,7 +9,7 @@ def unite_bytes(msb, lsb):
 class AM2320():
 	def __init__(self):
 		self.addr = addr
-		self.i2c = I2C(bus=1)
+		self.i2c = i2cdev.I2C(bus=1)
 
 	def open(self, addr):
 		self.i2c.open(bus=1)
@@ -43,22 +43,21 @@ class AM2320():
 		buf = self.i2c.read(nRead=8)
 
 		humidity = unite_bytes(buf[2], buf[3])
-		humidity = float(humidity/10.0)
 
 		temperature = unite_bytes(buf[4], buf[5])
-		temperature = float(temperature/10.0)
 
 		return temperature, humidity
 
-sensor = AM2320()
-sensor.open(addr=addr)
+if __name__ == "main":
+	sensor = AM2320()
+	sensor.open(addr=addr)
 
-while True:
-	t, h = sensor.read_data()
-	print("temp:", t, "C", "humidity:", h, "%")
-	sleep(0.5)
+	while True:
+		t, h = sensor.read_data()
+		print("temp:", t, "C", "humidity:", h, "%")
+		sleep(2)
 
-sensor.close()
+	sensor.close()
 
 
 
