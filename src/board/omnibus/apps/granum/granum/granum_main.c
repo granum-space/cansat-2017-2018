@@ -49,7 +49,7 @@ int granum_main(int argc, char *argv[])
 	  return 1;
 	}
 
-	char filename[16];
+	char filename[32];
 	struct stat stats;
 
 	for(int i = 0; i < 100; i++) {
