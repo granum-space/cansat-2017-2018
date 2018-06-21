@@ -1,7 +1,7 @@
 import pyaudio
 import socket
 
-FORMAT = pyaudio.paInt32 #FIXME завести общие настройки
+FORMAT = pyaudio.paInt32
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
