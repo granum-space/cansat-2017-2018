@@ -23,6 +23,7 @@
         <message id="152" name="PICTURE_HEADER">
             <description>Picture of spectrum</description>
             <field type="uint64_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint16_t" name="servo">Servo position in degrees</field>
             <field type="uint32_t" name="size" units="bytes">total data size in bytes (set on ACK only)</field>
             <field type="uint16_t" name="width">Width of a matrix or image</field>
             <field type="uint16_t" name="height">Height of a matrix or image</field>
@@ -34,6 +35,7 @@
         <message id="153" name="INTENSITY_HEADER">
             <description>Array of spectrum intensity</description>
             <field type="uint64_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint16_t" name="servo">Servo position in degrees</field>
             <field type="uint32_t" name="size" units="bytes">total data size in bytes (set on ACK only)</field>
             <field type="uint16_t" name="packets">number of packets beeing sent (set on ACK only)</field>
             <field type="uint8_t" name="payload" units="bytes">payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only)</field>
