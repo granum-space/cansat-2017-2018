@@ -1,15 +1,15 @@
 function updateSpectrum(spectrumUpdateData) {
-    $.getJSON(spectrumUpdateData.dataUrl + "&latestTimestamp=" + spectrumUpdateData.latestTimestamp, function(data) {
+    $.getJSON(spectrumUpdateData.dataUrl + "?latestIdentifier=" + spectrumUpdateData.latestIdentifier, function(data) {
         console.log("updating spectrum");
 
-        if(data.updated == 'true')
+        if(data.identifier != spectrumUpdateData.latestIdentifier)
         {
-            spectrumUpdateData.chart.data.datasets[0].data = data.spectrum;
+            spectrumUpdateData.chart.data.datasets[0].data = data.data;
             spectrumUpdateData.chart.update();
-            spectrumUpdateData.latestTimestamp = data.timestamp;
-s
-            document.getElementById("spectrum-img").src = spectrumUpdateData.IMGUrl + '?timestamp_ms=' +  data.timestamp;
+            spectrumUpdateData.latestIdentifier = data.identifier;
         }
+
+        document.getElementById("spectrum-img").src = spectrumUpdateData.IMGUrl + '?identifier=' +  spectrumUpdateData.latestIdentifier;
     });
 
     spectrumUpdateData.timeoutContext.setTimeout(
@@ -63,7 +63,7 @@ function mccSpectrumMain(spectrumDataUrl, spectrumIMGUrl)
         dataUrl: spectrumDataUrl,
         IMGUrl: spectrumIMGUrl,
         chart: spectrumChart,
-        latestTimestamp: -1,
+        latestIdentifier: -1,
         timeoutContext: this
     };
 

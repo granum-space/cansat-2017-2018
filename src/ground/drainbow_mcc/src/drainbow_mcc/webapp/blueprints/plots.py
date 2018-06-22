@@ -1,8 +1,5 @@
 import time
 import json
-import math
-from cgi import valid_boundary
-import os
 
 from flask import Blueprint, render_template, abort, jsonify, request, current_app, send_file
 from jinja2 import TemplateNotFound
@@ -45,6 +42,7 @@ def plot_data():
     elif chart_name == "distance":
         return _get_distance_data()
 
+
 @plots.route("/map_data")
 def map_data():
     # Достаем элементы
@@ -70,11 +68,10 @@ def map_data():
 
     return jsonify(data)
 
+
 @plots.route("/gl_data")
 def gl_data():
-    # Достаем элементы
-    time = now()
-
+    # Достаем последний элемент
     zsetname = common_definitions.ZSET_NAME_ATTITUDE
     elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
 
@@ -89,64 +86,33 @@ def gl_data():
 
     return jsonify(data)
 
+
 @plots.route("/spectrum_data")
 def spectrum_data():
-    # Достаем элементы
-    time = now()
-
+    # Достаем последний элемент
     zsetname = common_definitions.ZSET_NAME_SPECTRUM
-    elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
+    spectrum, score = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int) [0]
 
-    data = []
-    for e in elems:
-        value, score = e
-        value = json.loads(value.decode("utf-8"))
-        data.append({
-            'data': [value['q2'], value['q3'], value['q4'], value['q1']],
-            'servertime': score
+    spectrum = json.loads(spectrum.decode("utf-8"))
+
+    data = {'data': [], 'identifier': spectrum['identifier']}
+
+    for i, dot in enumerate(spectrum['data']):
+        data['data'].append({
+            'x': i,
+            'y': dot
         })
+
+    data['timestamp'] = score
 
     return jsonify(data)
 
-
-prevTimestamp = 0
-currFile = 'static/staytuned.jpg'
-backFile = 'static/Drainbow.png'
 
 @plots.route("/spectrum_img")
 def spectrum_img():
-    global prevTimestamp
-    global currFile
-    global backFile
+    identifier = int(request.args.get("identifier"))
 
-    try:
-        timestamp = int(request.args.get("timestamp_ms"))
-    except Exception as e:
-        print(type(e))
-        timestamp = prevTimestamp + 1001
-
-    if(timestamp - prevTimestamp > 1000):
-        currFile, backFile = (backFile, currFile)
-        prevTimestamp = timestamp
-
-    return send_file(currFile)
-
-    # Достаем элементы
-    time = now()
-
-    zsetname = common_definitions.ZSET_NAME_SPECTRUM
-    elems = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int)
-
-    data = []
-    for e in elems:
-        value, score = e
-        value = json.loads(value.decode("utf-8"))
-        data.append({
-            'data': [value['q2'], value['q3'], value['q4'], value['q1']],
-            'servertime': score
-        })
-
-    return jsonify(data)
+    return send_file('tmp/img/%d.png' % identifier)
 
 
 def _get_data_abstract(plotname, yvalue_name, time=now()):

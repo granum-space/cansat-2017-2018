@@ -1,4 +1,5 @@
 import csv
+import os
 
 from pymavlink import mavutil
 
@@ -18,8 +19,22 @@ class PictureSaver(PictureAcceptor):
         self.filename_template = filename_template
 
     def accept(self, data, identifier):
-        with open(self.filename_template % identifier, mode="wb") as output:
+        filename = self.filename_template % identifier
+
+        if not os.path.exists(os.path.dirname(filename)):
+            try:
+                os.makedirs(os.path.dirname(filename))
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+
+        if identifier != 0:
+            previous = self.filename_template % (identifier - 1)
+            os.remove(previous)
+
+        with open(filename, mode="wb") as output:
             output.write(bytes(data))
+            output.flush()
             print("picture saved")
 
 
@@ -99,9 +114,9 @@ class SpectrumListener:
 
 class SpectrumAggregator:
 
-    def __init__(self):
-        self.picture_listener = PictureListener("img.png")
-        self.spectrum_listener = SpectrumListener("graph.csv")
+    def __init__(self, spectrum_acceptor=SpectrumSaver, picture_acceptor=PictureSaver):
+        self.picture_listener = PictureListener(acceptor=picture_acceptor)
+        self.spectrum_listener = SpectrumListener(acceptor=spectrum_acceptor)
         self.picture_index_we_wait_for = 0
         self.spectrum_index_we_wait_for = 0
 
