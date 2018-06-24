@@ -37,14 +37,17 @@ pthread_addr_t interfaces_thread(pthread_addr_t arg)  {
 		int len = read(nrf_fd, buffer, 512);
 
 		if(len > 0) {
+			printf("Interfaces 1\n");
 			ROUTE(ROUTE_WAY_GROUND_COMMANDS, buffer, len)
 		}
 
 		len = read(raspberry_fd, buffer, len); //FIXME выяснить, блокируется ли
 
 		if(len > 0) {
+			printf("Interfaces 2\n");
 			ROUTE(ROUTE_WAY_TELEMETRY_RASPBERRY, buffer, len)//FIXME determine, if it is raspberry telemetry or ground commands
 		}
 
+		usleep(10000);
 	}
 }

@@ -1,7 +1,6 @@
 from flask import Blueprint, Response, current_app
 
 import socket
-import sys
 
 sound = Blueprint('sound', __name__, url_prefix="/sound")
 

@@ -146,6 +146,8 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
+		printf("Madgwick 1\n");
+
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 
 		quat_msg.q1 = q0;
@@ -155,6 +157,8 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 
 		mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+		printf("Madgwick 1\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 		DEBUG("_________________________________________________________________\n");

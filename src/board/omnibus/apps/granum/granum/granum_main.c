@@ -74,7 +74,7 @@ int granum_main(int argc, char *argv[])
 		return 1;
 	}
 
-	raspberry_fd = open("/dev/ttyS2", O_RDWR | O_NONBLOCK); //FIXME уточнить номер tty
+	raspberry_fd = open("/dev/ttyS1", O_RDWR | O_NONBLOCK); //FIXME уточнить номер tty
 
 
 
@@ -152,10 +152,14 @@ int granum_main(int argc, char *argv[])
 	pthread_t interfaces_thread_id;
 	pthread_create(&interfaces_thread_id, 0, interfaces_thread, NULL);
 
+	volatile struct sched_param param;
+	nxsched_getparam(0, &param);
+
 	while(true){
-		//control flow here
-		//reading fifo, parsing and executing fsm
+		sleep(1);
 	}
+
+	printf("Something not good happened, and so, we are leaving main thread, brothers!\n");
 
  	return 0;
 }

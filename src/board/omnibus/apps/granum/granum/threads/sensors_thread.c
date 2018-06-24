@@ -73,11 +73,11 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 		return 1;
 	}
 
-	int gps_fd = open("/dev/ttyS1", O_RDONLY);
+	int gps_fd = open("/dev/ttyS2", O_RDONLY);
 
 	if (gps_fd < 0)
 	{
-		perror("Can't open /dev/ttyS1");
+		perror("Can't open /dev/ttyS2");
 		return 1;
 	}
 
@@ -149,6 +149,8 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
+		printf("Sensor 1\n");
+
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 		DEBUG("_________________________________________________________________\n");
 
@@ -160,6 +162,8 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 		mavlink_msg_sonar_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &sonar_msg);
 
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+		printf("Sensor 2\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 		DEBUG("_________________________________________________________________\n");
@@ -187,6 +191,8 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 
 			mavlink_msg_hil_gps_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+			printf("Sensor 3\n");
 
 			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 			DEBUG("_________________________________________________________________\n");
