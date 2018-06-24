@@ -1,0 +1,14 @@
+[Unit]
+Description=My service
+After=network.target
+
+[Service]
+Environment="MAVLINK20=True"
+Environment="MAVLINK_DIALECT=granum"
+Environment="PYTHONPATH=/home/pi/testing/src/"
+ExecStart=/home/pi/testing/venv/bin/python -m spectro
+WorkingDirectory=/home/pi/testing/src/spectro
+User=pi
+
+[Install]
+WantedBy=multi-user.target
