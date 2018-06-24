@@ -1,0 +1,14 @@
+[Unit]
+Description = granum team double rainbow mcc mavlink component
+After = network.target redis-server.service
+
+[Service]
+Type=simple
+Environment="PYTHONPATH=/opt/drainbow_mcc/app"
+Environment="MAVLINK20=True"
+Environment="MAVLINK_DIALECT=granum"
+Environment="DRAINBOW_MCC_CONFIG=drainbow_mcc.configs.prod"
+ExecStart=/opt/drainbow_mcc/venv/bin/gunicorn -w 3 --threads 10 --bind 0.0.0.0:80 drainbow_mcc.wsgi
+
+[Install]
+WantedBy=multi-user.target
