@@ -1,5 +1,6 @@
 import cv2
 import csv
+import sys
 
 def get_spectrum_from_img(img):
     intensity = []
@@ -7,25 +8,26 @@ def get_spectrum_from_img(img):
     height = img.shape[0]
     width = img.shape[1]
 
-    i = height-1
-    while i >= 0:
-        j = width-1
+    i = 0
+    while i < height:
+        j = 0
         summ = 0
-        while j >= 0:
+        while j < height:
             summ += img[i, j]
-            j -= 1
+            j += 1
         intensity.append(summ)
-        i -= 1
+        i += 1
 
     return intensity
 
 OUTPUT_DIR = "graph.csv"
 
-img = cv2.imread("img.png")
-width = 40
-height = 250
+img = cv2.imread(sys.argv[1])
+
+y_upleft = 125
 x_upleft = 330
-y_upleft = 140
+height = 270
+width = 57
 
 y_min = int(y_upleft)
 y_max = int(y_upleft + height)
@@ -42,15 +44,15 @@ img = y_component
 array = get_spectrum_from_img(img)
 
 with open(OUTPUT_DIR, mode="w", newline="") as ostream:
-    fieldnames = ["nm", "intensity"]
+    fieldnames = ["intensity", "row"]
     writer = csv.DictWriter(ostream, fieldnames)
     writer.writeheader()
 
-    i = 0
+    i = 1
     for el in array:
-        nm = i
+        line = i
         intensity = el
-        row = {"nm": nm, "intensity": intensity}
+        row = {"intensity": intensity, "row": line}
 
         writer.writerow(row)
         i += 1
