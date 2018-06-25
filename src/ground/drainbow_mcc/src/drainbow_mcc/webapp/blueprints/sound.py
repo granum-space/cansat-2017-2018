@@ -22,17 +22,17 @@ def sound_func():
         return '{}:{}'.format(a, p)
 
     def generate(root_path, tcp_port):
-        client = _get_client_info()
-
-        headername = root_path + '/static/header.wav'
-        with open(headername, "rb") as header:
-            yield header.read(44) #Sending only a header
-
-        logname = root_path + '/tmp/sound_log'
-        log = open(logname, 'a')
-        log.write(time.asctime() + ' REQ ' + client + '\n')
-
         try:
+            client = _get_client_info()
+
+            headername = root_path + '/static/header.wav'
+            with open(headername, "rb") as header:
+                yield header.read(44) #Sending only a header
+
+            logname = root_path + '/tmp/sound_log'
+            log = open(logname, 'a')
+            log.write(time.asctime() + ' REQ ' + client + '\n')
+
             provider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
             provider.connect(('localhost', tcp_port))
@@ -50,10 +50,15 @@ def sound_func():
 
         finally:
             log = open(logname, 'a')
+
+            try:
+                provider.shutdown(socket.SHUT_RDWR)
+                provider.close()
+            except BaseException as e:
+                log.write(str(e) + '\n')
+
             log.write(time.asctime() + ' CLS ' + client + '\n')
             log.close()
-
-            provider.close()
 
 
     return Response(generate(root_path, tcp_port), mimetype="audio/x-wav")
