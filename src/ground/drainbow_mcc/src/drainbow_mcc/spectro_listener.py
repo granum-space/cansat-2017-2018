@@ -22,12 +22,16 @@ class PictureListener():
     def __init__(self, *args, **kwargs):
         pass
 
-    def accept_data(self, data, seqnr, time):
+    def accept_data(self, data, seqnr, config):
         self.WHOLE_DATA += data
         if seqnr == self.DATA_PACKETS_COUNT - 1: #if last package
+            number = config[0]
+            time = config[1]
+            servo = config[2]
+            y_upleft = config[3]
             self.WHOLE_DATA = self.WHOLE_DATA[:self.TOTAL_SIZE]
             self.number_of_whole_packages += 1
-            self.OUTPUT_DIR = "img%d.png"%time
+            self.OUTPUT_DIR = "img%d_%d_%d_%d.png"%number%time%servo%y_upleft
             f = open(self.OUTPUT_DIR, mode="wb")
             f.write(bytes(self.WHOLE_DATA))
             self.state = "IDLE"
@@ -60,7 +64,7 @@ class SpectrumAggregator:
         self.picture_listener = PictureListener()
         self.picture_index_we_wait_for = 0
 
-    def accept_message(self, msg, time):
+    def accept_message(self, msg, config):
         if self.picture_listener.state == "IDLE": #ждем заголовка
             if msg.get_type() == "PICTURE_HEADER": #получили заголовок картинки
                 self.picture_listener.WHOLE_DATA = []
@@ -77,7 +81,7 @@ class SpectrumAggregator:
                 elif seqnr > self.picture_index_we_wait_for:
                     self.picture_listener.state = "IDLE"
                 elif seqnr == self.picture_index_we_wait_for:
-                    self.picture_listener.accept_data(data=msg.data, seqnr=seqnr, time=time)
+                    self.picture_listener.accept_data(data=msg.data, seqnr=seqnr, config=config)
                     self.picture_index_we_wait_for += 1
 
         if self.spectrum_listener.state == "IDLE": #ждем заголовка

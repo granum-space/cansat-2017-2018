@@ -54,12 +54,16 @@ def main(argv):
                 processors.update({msg_id: writer})
 
         if msg_id == 152 or msg_id == 131:
+            config = []
             if msg_id == 152:
-                time = msg.time_boot_ms
-            spectrumAggregator.accept_message(msg=msg, time=time) # ищем картинки и сохраняем
+                config.append(msg.number)
+                config.append(msg.time_boot_ms)
+                config.append(msg.servo)
+                config.append(msg.y_upleft_crop)
+            spectrumAggregator.accept_message(msg=msg, config=config) # ищем картинки и сохраняем
 
         if msg_id == 153 or msg_id == 154: # INTENSITY_HEADER or INTENSITY_ENCAPSULATED_DATA
-            spectrumAggregator.accept_message(msg, time)
+            spectrumAggregator.accept_message(msg=msg, config=config)
             if msg_id == 153:
                 time_boot_ms = msg.time_boot_ms
                 servo = msg.servo
