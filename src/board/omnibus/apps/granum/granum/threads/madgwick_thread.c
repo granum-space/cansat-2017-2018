@@ -125,10 +125,10 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		if(isok < 0) continue;
 
 		MadgwickAHRSupdate(DTORAD(record_mpu.gyro.x - gyro_err_x), \
-				DTORAD(record_mpu.gyro.x - gyro_err_y), \
+				DTORAD(record_mpu.gyro.y - gyro_err_y), \
 				DTORAD(record_mpu.gyro.z - gyro_err_z), \
 				record_mpu.acc.x, record_mpu.acc.y, record_mpu.acc.z, \
-				record_lsm.field.x, record_lsm.field.y, record_lsm.field.z); //Fixme remap according to real attitude
+				-record_lsm.field.y, -record_lsm.field.x, -record_lsm.field.z); //Remapped according to real sensors attitude
 
 		beta = 0.066;
 
@@ -137,8 +137,8 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		imu_msg.yacc = (int)(record_mpu.acc.y * 1000.0f);
 		imu_msg.zacc = (int)(record_mpu.acc.z * 1000.0f);
 		imu_msg.xgyro = (int)(DTORAD((record_mpu.gyro.x - gyro_err_x)) * 1000.0f); //convert to mDPS
-		imu_msg.ygyro = (int)(DTORAD((record_mpu.gyro.y - gyro_err_x)) * 1000.0f);
-		imu_msg.zgyro = (int)(DTORAD((record_mpu.gyro.z - gyro_err_x)) * 1000.0f);
+		imu_msg.ygyro = (int)(DTORAD((record_mpu.gyro.y - gyro_err_y)) * 1000.0f);
+		imu_msg.zgyro = (int)(DTORAD((record_mpu.gyro.z - gyro_err_z)) * 1000.0f);
 		imu_msg.xmag = (int)(record_lsm.field.x / 10.0f); //convert to mT
 		imu_msg.ymag = (int)(record_lsm.field.y / 10.0f);
 		imu_msg.zmag = (int)(record_lsm.field.z / 10.0f);
@@ -146,7 +146,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		printf("Madgwick 1\n");
+		DEBUG("Madgwick 1\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 
@@ -158,10 +158,9 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		printf("Madgwick 1\n");
+		DEBUG("Madgwick 2\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
-		DEBUG("_________________________________________________________________\n");
 	}
 
 	return NULL;

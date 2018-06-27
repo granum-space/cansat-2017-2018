@@ -127,7 +127,7 @@ int granum_main(int argc, char *argv[])
 		return 1;
 	}
 
-	fifo_fd = open("/dev/cf_fifo", O_RDWR);
+	fifo_fd = open("/dev/cf_fifo", O_RDWR | O_NONBLOCK);
 	if (fifo_fd < 0)
 	{
 		perror("Can't open telemetry file");
@@ -151,9 +151,6 @@ int granum_main(int argc, char *argv[])
 
 	pthread_t interfaces_thread_id;
 	pthread_create(&interfaces_thread_id, 0, interfaces_thread, NULL);
-
-	volatile struct sched_param param;
-	nxsched_getparam(0, &param);
 
 	while(true){
 		sleep(1);

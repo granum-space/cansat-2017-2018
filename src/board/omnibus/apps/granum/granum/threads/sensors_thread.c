@@ -146,13 +146,11 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 		baro_msg.temperature = result.temperature * 100.0;		//temperature in 0.01 degC
 
 		mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &baro_msg);
-
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		printf("Sensor 1\n");
+		DEBUG("Sensor 1\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
-		DEBUG("_________________________________________________________________\n");
 
 //SONAR
 		read(sonar_fd, &sonar_msg.distance, 2);
@@ -163,10 +161,9 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		printf("Sensor 2\n");
+		DEBUG("Sensor 2\n");
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
-		DEBUG("_________________________________________________________________\n");
 
 //GPS
 		if( _parseGPS(gps_fd, 100) ) {
@@ -192,10 +189,9 @@ pthread_addr_t sensors_thread(pthread_addr_t arg) {
 			mavlink_msg_hil_gps_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-			printf("Sensor 3\n");
+			DEBUG("Sensor 3\n");
 
 			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
-			DEBUG("_________________________________________________________________\n");
 		}
 
 		usleep(100000);
