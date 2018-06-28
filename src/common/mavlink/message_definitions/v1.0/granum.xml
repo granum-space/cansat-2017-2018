@@ -50,6 +50,16 @@
             <field type="int16_t" name="temperature" units="C">Measured temperature</field>
             <field type="uint16_t" name="humidity" units="%">Measured humidity</field>
         </message>
+
+        <message id="156" name="LUMINOSITY">
+            <field type="uint64_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint16_t" name="luminosity" units="lux">Measured luminosity</field>
+        </message>
+
+        <message id="157" name="GRANUM_MESSAGE">
+            <field type="uint64_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="int8_t[251]" name="message">Message text </field>
+        </message>
         
     </messages>
 </mavlink>
