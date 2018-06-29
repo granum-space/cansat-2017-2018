@@ -1,0 +1,12 @@
+[Unit]
+Description=My service
+
+[Service]
+Type=simple
+ExecStart=/home/pi/config_camera.sh   
+User=pi
+WorkingDirectory=/home/pi/            
+
+[Install]
+WantedBy=multi-user.target
+
