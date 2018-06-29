@@ -5,10 +5,15 @@ After=network.target
 [Service]
 Environment="MAVLINK20=True"
 Environment="MAVLINK_DIALECT=granum"
-Environment="PYTHONPATH=/home/pi/testing/src/"
-ExecStart=/home/pi/testing/venv/bin/python -m spectro
-WorkingDirectory=/home/pi/testing/src/spectro
+Environment="PYTHONPATH=/opt/launch/src/"
+
+ExecStart=/opt/launch/venv/bin/python -m spectro_module
+
+WorkingDirectory=/opt/launch/src/spectro_module
+
 User=pi
+
+RestartSec=2
 
 [Install]
 WantedBy=multi-user.target

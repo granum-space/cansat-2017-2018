@@ -3,9 +3,9 @@ Description=My service
 
 [Service]
 Type=simple
-ExecStart=/home/pi/config_camera.sh   
+ExecStart=/opt/launch/config_camera.sh   
 User=pi
-WorkingDirectory=/home/pi/            
+WorkingDirectory=/opt/launch/            
 
 [Install]
 WantedBy=multi-user.target

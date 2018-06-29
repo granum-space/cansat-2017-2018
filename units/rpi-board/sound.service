@@ -1,0 +1,18 @@
+[Unit]
+Description=My service
+After=network.target
+
+Environment="PYTHONPATH=/opt/launch/src/"
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python -m sound_module
+
+WorkingDirectory=/opt/launch/src/
+
+User=pi
+
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

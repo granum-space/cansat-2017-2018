@@ -5,10 +5,15 @@ After=network.target
 [Service]
 Environment="MAVLINK20=True"
 Environment="MAVLINK_DIALECT=granum"
-Environment="PYTHONPATH=/home/pi/testing/src/"
-ExecStart=/home/pi/testing/venv/bin/python -m am2320 
-WorkingDirectory=/home/pi/testing/src/am2320 
+Environment="PYTHONPATH=/opt/launch/src/"
+
+ExecStart=/opt/launch/venv/bin/python -m am2320_module
+ 
+WorkingDirectory=/opt/launch/src/am2320_module
+ 
 User=pi
+
+RestartSec=2
 
 [Install]
 WantedBy=multi-user.target
