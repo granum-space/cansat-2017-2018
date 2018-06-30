@@ -34,6 +34,9 @@ def update_zset(set_name, message):
 
     dmsg = message.to_dict()
     jmsg = json.dumps(dmsg)
+
+    if(dmsg['mavpackettype'] == 'SONAR'): print(dmsg['time_boot_ms'])
+
     p.zadd(set_name, timestamp, jmsg)
     p.execute()
 

@@ -41,7 +41,7 @@ typedef enum {
 } gr_system_t;
 
 typedef enum {
-	GR_COMPONENT_OMNIBUS_MAIN = 0,
+	GR_COMPONENT_OMNIBUS_MAIN = 1,
 	GR_COMPONENT_OMNIBUS_MADJWICK,
 } gr_component_omnibus_t;
 

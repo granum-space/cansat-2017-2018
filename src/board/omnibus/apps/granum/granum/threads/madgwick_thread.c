@@ -29,8 +29,10 @@
 
 #define SEC2NSEC(SEC) (SEC * 1000000000)
 #define PERIOD_NSEC SEC2NSEC(1)
+#define GAUSSTOT(GAUSS) (GAUSS / 10000)
 
-#define DTORAD(DEG) ((DEG) * M_PI / 180.0f)
+#define DTORAD(DEG)	((DEG) * M_PI / 180.0f)
+#define GTOMSS(G)	(G * 9.80665)
 
 pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 	printf("Madgwick thread\n");
@@ -66,7 +68,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 	uint8_t buffer[1024];
 
 	struct timespec period = {
-			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.09)
+			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.01)
 	};
 
 	float gyro_err_x = 0;
@@ -125,12 +127,16 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		if(isok < 0) continue;
 
 		MadgwickAHRSupdate(DTORAD(record_mpu.gyro.x - gyro_err_x), \
-				DTORAD(record_mpu.gyro.y - gyro_err_y), \
 				DTORAD(record_mpu.gyro.z - gyro_err_z), \
-				record_mpu.acc.x, record_mpu.acc.y, record_mpu.acc.z, \
-				-record_lsm.field.y, -record_lsm.field.x, -record_lsm.field.z); //Remapped according to real sensors attitude
+				DTORAD(record_mpu.gyro.y - gyro_err_y), \
+				GTOMSS(record_mpu.acc.x), GTOMSS(record_mpu.acc.z), GTOMSS(record_mpu.acc.y), \
+				GAUSSTOT(-record_lsm.field.y), GAUSSTOT(-record_lsm.field.z), GAUSSTOT(-record_lsm.field.x) ); //Remapped according to real sensors attitude
 
-		beta = 0.066;
+		static int repetitions = 0;
+		if(repetitions < 100) {
+			repetitions++;
+			if(repetitions == 100) beta = 0.041;
+		}
 
 		imu_msg.time_boot_ms = record_mpu.time.tv_sec * 1000 + record_mpu.time.tv_nsec / 1000000;
 		imu_msg.xacc = (int)(record_mpu.acc.x * 1000.0f); //convert to mG
@@ -143,7 +149,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		imu_msg.ymag = (int)(record_lsm.field.y / 10.0f);
 		imu_msg.zmag = (int)(record_lsm.field.z / 10.0f);
 
-		mavlink_msg_scaled_imu_encode(0, MAV_COMP_ID_IMU, &msg, &imu_msg);
+		mavlink_msg_scaled_imu_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &imu_msg);
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		DEBUG("Madgwick 1\n");
@@ -155,7 +161,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 		quat_msg.q3 = q2;
 		quat_msg.q4 = q3;
 
-		mavlink_msg_attitude_quaternion_encode(0, MAV_COMP_ID_IMU, &msg, &quat_msg);
+		mavlink_msg_attitude_quaternion_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &quat_msg);
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		DEBUG("Madgwick 2\n");

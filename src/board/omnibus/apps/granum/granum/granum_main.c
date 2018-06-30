@@ -10,6 +10,13 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
+
+#include <sys/boardctl.h>
+
+#define GRANUM_FIRE_CHUTE_DEPLOY	BOARDIOC_USER+1
+#define GRANUM_FIRE_CHUTE_CUT		BOARDIOC_USER+2
+#define GRANUM_FIRE_LEGS_DEPLOY		BOARDIOC_USER+3//not great...
 
 #include <nuttx/config.h>
 
@@ -33,7 +40,12 @@
 
 //Global variables
 int nrf_fd, file_fd, fifo_fd, raspberry_fd;
+struct timespec current_time;
+
 gr_state_t gr_state = GR_STATE_BOOTING;
+
+double ground_pressure;
+time_t chute_open_time;
 
 //Settings
 #define GR_CONFIG_LUX_THRESHOLD 400
@@ -78,29 +90,28 @@ static void _translate_state(bool open_legs) {
 	switch(gr_state) {
 	case GR_STATE_BOOTING:
 	case GR_STATE_READY:
-		gr_state++;
-		break;
-
 	case GR_STATE_LOADED:
-		//FIXME starting spectro observation
 		gr_state++;
 		break;
 
 	case GR_STATE_FREE_FALL:
-		//FIXME open chute
+		boardctl(GRANUM_FIRE_CHUTE_DEPLOY, NULL);
+
+		chute_open_time = current_time.tv_sec;
+
 		gr_state++;
 		break;
 
 	case GR_STATE_AWAITING_CHUTE:
 		if(open_legs) {
-			//FIXME open legs
+			boardctl(GRANUM_FIRE_LEGS_DEPLOY, NULL);
 		}
 
 		gr_state++;
 		break;
 
 	case GR_STATE_PRE_LANDING:
-		//FIXME detach chute
+		boardctl(GRANUM_FIRE_CHUTE_CUT, NULL);
 		gr_state++;
 		break;
 
@@ -108,6 +119,10 @@ static void _translate_state(bool open_legs) {
 		break; //May be we should report?
 
 	}
+}
+
+static double _alt(double pressure, double reference_pressure) {
+	return log(pressure / reference_pressure) / -0.000118558460224151; //Constant precomputed from Wikipedia
 }
 
 #ifdef CONFIG_BUILD_KERNEL
@@ -215,11 +230,6 @@ int granum_main(int argc, char *argv[])
 	}
 
 
-//Messages instances
-	mavlink_message_t msg;
-	uint8_t buffer[1024];
-
-
 
 //Running threads
 	pthread_t madgwick_thread_id;
@@ -279,7 +289,7 @@ int granum_main(int argc, char *argv[])
 
 //Messages and records
 	mavlink_scaled_pressure_t baro_msg;
-	bmp280_data_t result = {0, 0};
+	bmp280_data_t bmp280_result = {0, 0};
 
 	mavlink_sonar_t sonar_msg;
 	mavlink_luminosity_t luminosity_msg;
@@ -305,42 +315,86 @@ int granum_main(int argc, char *argv[])
 	mavlink_message_t msg;
 	uint8_t buffer[1024];
 
-	gr_state++;
+	_translate_state(NULL);
 
-	struct timespec current_time;
+	read(baro_fd, &bmp280_result, sizeof(bmp280_result) );
+	ground_pressure = bmp280_result.pressure;
 
 	while(true){
+		if(gr_state == GR_STATE_READY) {
+			mavlink_status_t stat;
+
+			int len = read(nrf_fd, buffer, 255);
+
+			for(int i = 0; i < len; i++) {
+				if( mavlink_frame_char(0, buffer[i], &msg, &stat) == MAVLINK_FRAMING_OK) {
+					if(msg.msgid == MAVLINK_MSG_ID_GRANUM_COMMAND) {
+						_translate_state(NULL);
+						break;
+					}
+				}
+			}
+		}
+
+
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
 		uint64_t time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
+
+		if(gr_state == GR_STATE_AWAITING_CHUTE && ( current_time.tv_sec - chute_open_time > 30 ))
+			_translate_state(false);
 
 //TSL2561
 		read(tsl_fd, &luminosity_msg.luminosity, 2);
 		luminosity_msg.time_boot_ms = time_boot_ms;
 		mavlink_msg_luminosity_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &sonar_msg);
 
-		int len = mavlink_msg_to_send_buffer(buffer, &msg);
+		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 
 		if(gr_state == GR_STATE_LOADED && luminosity_msg.luminosity >= GR_CONFIG_LUX_THRESHOLD) _translate_state(NULL);
 
 //BMP280
-		ssize_t isok = read(baro_fd, &result, sizeof(result) );
+		ssize_t isok = read(baro_fd, &bmp280_result, sizeof(bmp280_result) );
 		DEBUG("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
 		baro_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
-		baro_msg.press_abs = result.pressure / 100.0;				//pressure in hPa
-		baro_msg.temperature = result.temperature * 100.0;		//temperature in 0.01 degC
+		baro_msg.press_abs = bmp280_result.pressure / 100.0;				//pressure in hPa
+		baro_msg.temperature = bmp280_result.temperature * 100.0;		//temperature in 0.01 degC
 
-		mavlink_msg_scaled_pressure_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &baro_msg);
-		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
+		mavlink_msg_scaled_pressure_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &baro_msg);
+		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 
-		if(gr_state == GR_STATE_FREE_FALL || gr_state == GR_STATE_AWAITING_CHUTE) {
-			//TODO logic
+		if(gr_state == GR_STATE_FREE_FALL && (_alt(bmp280_result.pressure, ground_pressure) <= 250.0) )
+			_translate_state(NULL);
+
+		if(gr_state == GR_STATE_AWAITING_CHUTE && (_alt(bmp280_result.pressure, ground_pressure) <= 50.0) )
+			_translate_state(false);
+
+		if(gr_state == GR_STATE_AWAITING_CHUTE) {
+			static double prev_height = 0;
+			static double prev_time = 0;
+			static uint8_t repetitions = 0;
+
+			double current_height = _alt(bmp280_result.pressure, ground_pressure);
+			double current_time_dbl = time_boot_ms / 1000.0;
+
+			if(prev_height != 0) {
+				double v = (current_height - prev_height) / (current_time_dbl - prev_time);
+
+				if(fabs(v) < 10.0) repetitions++;
+				else repetitions = 0;
+
+				if(repetitions == 10) _translate_state(true);
+			}
+
+			prev_height = current_height;
+			prev_time = current_time_dbl;
 		}
+
 
 //SONAR
 		read(sonar_fd, &sonar_msg.distance, 2);
@@ -355,21 +409,38 @@ int granum_main(int argc, char *argv[])
 		if(gr_state == GR_STATE_LOADED && sonar_msg.distance > GR_CONFIG_DISTANCE_FREE_FALL_THRESHOLD) _translate_state(NULL);
 
 		if(gr_state == GR_STATE_PRE_LANDING) {
+			if(sonar_msg.distance < 12) {
+				static double prev_height;
+				static double prev_time;
 
+				double current_height = _alt(bmp280_result.pressure, ground_pressure);
+				double current_time_dbl = time_boot_ms / 1000.0;
+
+				double v = (current_height - prev_height) / (current_time_dbl - prev_time);
+				double t = 10.0 / v;
+
+				sched_lock();
+
+				usleep(t * 1000000);
+
+				_translate_state(NULL);
+
+				sched_unlock();
+			}
 		}
 
 //GPS
 		if( _parseGPS(gps_fd, 100) ) {
 			// накопили, теперь разбираем
 			if (!minmea_check(_msg_buffer, false))
-				continue;
+				goto gps_end;
 
 			struct minmea_sentence_gga frame;
 			if (!minmea_parse_gga(&frame, _msg_buffer))
-				continue; // опс, что-то пошло не так
+				goto gps_end; // опс, что-то пошло не так
 
 			if (frame.fix_quality == 0)
-				continue;
+				goto gps_end;
 
 			minmea_gettime(&gps_time, &gps_basedate, &frame.time);
 
@@ -379,11 +450,12 @@ int granum_main(int argc, char *argv[])
 			gps_msg.alt = (int32_t)(minmea_tofloat(&frame.altitude) * 1000);
 			gps_msg.fix_type = frame.fix_quality;
 
-			mavlink_msg_hil_gps_encode(0, MAV_COMP_ID_PERIPHERAL, &msg, &gps_msg);
+			mavlink_msg_hil_gps_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &gps_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
 			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 		}
+gps_end:
 
 		usleep(100000);
 	}
