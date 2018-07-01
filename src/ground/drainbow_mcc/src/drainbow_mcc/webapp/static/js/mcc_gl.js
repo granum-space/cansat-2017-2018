@@ -14,6 +14,8 @@ function updateModel(glUpdateData) {
         quaternion.normalize();
 
         pivot.setRotationFromQuaternion(quaternion)
+        pivot.rotation.x -= 0.5 * Math.PI;
+
         render();
     });
 
