@@ -19,7 +19,7 @@ app = Flask(
 
 app.config.from_object(os.environ["DRAINBOW_MCC_CONFIG"])
 log = logging.getLogger('werkzeug')
-log.setLevel(app.config["LOG_LEVEL"])
+log.setLevel(app.config["WEB_LOG_LEVEL"])
 
 assets.init_app(app)
 redis_store.init_app(app)

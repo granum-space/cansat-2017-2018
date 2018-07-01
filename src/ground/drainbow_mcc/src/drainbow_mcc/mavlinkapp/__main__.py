@@ -10,11 +10,12 @@ from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_sc
     MAVLink_picture_header_message, MAVLink_intensity_header_message, MAVLink_encapsulated_data_message, \
     MAVLink_intensity_encapsulated_data_message
 
-from .config import get_config
 from .redis_store import redis_store
 
+from ..common.config import get_config
 from ..common.definitions import ZSET_NAME_IMU, ZSET_NAME_PRESSURE, ZSET_NAME_DISTANCE, ZSET_NAME_MAP, \
     ZSET_NAME_ATTITUDE, ZSET_NAME_SPECTRUM
+
 
 from .spectrum import SpectrumAggregator, SpectrumAcceptor, PictureSaver
 
@@ -56,7 +57,7 @@ class SpectrumRedisSaver(SpectrumAcceptor):
 
 
 def main(argv):
-    logging.basicConfig(stream=sys.stdout, level=_config["LOG_LEVEL"])
+    logging.basicConfig(stream=sys.stdout, level=_config["MAV_LOG_LEVEL"])
 
     _log.info("Запускаюсь. Слушаю url: %s" % _config["MAV_LISTEN_URL"])
     connection = mavutil.mavlink_connection(_config["MAV_LISTEN_URL"])
