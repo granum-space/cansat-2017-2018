@@ -64,6 +64,12 @@ MAP_PLOT_SCOPE_MS = timedelta(seconds=15)
 DISTANCE_PLOT_SCOPE_MS = timedelta(seconds=15)
 """ Диапазон отображения на графике последних данных MPU6000 """
 
+LUMINOSITY_PLOT_SCOPE_MS = timedelta(seconds=15)
+""" Диапазон отображения на графике последних данных MPU6000 """
+
+HUMIDITY_PLOT_SCOPE_MS = timedelta(seconds=15)
+""" Диапазон отображения на графике последних данных MPU6000 """
+
 # Настройки стриминга звука
 # ==================================================
 SOUND_CHANNELS = 1

@@ -41,6 +41,11 @@ def plot_data():
         return _get_pressure_data()
     elif chart_name == "distance":
         return _get_distance_data()
+    elif chart_name == "luminosity":
+        return _get_luminosity_data()
+    elif chart_name == "humidity":
+        return _get_humidity_data()
+
 
 
 @plots.route("/map_data")
@@ -187,17 +192,18 @@ def _get_gyro_data():
 
 def _get_temperature_data():
     time = now()
-    temperature = _get_data_abstract("PRESSURE", "temperature", time)
+    temperature_bmp = _get_data_abstract("PRESSURE", "temperature", time)
+    temperature_am2320 = _get_data_abstract("HUMIDITY", "temperature", time)
 
     latestUpdateTime = request.args.get("latestUpdateTime")
-    if len(temperature) > 0:
+    if len(temperature_bmp) > 0:
         latestUpdateTime = temperature[-1]["servertime"]
 
-    for record in temperature:
+    for record in temperature_bmp:
         record["y"] /= 100.0
 
     data = {
-        "datas": [temperature],
+        "datas": [temperature_bmp, temperature_am2320],
         "latestUpdateTime": latestUpdateTime,
         "viewlimit": viewlimit("PRESSURE", time)
     }
@@ -232,6 +238,38 @@ def _get_distance_data():
         "datas": [distance],
         "latestUpdateTime": latestUpdateTime,
         "viewlimit": viewlimit("DISTANCE", time)
+    }
+
+    return jsonify(data)
+
+def _get_luminosity_data():
+    time = now()
+    luminosity = _get_data_abstract("LUMINOSITY", "luminosity", time)
+
+    latestUpdateTime = request.args.get("latestUpdateTime")
+    if len(luminosity) > 0:
+        latestUpdateTime = luminosity[-1]["servertime"]
+
+    data = {
+        "datas": [luminosity],
+        "latestUpdateTime": latestUpdateTime,
+        "viewlimit": viewlimit("LUMINOSITY", time)
+    }
+
+    return jsonify(data)
+
+def _get_humidity_data():
+    time = now()
+    humidity = _get_data_abstract("HUMIDITY", "humidity", time)
+
+    latestUpdateTime = request.args.get("latestUpdateTime")
+    if len(humidity) > 0:
+        latestUpdateTime = humidity[-1]["servertime"]
+
+    data = {
+        "datas": [humidity],
+        "latestUpdateTime": latestUpdateTime,
+        "viewlimit": viewlimit("HUMIDITY", time)
     }
 
     return jsonify(data)

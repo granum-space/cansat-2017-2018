@@ -7,6 +7,15 @@ ZSET_NAME_PRESSURE = "granum:pressure"
 ZSET_NAME_DISTANCE = "granum:distance"
 """ Имя редисового zset, в котором хранятся сообщения SONAR """
 
+ZSET_NAME_HUMIDITY = "granum:humidity"
+""" Имя редисового zset, в котором хранятся сообщения AM2320 """
+
+ZSET_NAME_LUMINOSITY = "granum:luminosity"
+""" Имя редисового zset, в котором хранятся сообщения LUMINOSITY """
+
+ZSET_NAME_MESSAGES = "granum:messages"
+""" Имя редисового zset, в котором хранятся сообщения MESSAGE """
+
 ZSET_NAME_MAP = "granum:map"
 """ Имя редисового zset, в котором хранятся сообщения HIL_GPS """
 
