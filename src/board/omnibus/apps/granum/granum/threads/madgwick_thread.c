@@ -138,35 +138,41 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 			if(repetitions == 100) beta = 0.041;
 		}
 
-		imu_msg.time_boot_ms = record_mpu.time.tv_sec * 1000 + record_mpu.time.tv_nsec / 1000000;
-		imu_msg.xacc = (int)(record_mpu.acc.x * 1000.0f); //convert to mG
-		imu_msg.yacc = (int)(record_mpu.acc.y * 1000.0f);
-		imu_msg.zacc = (int)(record_mpu.acc.z * 1000.0f);
-		imu_msg.xgyro = (int)(DTORAD((record_mpu.gyro.x - gyro_err_x)) * 1000.0f); //convert to mDPS
-		imu_msg.ygyro = (int)(DTORAD((record_mpu.gyro.y - gyro_err_y)) * 1000.0f);
-		imu_msg.zgyro = (int)(DTORAD((record_mpu.gyro.z - gyro_err_z)) * 1000.0f);
-		imu_msg.xmag = (int)(record_lsm.field.x / 10.0f); //convert to mT
-		imu_msg.ymag = (int)(record_lsm.field.y / 10.0f);
-		imu_msg.zmag = (int)(record_lsm.field.z / 10.0f);
+		static int ticker = 0;
+		ticker++;
+		if(ticker == 5) {
+			ticker = 0;
 
-		mavlink_msg_scaled_imu_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &imu_msg);
-		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
+			imu_msg.time_boot_ms = record_mpu.time.tv_sec * 1000 + record_mpu.time.tv_nsec / 1000000;
+			imu_msg.xacc = (int)(record_mpu.acc.x * 1000.0f); //convert to mG
+			imu_msg.yacc = (int)(record_mpu.acc.y * 1000.0f);
+			imu_msg.zacc = (int)(record_mpu.acc.z * 1000.0f);
+			imu_msg.xgyro = (int)(DTORAD((record_mpu.gyro.x - gyro_err_x)) * 1000.0f); //convert to mDPS
+			imu_msg.ygyro = (int)(DTORAD((record_mpu.gyro.y - gyro_err_y)) * 1000.0f);
+			imu_msg.zgyro = (int)(DTORAD((record_mpu.gyro.z - gyro_err_z)) * 1000.0f);
+			imu_msg.xmag = (int)(record_lsm.field.x / 10.0f); //convert to mT
+			imu_msg.ymag = (int)(record_lsm.field.y / 10.0f);
+			imu_msg.zmag = (int)(record_lsm.field.z / 10.0f);
 
-		DEBUG("Madgwick 1\n");
+			mavlink_msg_scaled_imu_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &imu_msg);
+			uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			DEBUG("Madgwick 1\n");
 
-		quat_msg.q1 = q0;
-		quat_msg.q2 = q1;
-		quat_msg.q3 = q2;
-		quat_msg.q4 = q3;
+			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 
-		mavlink_msg_attitude_quaternion_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &quat_msg);
-		len = mavlink_msg_to_send_buffer(buffer, &msg);
+			quat_msg.q1 = q0;
+			quat_msg.q2 = q1;
+			quat_msg.q3 = q2;
+			quat_msg.q4 = q3;
 
-		DEBUG("Madgwick 2\n");
+			mavlink_msg_attitude_quaternion_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MADJWICK, &msg, &quat_msg);
+			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			DEBUG("Madgwick 2\n");
+
+			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+		}
 	}
 
 	return NULL;

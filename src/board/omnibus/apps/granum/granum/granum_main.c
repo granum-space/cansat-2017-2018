@@ -48,7 +48,7 @@ double ground_pressure;
 time_t chute_open_time;
 
 //Settings
-#define GR_CONFIG_LUX_THRESHOLD 400
+#define GR_CONFIG_LUX_THRESHOLD 250
 #define GR_CONFIG_DISTANCE_FREE_FALL_THRESHOLD 50
 
 
@@ -103,7 +103,7 @@ static void _translate_state(bool open_legs) {
 		break;
 
 	case GR_STATE_AWAITING_CHUTE:
-		if(open_legs) {
+		if(true) {
 			boardctl(GRANUM_FIRE_LEGS_DEPLOY, NULL);
 		}
 
@@ -320,25 +320,16 @@ int granum_main(int argc, char *argv[])
 	read(baro_fd, &bmp280_result, sizeof(bmp280_result) );
 	ground_pressure = bmp280_result.pressure;
 
+	clock_gettime(CLOCK_MONOTONIC, &current_time);
+	time_t boottime =  current_time.tv_sec;
+
 	while(true){
-		if(gr_state == GR_STATE_READY) {
-			mavlink_status_t stat;
-
-			int len = read(nrf_fd, buffer, 255);
-
-			for(int i = 0; i < len; i++) {
-				if( mavlink_frame_char(0, buffer[i], &msg, &stat) == MAVLINK_FRAMING_OK) {
-					if(msg.msgid == MAVLINK_MSG_ID_GRANUM_COMMAND) {
-						_translate_state(NULL);
-						break;
-					}
-				}
-			}
-		}
-
-
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
 		uint64_t time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
+
+		if(gr_state == GR_STATE_READY) {
+			if((current_time.tv_sec - boottime) >= 60) _translate_state(NULL);
+		}
 
 		if(gr_state == GR_STATE_AWAITING_CHUTE && ( current_time.tv_sec - chute_open_time > 30 ))
 			_translate_state(false);
@@ -409,7 +400,7 @@ int granum_main(int argc, char *argv[])
 		if(gr_state == GR_STATE_LOADED && sonar_msg.distance > GR_CONFIG_DISTANCE_FREE_FALL_THRESHOLD) _translate_state(NULL);
 
 		if(gr_state == GR_STATE_PRE_LANDING) {
-			if(sonar_msg.distance < 12) {
+			if(sonar_msg.distance < 1200) {
 				static double prev_height;
 				static double prev_time;
 
