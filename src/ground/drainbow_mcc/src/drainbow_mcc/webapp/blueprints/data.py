@@ -16,18 +16,10 @@ def viewlimit(plotname, timebase=now()):
     return timebase - current_app.config["%s_PLOT_SCOPE_MS" % plotname].total_seconds()*1000
 
 
-plots = Blueprint('plots', __name__, url_prefix="/plots")
+data = Blueprint('data', __name__, url_prefix="/data")
 
 
-@plots.route("/")
-def plots_index():
-    try:
-        return render_template('plots.html')
-    except TemplateNotFound:
-        abort(404)
-
-
-@plots.route("/plot_data")
+@data.route("/plot_data")
 def plot_data():
     chart_name = request.args.get("chartName")
 
@@ -48,7 +40,7 @@ def plot_data():
 
 
 
-@plots.route("/map_data")
+@data.route("/map_data")
 def map_data():
     # Достаем элементы
     time = now()
@@ -74,7 +66,7 @@ def map_data():
     return jsonify(data)
 
 
-@plots.route("/gl_data")
+@data.route("/gl_data")
 def gl_data():
     # Достаем последний элемент
     zsetname = common_definitions.ZSET_NAME_ATTITUDE
@@ -92,7 +84,7 @@ def gl_data():
     return jsonify(data)
 
 
-@plots.route("/spectrum_data")
+@data.route("/spectrum_data")
 def spectrum_data():
     # Достаем последний элемент
     zsetname = common_definitions.ZSET_NAME_SPECTRUM
@@ -113,7 +105,7 @@ def spectrum_data():
     return jsonify(data)
 
 
-@plots.route("/spectrum_img")
+@data.route("/spectrum_img")
 def spectrum_img():
     identifier = int(request.args.get("identifier"))
 
