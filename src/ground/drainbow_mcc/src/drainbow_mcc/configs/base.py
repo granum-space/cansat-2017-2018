@@ -52,6 +52,9 @@ MODEL_DATA_UPDATE_PERIOD_MS = 100
 SPECTRUM_DATA_UPDATE_PERIOD_MS = 1000
 """ период обновления модели (в мс) """
 
+STATUS_DATA_UPDATE_PERIOD_MS = 1000
+""" период обновления статуса (в мс) """
+
 IMU_PLOT_SCOPE_MS = timedelta(seconds=15)
 """ Диапазон отображения на графике последних данных MPU6000 """
 

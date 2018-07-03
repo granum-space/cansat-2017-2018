@@ -68,7 +68,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 	uint8_t buffer[1024];
 
 	struct timespec period = {
-			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.01)
+			.tv_sec = 0, .tv_nsec = SEC2NSEC(0.09)
 	};
 
 	float gyro_err_x = 0;

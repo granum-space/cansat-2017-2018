@@ -6,8 +6,8 @@ from flask import Flask
 from .assets import assets
 from .redis_store import redis_store
 
-from .blueprints.landing import landing
-from .blueprints.plots import plots
+from .blueprints.pages import pages
+from .blueprints.data import data
 from .blueprints.gl_test import gl_test
 from .blueprints.sound import sound
 
@@ -24,8 +24,8 @@ log.setLevel(app.config["WEB_LOG_LEVEL"])
 assets.init_app(app)
 redis_store.init_app(app)
 
-app.register_blueprint(landing)
-app.register_blueprint(plots)
+app.register_blueprint(pages)
+app.register_blueprint(data)
 app.register_blueprint(gl_test)
 app.register_blueprint(sound)
 

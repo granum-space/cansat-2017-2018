@@ -61,8 +61,9 @@
             <field type="int8_t[251]" name="message">Message text </field>
         </message>
 
-        <message id="158" name="GRANUM_COMMAND">
-            <field type="uint8_t" name="dummy">Dummy</field>
+        <message id="158" name="GRANUM_STATUS">
+            <field type="uint64_t" name="time_boot_ms" units="ms">Timestamp (milliseconds since system boot)</field>
+            <field type="uint8_t" name="state">Current state</field>
         </message>
         
     </messages>

@@ -16,6 +16,9 @@ ZSET_NAME_LUMINOSITY = "granum:luminosity"
 ZSET_NAME_MESSAGES = "granum:messages"
 """ Имя редисового zset, в котором хранятся сообщения MESSAGE """
 
+ZSET_NAME_STATUS = "granum:status"
+""" Имя редисового zset, в котором хранятся сообщения STATUS """
+
 ZSET_NAME_MAP = "granum:map"
 """ Имя редисового zset, в котором хранятся сообщения HIL_GPS """
 

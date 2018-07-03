@@ -20,10 +20,24 @@
 
 
 
+{% block navbared %}
+
+<div id="status-div" style="color: white; font-size: 30px;">No-state</div>
+
+<audio controls>
+    <source src="/sound" type="audio/wav">
+    Your browser does not support the audio tag.
+</audio>
+
+
+{% endblock %}
+
+
+
 {% block content %}
     <div class="row h-100 center-block">
         <div class="col-xl-12 text-center" id="header">
-            <h1>PLOTS</h1>
+            <h1>OVERVIEW</h1>
         </div>
     </div>
 
@@ -57,11 +71,38 @@
         </div>
     </div>
 
+    <div class="row h-100 center-block margin-bottom">
+        <div class="col-xl-6 text-center">
+            <img id="spectrum-img" src="{{ url_for("data.spectrum_img") }}" alt="Stay tuned!" style="max-height:300px"/>
+        </div>
+        <div class="col-xl-6 text-center">
+            <canvas id="spectrum-plot-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="row h-100 center-block margin-bottom">
+        <div class="col-xl-6 text-center">
+            <div class="h-100 center-block three-js-scene" id="orientation-model-scene"></div>
+        </div>
+        <div class="col-xl-6 text-center">
+            <div class="h-100 center-block" id="map"></div>
+        </div>
+    </div>
+
+    <div style="display: none;">
+        <div id="popup" title="Telemetry"></div>
+    </div>
+
 {% endblock %}
 
 
 
+
 {% block js %}
+
+{% assets "popper_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 
 {{ super() }}
 
@@ -72,6 +113,39 @@
 {% assets "mcc_charts" %}
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+
+
+{% assets "openlayers_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{% assets "mcc_map" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+
+{% assets "three" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{% assets "three_stl_loader" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{% assets "mcc_gl" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+
+{% assets "mcc_spectrum" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+
+{% assets "mcc_status" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
 
 <script type="text/javascript">
 
@@ -224,10 +298,22 @@ $(document).ready(function(){
     }];
 
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodGLMs = {{ config["MODEL_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodSpectrumMs = {{ config["SPECTRUM_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodStatusMs = {{ config["STATUS_DATA_UPDATE_PERIOD_MS"] }}
 
     plotDataUrl = "{{ url_for("data.plot_data") }}"
+    mapDataUrl = "{{ url_for("data.map_data") }}"
+    glDataUrl = "{{ url_for("data.gl_data") }}"
+    spectrumDataUrl = "{{ url_for("data.spectrum_data") }}"
+    spectrumIMGUrl = "{{ url_for("data.spectrum_img") }}"
+    statusUrl = "{{ url_for("data.status") }}"
 
     mccChartsMain(charts, updatePeriodMs, plotDataUrl );
+    mccMapMain(mapDataUrl);
+    mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='cansat.stl') }}", glDataUrl);
+    mccSpectrumMain(spectrumDataUrl, spectrumIMGUrl);
+    mccStatusMain(statusUrl);
 })
 
 </script>
