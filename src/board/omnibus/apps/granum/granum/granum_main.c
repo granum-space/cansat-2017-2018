@@ -338,7 +338,7 @@ int granum_main(int argc, char *argv[])
 //TSL2561
 		read(tsl_fd, &luminosity_msg.luminosity, 2);
 		luminosity_msg.time_boot_ms = time_boot_ms;
-		mavlink_msg_luminosity_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &sonar_msg);
+		mavlink_msg_luminosity_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &luminosity_msg);
 
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 

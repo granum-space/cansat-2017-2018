@@ -51,7 +51,11 @@
         </div>
 
         <div class="col-xl-6 text-center">
-            <canvas id="temperature-plot-canvas"></canvas>
+            <canvas id="temperature-bmp-plot-canvas"></canvas>
+        </div>
+
+        <div class="col-xl-6 text-center">
+            <canvas id="temperature-am-plot-canvas"></canvas>
         </div>
 
         <div class="col-xl-6 text-center">
@@ -217,7 +221,7 @@ $(document).ready(function(){
 
         ]
     },{
-        name: "temperature",
+        name: "temperature-bmp",
         datasets:
         [
             {
@@ -229,6 +233,11 @@ $(document).ready(function(){
                 "lineTension": 0,
                 "data": [],
             },
+        ]
+    },{
+        name: "temperature-am",
+        datasets:
+        [
             {
                 "label": "Температура по датчику AM2320 (degC)",
                 "fill": false,

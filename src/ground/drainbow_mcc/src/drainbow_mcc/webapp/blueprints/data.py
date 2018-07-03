@@ -27,8 +27,10 @@ def plot_data():
         return _get_acc_data()
     elif chart_name == "gyro":
         return _get_gyro_data()
-    elif chart_name == "temperature":
-        return _get_temperature_data()
+    elif chart_name == "temperature-bmp":
+        return _get_temperature_bmp_data()
+    elif chart_name == "temperature-am":
+        return _get_temperature_am_data()
     elif chart_name == "pressure":
         return _get_pressure_data()
     elif chart_name == "distance":
@@ -193,42 +195,45 @@ def _get_gyro_data():
     return jsonify(data)
 
 
-def _get_temperature_data():
+def _get_temperature_bmp_data():
     time = now()
     temperature_bmp = _get_data_abstract("PRESSURE", "temperature", time)
-    temperature_am2320 = _get_data_abstract("HUMIDITY", "temperature", time)
 
-    for record in temperature_am2320:
-        record['y'] /= 10.0
 
     latestUpdateTime = request.args.get("latestUpdateTime")
-    latestUpdateTimeBmp = None
-    latestUpdateTimeAM2320 = None
-
     if len(temperature_bmp) > 0:
-        latestUpdateTimeBmp = temperature_bmp[-1]["servertime"]
+        latestUpdateTime = temperature_bmp[-1]["servertime"]
 
-    if len(temperature_am2320) > 0:
-        latestUpdateTimeAM2320 = temperature_am2320[-1]["servertime"]
-
-    if latestUpdateTimeBmp != None and latestUpdateTimeAM2320 != None:
-        latestUpdateTime = max(latestUpdateTimeBmp, latestUpdateTimeAM2320)
-
-    else:
-        updated = latestUpdateTimeBmp or latestUpdateTimeAM2320
-        if updated != None:
-            latestUpdateTime = updated
 
     for record in temperature_bmp:
         record["y"] /= 100.0
 
     data = {
-        "datas": [temperature_bmp, temperature_am2320],
+        "datas": [temperature_bmp],
         "latestUpdateTime": latestUpdateTime,
         "viewlimit": viewlimit("PRESSURE", time)
     }
 
-    print(data)
+    return jsonify(data)
+
+def _get_temperature_am_data():
+    time = now()
+    temperature_am = _get_data_abstract("HUMIDITY", "temperature", time)
+
+
+    latestUpdateTime = request.args.get("latestUpdateTime")
+    if len(temperature_am) > 0:
+        latestUpdateTime = temperature_am[-1]["servertime"]
+
+
+    for record in temperature_am:
+        record["y"] /= 10.0
+
+    data = {
+        "datas": [temperature_am],
+        "latestUpdateTime": latestUpdateTime,
+        "viewlimit": viewlimit("HUMIDITY", time)
+    }
 
     return jsonify(data)
 
