@@ -28,7 +28,7 @@ MAV_DEFRAG_LISTEN_URL = 'udpin:0.0.0.0:10000'
     передаются пакеты в  MAV_LISTEN_URL.replace("in", "out")
 """
 
-MAV_DEFRAG_REPORT_PERIOD = 1.0
+MAV_DEFRAG_REPORT_PERIOD = 10.0
 """ Частота отчетов в лог дефрагментатора в секундах
     (не чаще этого значения и не чаще таймаута, если соообщений нет )
 """
