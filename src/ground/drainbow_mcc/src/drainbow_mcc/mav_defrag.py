@@ -31,7 +31,7 @@ def defrag_main():
         msg = in_connection.recv_match(blocking=True, timeout=rcv_timeout)
         if msg:
             _log.debug("msg: %s", msg)
-            out_connection.send(msg)
+            out_connection.mav.send(msg)
             msg_counter += 1
 
         now = time.time()

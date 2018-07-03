@@ -198,9 +198,26 @@ def _get_temperature_data():
     temperature_bmp = _get_data_abstract("PRESSURE", "temperature", time)
     temperature_am2320 = _get_data_abstract("HUMIDITY", "temperature", time)
 
+    for record in temperature_am2320:
+        record['y'] /= 10.0
+
     latestUpdateTime = request.args.get("latestUpdateTime")
+    latestUpdateTimeBmp = None
+    latestUpdateTimeAM2320 = None
+
     if len(temperature_bmp) > 0:
-        latestUpdateTime = temperature[-1]["servertime"]
+        latestUpdateTimeBmp = temperature_bmp[-1]["servertime"]
+
+    if len(temperature_am2320) > 0:
+        latestUpdateTimeAM2320 = temperature_am2320[-1]["servertime"]
+
+    if latestUpdateTimeBmp != None and latestUpdateTimeAM2320 != None:
+        latestUpdateTime = max(latestUpdateTimeBmp, latestUpdateTimeAM2320)
+
+    else:
+        updated = latestUpdateTimeBmp or latestUpdateTimeAM2320
+        if updated != None:
+            latestUpdateTime = updated
 
     for record in temperature_bmp:
         record["y"] /= 100.0
@@ -210,6 +227,8 @@ def _get_temperature_data():
         "latestUpdateTime": latestUpdateTime,
         "viewlimit": viewlimit("PRESSURE", time)
     }
+
+    print(data)
 
     return jsonify(data)
 
@@ -268,6 +287,9 @@ def _get_humidity_data():
     latestUpdateTime = request.args.get("latestUpdateTime")
     if len(humidity) > 0:
         latestUpdateTime = humidity[-1]["servertime"]
+
+    for record in humidity:
+        record['y'] /= 10.0
 
     data = {
         "datas": [humidity],
