@@ -112,6 +112,17 @@ def spectrum_img():
     return send_file('tmp/img/%d.png' % identifier)
 
 
+@data.route("/status")
+def status():
+    # Достаем последний элемент
+    zsetname = common_definitions.ZSET_NAME_STATUS
+    status, score = redis_store.zrange(zsetname, -1, -1, withscores=True, score_cast_func=int) [0]
+
+    status = json.loads(status.decode("utf-8"))
+
+    return jsonify(status)
+
+
 def _get_data_abstract(plotname, yvalue_name, time=now()):
     """ Преобразует набор "мавлинкоджсоновых элементов в набор элементов точек для графика
     Элементы оси Y выбираются по указанному ключу """

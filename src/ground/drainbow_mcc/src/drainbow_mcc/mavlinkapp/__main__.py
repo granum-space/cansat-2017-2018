@@ -8,14 +8,14 @@ from pymavlink import mavutil
 from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_scaled_pressure_message, \
     MAVLink_am2320_message, MAVLink_luminosity_message, MAVLink_granum_message_message, \
     MAVLink_hil_gps_message, MAVLink_sonar_message, MAVLink_attitude_quaternion_message, \
-    MAVLink_picture_header_message, MAVLink_intensity_header_message, MAVLink_encapsulated_data_message, \
-    MAVLink_intensity_encapsulated_data_message
+    MAVLink_granum_status_message, MAVLink_picture_header_message, MAVLink_intensity_header_message, \
+    MAVLink_encapsulated_data_message, MAVLink_intensity_encapsulated_data_message
 
 from .redis_store import redis_store
 
 from ..common.config import get_config
 from ..common.definitions import ZSET_NAME_IMU, ZSET_NAME_PRESSURE, ZSET_NAME_DISTANCE, ZSET_NAME_HUMIDITY, \
-    ZSET_NAME_LUMINOSITY, ZSET_NAME_MESSAGES, ZSET_NAME_MAP, ZSET_NAME_ATTITUDE, ZSET_NAME_SPECTRUM
+    ZSET_NAME_LUMINOSITY, ZSET_NAME_MESSAGES, ZSET_NAME_STATUS, ZSET_NAME_MAP, ZSET_NAME_ATTITUDE, ZSET_NAME_SPECTRUM
 
 
 from .spectrum import SpectrumAggregator, SpectrumAcceptor, PictureSaver
@@ -35,8 +35,6 @@ def update_zset(set_name, message):
 
     dmsg = message.to_dict()
     jmsg = json.dumps(dmsg)
-
-    if(dmsg['mavpackettype'] == 'SONAR'): print(dmsg['time_boot_ms'])
 
     p.zadd(set_name, timestamp, jmsg)
     p.execute()
@@ -109,6 +107,10 @@ def main(argv):
         elif isinstance(msg, MAVLink_attitude_quaternion_message):
             """ Сообщение с данными о вращении """
             update_zset(ZSET_NAME_ATTITUDE, msg)
+
+        elif isinstance(msg, MAVLink_granum_status_message):
+            """ Сообщения статуса """
+            update_zset(ZSET_NAME_STATUS, msg)
 
         elif isinstance(msg, MAVLink_picture_header_message) \
             or isinstance(msg, MAVLink_intensity_header_message) \

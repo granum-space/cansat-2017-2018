@@ -22,6 +22,8 @@
 
 {% block navbared %}
 
+<div id="status-div" style="color: white; font-size: 30px;">No-state</div>
+
 <audio controls>
     <source src="/sound" type="audio/wav">
     Your browser does not support the audio tag.
@@ -138,6 +140,12 @@
 {% assets "mcc_spectrum" %}
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+
+
+{% assets "mcc_status" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
 
 <script type="text/javascript">
 
@@ -292,17 +300,20 @@ $(document).ready(function(){
     updatePeriodMs = {{ config["PLOT_DATA_UPDATE_PERIOD_MS"] }}
     updatePeriodGLMs = {{ config["MODEL_DATA_UPDATE_PERIOD_MS"] }}
     updatePeriodSpectrumMs = {{ config["SPECTRUM_DATA_UPDATE_PERIOD_MS"] }}
+    updatePeriodStatusMs = {{ config["STATUS_DATA_UPDATE_PERIOD_MS"] }}
 
     plotDataUrl = "{{ url_for("data.plot_data") }}"
     mapDataUrl = "{{ url_for("data.map_data") }}"
     glDataUrl = "{{ url_for("data.gl_data") }}"
     spectrumDataUrl = "{{ url_for("data.spectrum_data") }}"
     spectrumIMGUrl = "{{ url_for("data.spectrum_img") }}"
+    statusUrl = "{{ url_for("data.status") }}"
 
     mccChartsMain(charts, updatePeriodMs, plotDataUrl );
     mccMapMain(mapDataUrl);
     mccGLMain($("#orientation-model-scene"), "{{ url_for('static', filename='cansat.stl') }}", glDataUrl);
     mccSpectrumMain(spectrumDataUrl, spectrumIMGUrl);
+    mccStatusMain(statusUrl);
 })
 
 </script>
