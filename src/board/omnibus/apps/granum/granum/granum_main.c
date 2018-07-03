@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+#include <nuttx/pthread.h>
 
 #include <sys/boardctl.h>
 
@@ -229,14 +230,13 @@ int granum_main(int argc, char *argv[])
 		return 1;
 	}
 
+	pthread_attr_t thrds_attrs = PTHREAD_ATTR_INITIALIZER;
+	thrds_attrs.priority -= 1;
 
 
-//Running threads
+//Running madjick thread
 	pthread_t madgwick_thread_id;
-	pthread_create(&madgwick_thread_id, 0, madgwick_thread, NULL);
-
-	pthread_t interfaces_thread_id;
-	pthread_create(&interfaces_thread_id, 0, interfaces_thread, NULL);
+	pthread_create(&madgwick_thread_id, &thrds_attrs, madgwick_thread, NULL);
 
 //Opening files
 	int baro_fd = open("/dev/baro0", O_RDWR | O_NONBLOCK);
@@ -293,6 +293,7 @@ int granum_main(int argc, char *argv[])
 
 	mavlink_sonar_t sonar_msg;
 	mavlink_luminosity_t luminosity_msg;
+	mavlink_granum_status_t status_msg;
 
 	mavlink_hil_gps_t gps_msg;
 	gps_msg.cog = 0;
@@ -363,7 +364,7 @@ int granum_main(int argc, char *argv[])
 			_translate_state(NULL);
 
 		if(gr_state == GR_STATE_AWAITING_CHUTE && (_alt(bmp280_result.pressure, ground_pressure) <= 50.0) )
-			_translate_state(false);
+			_translate_state(true);
 
 		if(gr_state == GR_STATE_AWAITING_CHUTE) {
 			static double prev_height = 0;
@@ -446,7 +447,23 @@ int granum_main(int argc, char *argv[])
 
 			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
 		}
+
+		static uint8_t st_send_delay = 0;
+
 gps_end:
+		st_send_delay++;
+
+		if(st_send_delay == 10) {
+			status_msg.time_boot_ms = time_boot_ms;
+			status_msg.state = gr_state;
+
+			mavlink_msg_granum_status_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &status_msg);
+			len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+
+			st_send_delay = 0;
+		}
 
 		usleep(100000);
 	}
