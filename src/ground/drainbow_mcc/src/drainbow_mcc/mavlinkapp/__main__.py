@@ -67,8 +67,9 @@ def main(argv):
     mav = connection
 
     now = datetime.utcnow().isoformat()
-    mav.setup_logfile("/opt/logs/%s.log")
-    _log.info("mavlog setted up")
+    logfile = "/opt/logs/%s_mavlink_app.mav" % now
+    mav.setup_logfile(logfile)
+    _log.error("mavlog setted up %s" % logfile)
 
     mavlinkapp_path = os.path.dirname(os.path.abspath(__file__)) # Path to ...../drainbow_mcc/mavlinkapp/
     drainbow_mcc_path = os.path.dirname(mavlinkapp_path)

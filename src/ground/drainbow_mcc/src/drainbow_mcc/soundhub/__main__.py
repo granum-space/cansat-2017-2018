@@ -1,5 +1,6 @@
 import socket
 import threading
+from datetime import datetime
 
 from ..common.config import get_config
 
@@ -15,12 +16,18 @@ tcp_sock.listen(0)
 
 subscribers = []
 
+now = datetime.utcnow().isoformat()
+logfile = "/opt/logs/%s_soundhub.blog" % now
+logstream = open(logfile, mode="wb")
+print("log  setted up %s" % logfile)
+
 
 def forwarder():
     while True:
 
         try:
             data, sender = udp_sock.recvfrom(_config['SOUND_CHUNK'] * _config['SOUND_CHANNELS'] * 4)
+            logstream.write(data)
         except socket.timeout:
             data = b'1'
 

@@ -10,26 +10,25 @@ from pymavlink.mavutil import mavlink_connection
 _log = logging.getLogger(__name__)
 
 
-def defrag_main():
+def relay_main():
     config = get_config()
-    log_level = config["MAV_DEFRAG_LOG_LEVEL"]
+    log_level = config["MAV_RELAY_LOG_LEVEL"]
 
     logging.basicConfig(stream=sys.stdout, level=log_level)
     _log.info("Запускаюсь")
 
-    mav_url_in = config["MAV_DEFRAG_LISTEN_URL"]
-    mav_url_out = config["MAV_LISTEN_URL"].replace("in", "out")
-    rcv_timeout = config["MAV_DEFRAG_RECEIVE_TIMEOUT"]
-    report_period = config["MAV_DEFRAG_REPORT_PERIOD"]
+    mav_url_in = config["MAV_RELAY_LISTEN_URL"]
+    rcv_timeout = config["MAV_RELAY_RECEIVE_TIMEOUT"]
+    report_period = config["MAV_RELAY_REPORT_PERIOD"]
 
-    _log.info("Использую вход на %s и выход на %s", mav_url_in, mav_url_out)
+    _log.info("Использую вход на %s", mav_url_in)
     in_connection = mavlink_connection(mav_url_in)
-    out_connection = mavlink_connection(mav_url_out)
 
     now = datetime.utcnow().isoformat()
-    logfile = "/opt/logs/%s_mavdefrag.mav" % now
+    logfile = "/opt/logs/%s_mavrelay.mav" % now
     in_connection.setup_logfile(logfile)
     _log.error("mavlog setted up %s" % logfile)
+
 
     last_report_time = time.time()
     msg_counter = 0
@@ -37,7 +36,6 @@ def defrag_main():
         msg = in_connection.recv_match(blocking=True, timeout=rcv_timeout)
         if msg:
             _log.debug("msg: %s", msg)
-            out_connection.mav.send(msg)
             msg_counter += 1
 
         now = time.time()
@@ -46,4 +44,4 @@ def defrag_main():
 
 
 if __name__ == "__main__":
-    defrag_main()
+    relay_main()
