@@ -3,6 +3,7 @@ import logging
 import time
 import json
 import os
+from datetime import datetime
 
 from pymavlink import mavutil
 from pymavlink.dialects.v20.granum import MAVLink_scaled_imu_message, MAVLink_scaled_pressure_message, \
@@ -64,6 +65,10 @@ def main(argv):
     _log.info("Запускаюсь. Слушаю url: %s" % _config["MAV_LISTEN_URL"])
     connection = mavutil.mavlink_connection(_config["MAV_LISTEN_URL"])
     mav = connection
+
+    now = datetime.utcnow().isoformat()
+    mav.setup_logfile("/opt/logs/%s.log")
+    _log.info("mavlog setted up")
 
     mavlinkapp_path = os.path.dirname(os.path.abspath(__file__)) # Path to ...../drainbow_mcc/mavlinkapp/
     drainbow_mcc_path = os.path.dirname(mavlinkapp_path)
