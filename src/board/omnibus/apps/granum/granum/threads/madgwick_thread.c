@@ -41,14 +41,12 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 	if (mpu_fd < 0)
 	{
 		perror("Can't open /dev/mpu0");
-		return 1;
 	}
 
 	int mag_fd = open("/dev/mag0", O_RDONLY);
 	if (mag_fd < 0)
 	{
 		perror("cant open magnitometer device");
-		return 1;
 	}
 
 //Настройки MPU6000
@@ -159,7 +157,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 
 			DEBUG("Madgwick 1\n");
 
-			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			send_telem(buffer, len);
 
 			quat_msg.q1 = q0;
 			quat_msg.q2 = q1;
@@ -171,7 +169,7 @@ pthread_addr_t madgwick_thread(pthread_addr_t arg) {
 
 			DEBUG("Madgwick 2\n");
 
-			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			send_telem(buffer, len);
 		}
 	}
 

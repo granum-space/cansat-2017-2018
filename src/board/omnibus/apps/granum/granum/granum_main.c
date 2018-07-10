@@ -32,12 +32,9 @@
 #include "../../include/gpsutils/minmea.h"
 #include "madgwick/MadgwickAHRS.h"
 
-#include "router.h"
 #include "common.h"
 
 #include "threads/madgwick_thread.h"
-#include "threads/sensors_thread.h"
-#include "threads/interfaces_thread.h"
 
 //Global variables
 int nrf_fd, file_fd, fifo_fd, raspberry_fd;
@@ -49,7 +46,7 @@ double ground_pressure;
 time_t chute_open_time;
 
 //Settings
-#define GR_CONFIG_LUX_THRESHOLD 250
+#define GR_CONFIG_LUX_THRESHOLD 1000
 #define GR_CONFIG_DISTANCE_FREE_FALL_THRESHOLD 50
 
 
@@ -117,7 +114,7 @@ static void _translate_state(bool open_legs) {
 		break;
 
 	default:
-		break; //May be we should report?
+		break; //Maybe we should report?
 
 	}
 }
@@ -147,8 +144,8 @@ int granum_main(int argc, char *argv[])
 	char filename[32];
 	struct stat stats;
 
-	for(int i = 0; i < 100; i++) {
-		snprintf(filename, 22, "/mnt/sd0/GRANUM%d.bin", i);
+	for(int i = 0; i < 10000; i++) {
+		snprintf(filename, 22, "/mnt/sd0/GR_%d.bin", i);
 		int ret = stat(filename, &stats);
 
 		if(ret == -1 && get_errno() == ENOENT) {
@@ -156,8 +153,8 @@ int granum_main(int argc, char *argv[])
 			break;
 		}
 
-		if(i == 99) {
-			perror("There are 99 telemetry files already");
+		if(i == 9999) {
+			perror("There are 9999 telemetry files already");
 			return 1;
 		}
 	}
@@ -214,22 +211,6 @@ int granum_main(int argc, char *argv[])
 	ioctl(nrf_fd, NRF24L01IOC_SETSTATE, (long unsigned int)&state);
 
 
-
-//Create fifo and open reading end
-	int ret = mkfifo("/dev/cf_fifo", 0666);
-	if(ret != 0) {
-		perror("Can't create fifo");
-		return 1;
-	}
-
-	fifo_fd = open("/dev/cf_fifo", O_RDWR | O_NONBLOCK);
-	if (fifo_fd < 0)
-	{
-		perror("Can't open telemetry file");
-		perror(filename);
-		return 1;
-	}
-
 	pthread_attr_t thrds_attrs = PTHREAD_ATTR_INITIALIZER;
 	thrds_attrs.priority -= 1;
 
@@ -243,7 +224,6 @@ int granum_main(int argc, char *argv[])
 	if (baro_fd < 0)
 	{
 		perror("Can't open /dev/baro0");
-		return 1;
 	}
 
 	int gps_fd = open("/dev/ttyS2", O_RDONLY);
@@ -251,21 +231,18 @@ int granum_main(int argc, char *argv[])
 	if (gps_fd < 0)
 	{
 		perror("Can't open /dev/ttyS2");
-		return 1;
 	}
 
 	int sonar_fd = open("/dev/sonar0", O_RDONLY);
 	if (sonar_fd < 0)
 	{
 		perror("cant open sonar device");
-		return 1;
 	}
 
 	int tsl_fd = open("/dev/lumen0", O_RDONLY);
 	if (tsl_fd < 0)
 	{
 	  perror("cant open lumen device");
-	  return 1;
 	}
 
 	ioctl(tsl_fd, TSL2561_IOCTL_CMD_SETUP, NULL);
@@ -324,12 +301,14 @@ int granum_main(int argc, char *argv[])
 	clock_gettime(CLOCK_MONOTONIC, &current_time);
 	time_t boottime =  current_time.tv_sec;
 
+	uint8_t st_send_delay = 0;
+
 	while(true){
 		clock_gettime(CLOCK_MONOTONIC, &current_time);
 		uint64_t time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
 
 		if(gr_state == GR_STATE_READY) {
-			if((current_time.tv_sec - boottime) >= 60) _translate_state(NULL);
+			if((current_time.tv_sec - boottime) >= 300) _translate_state(NULL);
 		}
 
 		if(gr_state == GR_STATE_AWAITING_CHUTE && ( current_time.tv_sec - chute_open_time > 30 ))
@@ -342,23 +321,21 @@ int granum_main(int argc, char *argv[])
 
 		uint16_t len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+		send_telem(buffer, len);
 
 		if(gr_state == GR_STATE_LOADED && luminosity_msg.luminosity >= GR_CONFIG_LUX_THRESHOLD) _translate_state(NULL);
 
 //BMP280
 		ssize_t isok = read(baro_fd, &bmp280_result, sizeof(bmp280_result) );
-		DEBUG("BMP280: got %d bytes, error %d\n", isok >= 0 ? isok : 0, isok >=0 ? 0 : -get_errno());
 
-		clock_gettime(CLOCK_MONOTONIC, &current_time);
-		baro_msg.time_boot_ms = current_time.tv_sec * 1000 + current_time.tv_nsec / 1000000;
+		baro_msg.time_boot_ms = time_boot_ms;
 		baro_msg.press_abs = bmp280_result.pressure / 100.0;				//pressure in hPa
 		baro_msg.temperature = bmp280_result.temperature * 100.0;		//temperature in 0.01 degC
 
 		mavlink_msg_scaled_pressure_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &baro_msg);
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+		send_telem(buffer, len);
 
 		if(gr_state == GR_STATE_FREE_FALL && (_alt(bmp280_result.pressure, ground_pressure) <= 250.0) )
 			_translate_state(NULL);
@@ -396,9 +373,7 @@ int granum_main(int argc, char *argv[])
 
 		len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-		ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
-
-		if(gr_state == GR_STATE_LOADED && sonar_msg.distance > GR_CONFIG_DISTANCE_FREE_FALL_THRESHOLD) _translate_state(NULL);
+		send_telem(buffer, len);
 
 		if(gr_state == GR_STATE_PRE_LANDING) {
 			if(sonar_msg.distance < 1200) {
@@ -445,10 +420,8 @@ int granum_main(int argc, char *argv[])
 			mavlink_msg_hil_gps_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &gps_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			send_telem(buffer, len);
 		}
-
-		static uint8_t st_send_delay = 0;
 
 gps_end:
 		st_send_delay++;
@@ -460,7 +433,7 @@ gps_end:
 			mavlink_msg_granum_status_encode(GR_SYSTEM_OMNIBUS, GR_COMPONENT_OMNIBUS_MAIN, &msg, &status_msg);
 			len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-			ROUTE(ROUTE_WAY_TELEMETRY_COMMON, buffer, len)
+			send_telem(buffer, len);
 
 			st_send_delay = 0;
 		}

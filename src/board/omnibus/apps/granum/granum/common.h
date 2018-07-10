@@ -8,7 +8,11 @@
 #ifndef APPS_GRANUM_GRANUM_COMMON_H_
 #define APPS_GRANUM_GRANUM_COMMON_H_
 
-#include "router.h"
+#include <nuttx/fs/fs.h>
+
+extern int nrf_fd;
+extern int file_fd;
+extern int raspberry_fd;
 
 #define DEBUG (void)//printf
 
@@ -44,5 +48,7 @@ typedef enum {
 	GR_COMPONENT_OMNIBUS_MAIN = 1,
 	GR_COMPONENT_OMNIBUS_MADJWICK,
 } gr_component_omnibus_t;
+
+void send_telem(void * ptr, size_t len);
 
 #endif /* APPS_GRANUM_GRANUM_COMMON_H_ */

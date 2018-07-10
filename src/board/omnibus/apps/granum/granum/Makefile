@@ -3,7 +3,7 @@
 # blinky
 
 ASRCS =
-CSRCS = madgwick/MadgwickAHRS.c threads/madgwick_thread.c threads/sensors_thread.c threads/interfaces_thread.c
+CSRCS = madgwick/MadgwickAHRS.c threads/madgwick_thread.c common.c
 MAINSRC = granum_main.c
 
 CONFIG_XYZ_PROGNAME ?= granum$(EXEEXT)
